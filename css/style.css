@@ -1,0 +1,66 @@
+﻿/*CSS Reset*/
+html, body, h1, h2, h3, h4, h5, h6, p, br, form, input, button, textarea, select, fieldset, blockquote, ul, ol, li, dl, dt, dd, pre { margin: 0; padding: 0; }
+body { font: 12px/1.231 Tahoma,Helvetica,Arial, "\5b8b\4f53",sans-serif; color: #333; }
+h1, h2, h3 { font-size: 18px; font-weight: bold; line-height: 35px; text-align: center; }
+h4, h5, h6 { font-size: 14px; font-weight: bold; line-height: 35px; }
+/*a { color: #333; text-decoration: none; outline: none; }
+a:hover { color: #23930c; text-decoration: none; }*/
+textarea, select, input, button, label { vertical-align: middle; font-size: 12px; }
+button { background: none; border: none; cursor: pointer; }
+address, cite, code, em, var, abbr, acronym { font-style: normal; }
+pre { font-size: 12px; text-align: center; white-space: pre-wrap; word-wrap: break-word; }
+table { border-collapse: collapse; table-layout: auto; text-align: center; }
+td, th { word-wrap: break-word; word-break: break-all; overflow: hidden; }
+ol, ul { list-style: none; }
+li { list-style-position: outside; }
+img { border: none; }
+/*clear float*/
+.clearfix { *zoom: 1; }
+.clearfix:before,
+.clearfix:after { display: table; line-height: 0; content: ""; }
+.clearfix:after { clear: both; }
+/*CSS float*/
+.fl { float: left; display: inline; }
+.fr { float: right; display: inline; }
+/*CSS align*/
+.ta_l { text-align: left; }
+.ta_r { text-align: right; }
+.ta_c { text-align: center; }
+.ta_j { text-align: justify; }
+/*CSS font-size*/
+.fz_12 { font-size: 12px; }
+.fz_14 { font-size: 14px; }
+.fz_16 { font-size: 16px; }
+.fz_18 { font-size: 18px; }
+/*CSS fontColor*/
+.f_blue { color: blue; }
+.f_white { color: white; }
+.f_666 { color: #666; }
+.f_09c { color: #09c; }
+/*padding*/
+.pt_20 { padding-top: 20px; }
+/*page-style*/
+#content { margin-left: 10px; }
+td { padding: 5px; }
+p { line-height: 50px; text-align: center; }
+.tdtitle { text-align: right; width: 100px; }
+.tdinput { text-align: left; width: 200px; }
+.nav { text-align: center; line-height: 35px; }
+.nav a { padding: 0 9px; font-size: 14px; }
+.btnp input { background-color: #86C31F; color: #FFFFFF; font-family: Verdana,Tahoma; font-size: 12px; font-weight: bold; height: 27px; vertical-align: middle; padding: 0 6px; cursor: pointer; }
+.smBtn { background-color: #86C31F; color: #FFFFFF; font-family: Verdana,Tahoma; font-size: 12px; font-weight: bold; height: 22px; vertical-align: middle; padding: 0 3px; cursor: pointer; }
+.b_orange { color: #F98E02; font-weight: 700; }
+.b_red { color: #E82246; font-weight: 700; }
+.b_blue { color: #1F41EF; font-weight: 700; }
+.b_lightblue { color: #17A0EF; font-weight: 700; }
+.b_green { color: #0CD337; font-weight: 700; }
+.gray { color: #333; }
+/*right.aspx*/
+.tableborder { text-align: left; background-color: #C9F1FF; border: 1px solid #4FB4DE; border-collapse: separate; table-layout: auto; color: #000; }
+.sitepath a, .tableborder a { color: #002280; text-decoration: none; }
+.sitepath a:hover, .tableborder a:hover { text-decoration: underline; }
+.header { background-color: #4FB4DE; color: #FFFFFF; font: bold 9pt Tahoma,Verdana; }
+/*sitepath*/
+.sitepath { background: url(../images/tb.gif) no-repeat 0 10px; text-align: left; line-height: 35px; padding-left: 22px; color: #000; font-size: 13px; }
+.tablewidth { width: 700px; }
+.inputBorder { border: 1px solid #ccc; height: 20px; line-height: 20px; }

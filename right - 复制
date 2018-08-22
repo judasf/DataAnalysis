@@ -1,0 +1,175 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="right - 复制.aspx.cs" Inherits="right" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>运维信息管理系统</title>
+    <link type="text/css" href="css/style.css" rel="Stylesheet" />
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+        <h4 class="ta_c  pt_20">
+            欢迎使用运维信息管理系统</h4>
+        <table align="center" width="96%" cellspacing="1" cellpadding="3" border="0" class="tableborder">
+            <tbody>
+                <tr class="header">
+                    <td height="25">
+                        我的状态
+                    </td>
+                </tr>
+                <tr>
+                    <td height="25" bgcolor="#FFFFFF">
+                        <table  width="96%" cellspacing="0" cellpadding="0" border="0" style="text-align:left;" >
+                            <tbody>
+                                <tr>
+                                    <td height="22">
+                                        当前用户:&nbsp;<b>
+                                            <%=Session["uname"] %>
+                                        </b>&nbsp;&nbsp;,所在单位:&nbsp;<b><%=Session["deptname"] %>
+                                        </b>&nbsp;&nbsp;,所在岗位:&nbsp;<b><%=SZGW %>
+                                        </b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td height="22" >
+                                        <b>工作提醒</b>：<span id="gztx" runat="server">没有工作提醒</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br />
+        <br />
+        <table align="center"  <%=isUnitKG||isUnitPQ||isUnitPQLL|| isAN || isNetCard?"style='display:none'":"" %> width="96%" cellspacing="1" cellpadding="3" border="0" class="tableborder">
+            <tbody>
+                <tr class="header">
+                    <td width="100%" height="25">
+                        <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                            <tbody>
+                                <tr>
+                                    <td width="50%">
+                                        <strong>快捷菜单</strong>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr style='display:none' <%=!isWB&&!isQYWH?"":"style='display:none'" %>>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>迁改事项管理</strong>：&nbsp;&nbsp;<a href="xlqggd/xlqgxxgl.aspx" <%=!isTOWN?"":"style='display:none'" %>>市区迁改信息管理</a>&nbsp;&nbsp;<a href="xlqggd/xlqgxxgl_town.aspx" <%=isTOWN||isAdmin||isYW?"":"style='display:none'" %>>县公司迁改管理</a>&nbsp;&nbsp;
+                        <a href="xlqggd/xlqgxxlr.aspx" <%=isSX?"":"style='display:none'" %>>迁改信息录入</a>
+                    </td>
+                </tr>
+                 <tr style='display:none' <%=isAdmin||isYW||isNSBD?"":"style='display:none'" %> >
+                    <td height="25" bgcolor="#FFFFFF"  >
+                        <strong>南水北调事项管理</strong>：&nbsp;&nbsp;
+                        <a href="nsbdgd/nsbdxxgl.aspx">南水北调信息管理</a>&nbsp;&nbsp; <a href="nsbdgd/nsbdxxlr.aspx"
+                           <%=isYW?"":"style='display:none'" %>>南水北调信息录入</a>&nbsp;&nbsp;<a href="nsbdgd/nsbdxxllgl.aspx"
+                            >南水北调领料信息管理</a>
+                    </td>
+                </tr>
+                <tr style='display:none' <%=!isGZBZ?"":"style='display:none'" %>>
+                    <td height="25" bgcolor="#FFFFFF"  >
+                        <strong>被盗事项管理</strong>：&nbsp;&nbsp;<a href="xlbdgd/xlbdxxtj.aspx">被盗信息统计</a>&nbsp;&nbsp;
+                        <a href="xlbdgd/xlbdxxgl.aspx">被盗信息管理</a>&nbsp;&nbsp; <a href="xlbdgd/xlbdxxlr.aspx"
+                            <%=isSX?"":"style='display:none'" %>>被盗信息录入</a>&nbsp;&nbsp;<a href="xlbdgd/xlbdxxllgl.aspx"
+                            <%=isKG?"":"style='display:none'" %>>被盗领料信息管理</a>
+                    </td>
+                </tr>
+                <tr  style='display:none'>
+                       
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>抢修事项管理</strong>：&nbsp;&nbsp;<a href="xlqxgd/xlqxxxtj.aspx">抢修信息统计</a>&nbsp;&nbsp;
+                        <a href="xlqxgd/xlqxxxgl.aspx">抢修信息管理</a> &nbsp;&nbsp; <a href="xlqxgd/xlqxxxlr.aspx"
+                            <%=isSX?"":"style='display:none'" %>>抢修信息录入</a>
+                    </td>
+                </tr>
+                <tr <%=!isGZBZ&&!isEC?"":"style='display:none'" %>>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>整改事项管理</strong>：&nbsp;&nbsp;<a href="xlzggd/xlzgxxtj.aspx">整改信息统计</a>&nbsp;&nbsp;
+                        <a href="xlzggd/xlzgxxgl.aspx" <%=!isTOWN||isAdmin||isYW?"":"style='display:none'" %>>市公司整改信息</a>
+                         <a href="xlzggd/xlzgxxgl_town.aspx" <%=isTOWN||isAdmin||isYW?"":"style='display:none'" %>>县公司整改信息</a>&nbsp;&nbsp;
+                        <a href="xlzggd/xlzgxxlr.aspx" <%=isSX&&!isTOWN?"":"style='display:none'" %>>整改信息录入</a>
+                        <a href="xlzggd/xlzgxxlr_town.aspx" <%=isSX&&isTOWN?"":"style='display:none'" %>>整改信息录入</a>&nbsp;&nbsp;
+                            <a href="xlzggd/xlzgxxllgl.aspx" <%=isKG||isWB||isAdmin||isYW||isSX?"":"style='display:none'" %>>整改领料信息管理</a>
+                    </td>
+                </tr>
+                   <tr style='display:none' <%=!isGZBZ?"":"style='display:none'" %>>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>电缆延伸事项管理</strong>：&nbsp;&nbsp;<a href="dlysgd/xlzgxxtj.aspx">电缆延伸信息统计</a>&nbsp;&nbsp;
+                          <a href="dlysgd/xlzgxxgl.aspx" <%=!isTOWN||isAdmin||isYW?"":"style='display:none'" %>>市公司电缆延伸</a>
+                         <a href="dlysgd/xlzgxxgl_town.aspx" <%=isTOWN||isAdmin||isYW?"":"style='display:none'" %>>县公司电缆延伸</a>&nbsp;&nbsp;
+                      <a href="dlysgd/xlzgxxlr.aspx"    <%=isSX&&!isTOWN?"":"style='display:none'" %>>电缆延伸信息录入</a>
+                      <a href="dlysgd/xlzgxxlr_town.aspx"    <%=isSX&&isTOWN?"":"style='display:none'" %>>电缆延伸信息录入</a>&nbsp;&nbsp;
+                      <a href="dlysgd/xlzgxxllgl.aspx"   <%=isKG||isWB||isAdmin||isYW||isSX?"":"style='display:none'" %>>电缆延伸领料管理</a>
+                    </td>
+                </tr>
+                <tr <%=isAdmin||isSX||isKG||isGZLD||isYW?"":"style='display:none'" %>>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>日常维护事项管理</strong>：&nbsp;&nbsp;<a href="rcwhllxx/yjylkctzgl.aspx">日常维护领料明细</a>&nbsp;&nbsp;
+                        <a href="rcwhllxx/yjylkctzlr.aspx" <%=isSX||isKG?"":"style='display:none'" %>>日常维护领料录入</a>
+                    </td>
+                </tr>
+                 <tr <%=isAdmin||isSX||isKG||isGZLD||isYW?"":"style='display:none'" %>>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>客户接入事项管理</strong>：&nbsp;&nbsp;<a href="khjrllxx/yjylkctzgl.aspx">客户接入领料明细</a>&nbsp;&nbsp;
+                        <a href="khjrllxx/yjylkctzlr.aspx" <%=isSX||isKG?"":"style='display:none'" %>>客户接入领料录入</a>
+                    </td>
+                </tr>
+                 <tr <%=isAdmin||isSX||isYW||isKG||isGZLD?"":"style='display:none'" %>>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>应急库事项管理</strong>：&nbsp;&nbsp;<a href="yjkgd/yjkxxgl.aspx">应急库信息管理</a>&nbsp;&nbsp;
+                        <a href="yjkgd/yjkxxlr.aspx" <%=isKG&&!isTOWN?"":"style='display:none'" %>>应急库信息录入</a>&nbsp;&nbsp;
+                        <a href="yjkgd/yjkxxllgl.aspx"  <%=isKG||isAdmin||isYW?"":"style='display:none'" %>>应急库领料信息管理</a>
+                    </td>
+                </tr>
+                <tr style='display:none'>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>工作报表管理</strong>：&nbsp;&nbsp;<a href="gzbb/wbzbgl.aspx">工作周报管理</a>&nbsp;&nbsp;
+                        <a href="gzbb/wbzbsc.aspx" <%=isWB?"":"style='display:none'" %>>工作周报上传</a>
+                    </td>
+                </tr>
+                  <tr  <%=isSX||isKG||isEC?"style='display:none'":"" %>>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>基站考核事项管理</strong>：&nbsp;&nbsp;<a href="jzkh/jzkhtjb.aspx">基站维护考核表</a>&nbsp;&nbsp;
+                       <a href="jzkh/jzdzzb_marking.aspx" <%=isWW&&Session["uname"].ToString()=="tianlihua"?"":"style='display:none'" %> >基站断站指标考核</a>&nbsp;&nbsp;
+                       <a href="jzkh/xqjgzzb_marking.aspx" <%=isWW&&Session["uname"].ToString()=="liuhongmin"?"":"style='display:none'" %> >小区故障指标考核</a>
+                        <a href="jzkh/jzrcwh_marking.aspx"  <%=(isWW&&Session["uname"].ToString()=="tianlihua")||isYWJZ||isGXJZKH?"":"style='display:none'" %>>日常维护管理考核</a>&nbsp;&nbsp;
+                        <a href="jzkh/jzwykh_marking.aspx" <%=isWY?"":"style='display:none'" %>>网优指标考核</a>&nbsp;&nbsp;
+                         <a href="jzkh/jzewjc_marking.aspx" <%=isYWJZ?"":"style='display:none'" %>>额外奖罚考核</a>
+                    </td>
+                </tr>
+                 <tr <%=isSX||isKG||isEC?"style='display:none'":"" %> >
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>线路考核事项管理</strong>：&nbsp;&nbsp;<a href="xlkh/xlkhtjb.aspx">线路维护考核表</a>&nbsp;&nbsp;
+                        <a href="xlkh/xlzayfw_marking.aspx" <%=(isXLKH && isTOWN) ||(isGZLD && Session["uname"].ToString() == "wangheyang")?"":"style='display:none'" %>>障碍服务指标考核</a>&nbsp;&nbsp;
+                        <a href="xlkh/xlrcwh_marking.aspx" <%=(isXLKH && isTOWN) || (isYW && Session["uname"].ToString()=="wankun")|| (isGZLD && Session["uname"].ToString() == "wangheyang")?"":"style='display:none'" %>>日常维护内容考核</a>&nbsp;&nbsp;
+                        <a href="xlkh/xlewjc_marking.aspx" <%=isYW && Session["uname"].ToString()=="wankun"?"":"style='display:none'" %>>额外奖罚考核</a>
+                    </td>
+                </tr>
+                <tr <%=isAdmin||isKG||isGZLD||isYW?"":"style='display:none'" %>>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>库存管理</strong>：&nbsp;&nbsp;<a href="kcgl/yjylkckctjb.aspx" >库存统计表</a>&nbsp;&nbsp;
+                        <a href="kcgl/yjylkckclr.aspx" <%=isKG?"":"style='display:none'" %> >库存录入</a>&nbsp;&nbsp;<a href="kcgl/yjylkclbgl.aspx" <%=isKG?"":"style='display:none'" %> >库存型号管理</a>
+                    &nbsp;&nbsp;<a href="kcgl/yjylkckclrmx.aspx" >库存录入明细</a>
+                    </td>
+                </tr>
+                <tr <%=isAdmin||isGZLD||isWB?"":"style='display:none'" %>>
+                    <td height="25" bgcolor="#FFFFFF" >
+                        <strong>系统设置</strong>：&nbsp;&nbsp;<a href="system/bmsz.aspx"  <%=isAdmin?"":"style='display:none'" %>>部门设置</a>&nbsp;&nbsp;
+                        <a href="system/gwsz.aspx" >岗位设置</a>&nbsp;&nbsp;<a href="system/yhgl.aspx" >用户管理</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </form>
+</body>
+</html>

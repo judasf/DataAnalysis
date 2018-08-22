@@ -1,0 +1,385 @@
+﻿<%@ Page Language="C#" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>接入网资源管理——接入网网点维修台账</title>
+    <%--引入My97日期文件--%>
+    <script src="../Script/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <%--引入Jquery文件--%>
+    <script src="../Script/easyui/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="../Script/easyui/jquery.easyui.min.js" type="text/javascript"></script>
+    <%--引入uploadify文件--%>
+    <link rel="stylesheet" type="text/css" href="../Script/uploadify/uploadify.css" />
+    <script type="text/javascript" src="../Script/uploadify/jquery.uploadify.js"></script>
+    <%--引入easyui文件--%>
+    <link href="../Script/easyui/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+    <link href="../Script/easyui/themes/icon.css" rel="stylesheet" type="text/css" />
+    <script src="../Script/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+    <script src="../Script/extJquery.js" type="text/javascript"></script>
+    <script src="../Script/extEasyUI.js" type="text/javascript"></script>
+    <link type="text/css" href="../css/style.css" rel="Stylesheet" />
+    <%  int roleid = -1;
+        if (Session["uname"] == null || Session["uname"].ToString() == "")
+        {%>
+    <script type="text/javascript">
+        $(function () {
+            parent.$.messager.alert('提示', '登陆超时，请重新登陆再进行操作！', 'error', function () {
+                parent.location.replace('default.aspx');
+            });
+        });
+
+    </script>
+    <%}
+        else
+        {
+            roleid = int.Parse(Session["roleid"].ToString()); 
+    %>
+    <script type="text/javascript">
+        var roleid = '<%=roleid%>';
+    </script>
+    <%}
+    %>
+    <script type="text/javascript">
+        //新增
+        var addRepairInfo = function () {
+            var dialog = parent.$.modalDialog({
+                title: '新增',
+                width: 600,
+                height: 600,
+                iconCls: 'icon-add',
+                href: 'AccessNetwork/Dialog/PointRepairInfo_OP.aspx',
+                buttons: [{
+                    text: '提交',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, repairGrid);
+                    }
+                },
+                    {
+                        text: '取消',
+                        handler: function () {
+                            dialog.dialog('close');
+                        }
+                    }
+                ]
+            });
+        };
+        //编辑
+        var editRepairInfo = function (id) {
+            var dialog = parent.$.modalDialog({
+                title: '编辑',
+                width: 600,
+                height: 600,
+                iconCls: 'icon-edit',
+                href: 'AccessNetwork/Dialog/PointRepairInfo_OP.aspx?id=' + id,
+                buttons: [{
+                    text: '保存',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, repairGrid);
+                    }
+                },
+                    {
+                        text: '取消',
+                        handler: function () {
+                            dialog.dialog('close');
+                        }
+                    }
+                ]
+            });
+        };
+        //查看详情
+        var viewPointRepiarDetail = function (id) {
+            var btns = [{
+                text: '关闭',
+                handler: function () {
+                    dialog.dialog('close');
+                }
+            }];
+            if (roleid == 4 || roleid == 15)
+                btns.unshift({
+                    text: '编辑',
+                    handler: function () {
+                        dialog.dialog('close');
+                        editRepairInfo(id);
+                    }
+                });
+            var dialog = parent.$.modalDialog({
+                title: '台账详情',
+                width: 600,
+                height: 600,
+                iconCls: 'ext-icon-page',
+                href: 'AccessNetwork/Dialog/ViewPointRepiarDetail_OP.aspx?id=' + id,
+                buttons: btns
+            });
+        };
+        //导入数据
+        var importResources = function () {
+            var dialog = parent.$.modalDialog({
+                title: '导入数据',
+                width: 600,
+                height: 230,
+                iconCls: 'icon-table_row_insert',
+                href: 'AccessNetwork/Dialog/ImporRepairInfo_op.aspx',
+                buttons: [{
+                    text: '导入',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, repairGrid);
+                    }
+                },
+                    {
+                        text: '取消',
+                        handler: function () {
+                            dialog.dialog('close');
+                        }
+                    }
+                ]
+            });
+        };
+
+        //查询功能
+        var searchGrid = function () {
+            repairGrid.datagrid('load', $.serializeObject($('#searchForm')));
+        };
+        //重置查询
+        var resetGrid = function () {
+            $('#searchForm').form('reset');
+            repairGrid.datagrid('load', {});
+        };
+        //导出网点维修台账excel
+        var exportRepairInfo = function () {
+            jsPostForm('../ajax/Srv_AccessNetwork.ashx/ExportPointRepairInfo', $.serializeObject($('#searchForm')));
+        };
+        //网点维修台账
+        var repairGrid;
+        $(function () {
+            repairGrid = $('#repairGrid').datagrid({
+                title: '网点维修台账',
+                url: '../ajax/Srv_AccessNetwork.ashx/GetPointRepairInfo',
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                noheader: true,
+                pageSize: 20,
+                singleSelect: true,
+                idField: 'id',
+                sortName: 'inputtime',
+                sortOrder: 'desc',
+                columns: [
+                  [
+                       {
+                           title: '操作',
+                           field: 'action',
+                           width: '50',
+                           halign: 'center',
+                           formatter: function (value, row) {
+                               var str = '';
+                               str += $.formatString('<a href="javascript:editRepairInfo(\'{0}\');" title="编辑" style="cursor:pointer;" >编辑</a>', row.id);
+                               //str += $.formatString('<img src="../script/easyui/themes/icons/no.png" title="删除" onclick="removeFun(\'{0}\');" style="cursor:pointer;"/>', row.id);
+                               return str;
+                           }
+                       }, {
+                           width: '80',
+                           title: '单位',
+                           field: 'deptname',
+                           halign: 'center',
+                           align: 'center'
+                       },
+                      {
+                          width: '65',
+                          title: '机房编号',
+                          field: 'anid',
+                          sortable: true,
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '接入机房名称',
+                          field: 'roomname',
+                          halign: 'center',
+                          align: 'center'
+                      }
+                      , {
+                          width: '70',
+                          title: '所属县市',
+                          field: 'cityname',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '160',
+                          title: '维修事项',
+                          field: 'repairinfo',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '维修签报单号',
+                          field: 'repairreportno',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '申请时间',
+                          field: 'applytime',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '通知维修时间',
+                          field: 'noticerepairtime',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '维修完成时间',
+                          field: 'repairfinishtime',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '保修截止日期',
+                          field: 'warrantyexpirationdate',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '180',
+                          title: '维修内容',
+                          field: 'repaircontent',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '120',
+                          title: '验收情况',
+                          field: 'checkinfo',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '100',
+                          title: '维修方名称',
+                          field: 'repairperson',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '90',
+                          title: '维修方联系方式',
+                          field: 'repairpersontel',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '70',
+                          title: '申请金额',
+                          field: 'applymoney',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '70',
+                          title: '报账金额',
+                          field: 'reimnursemoney',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '70',
+                          title: '立项时间',
+                          field: 'projecttime',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '70',
+                          title: '报账时间',
+                          field: 'reimbursetime',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '100',
+                          title: '备注',
+                          field: 'memo',
+                          halign: 'center',
+                          align: 'center'
+                      }
+                  ]
+                ],
+                toolbar: '#agTip',
+                onLoadSuccess: function (data) {
+                    parent.$.messager.progress('close');
+                    if (!data.success && data.total == -1) {
+                        parent.$.messager.alert('提示', '登陆超时，请重新登陆再进行操作！', 'error', function () {
+                            parent.location.replace('default.aspx');
+                        });
+                    }
+                    if (data.rows.length == 0) {
+                        var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
+                    }
+                    ////提示框
+                    $(this).datagrid('tooltip', ['roomname', 'repairinfo', 'repaircontent', 'CheckInfo', 'memo']);
+                },
+                onDblClickRow: function (index, row) {
+                    viewPointRepiarDetail(row.id);
+                }
+            });
+            //设置分页属性
+            var pager = $('#repairGrid').datagrid('getPager');
+            pager.pagination({
+                layout: ['list', 'sep', 'first', 'prev', 'sep', 'links', 'sep', 'next', 'last', 'sep', 'refresh', 'sep', 'manual']
+            });
+            if (roleid != 4 && roleid != 15)
+                $('#repairGrid').datagrid('hideColumn', 'action');
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+    <div id="agTip">
+        <form id="searchForm" style="margin: 0;">
+            <table>
+                <tr>
+                    <td style="width: 80px; font-weight: 700;">数据查询：</td>
+                    <%if (roleid != 15)
+                      { %>
+                    <td style="width: 70px; text-align: right;">所属县市：
+                    </td>
+                    <td>
+                        <select id="cityname" class="combo easyui-combobox" name="cityname" style="width: 70px;" data-options="panelHeight:'auto',editable:false">
+                            <option value="">全部</option>
+                            <option>安阳市</option>
+                            <option>安阳县</option>
+                            <option>汤阴县</option>
+                            <option>内黄县</option>
+                            <option>滑县</option>
+                            <option>林州市</option>
+                        </select>
+                    </td>
+                    <%} %>
+                    <td style="width: 80px; text-align: right;">机房编号：</td>
+                    <td>
+                        <input style="width: 80px; height: 20px" type="text" class="combo" name="anid" />
+                    </td>
+                    <td>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:true"
+                            onclick="searchGrid();">查询</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:true"
+                            onclick="resetGrid();">重置</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
+                            onclick="exportRepairInfo();">导出</a>
+                        <%if (roleid == 15 || roleid == 4)
+                          { %>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_row_insert',plain:true"
+                            onclick="importResources();">导入数据</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true"
+                            onclick="addRepairInfo();">新增维修台账</a>
+                        <%} %>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div style="background: url(../Script/easyui/themes/icons/tip.png) no-repeat 10px 5px; line-height: 24px; padding-left: 30px;">
+            双击每条记录查看详细信息
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true,border:false">
+        <p class="sitepath">
+            <b>当前位置：</b>接入网资源管理 > <a href="javascript:void(0);">网点维修台账</a>
+        </p>
+        <table id="repairGrid" data-options="fit:false,border:false">
+        </table>
+    </div>
+</body>
+</html>
