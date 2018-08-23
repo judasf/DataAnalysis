@@ -220,7 +220,7 @@
             <td style="text-align: right">物料类型：</td>
             <td><span id="classname"></span></td>
         </tr>
-          <tr>
+        <tr>
             <td style="text-align: right">物料型号：</td>
             <td><span id="typename"></span></td>
         </tr>
@@ -250,7 +250,7 @@
             <td>
                 <input type="text" name="memo" value=" " style="width: 400px;" class="inputBorder" /></td>
         </tr>
-           <tr>
+        <tr>
             <td style="text-align: right">调拨单上传：</td>
             <td class="tdinput">
                 <input type="hidden" name="report" id="report" />
