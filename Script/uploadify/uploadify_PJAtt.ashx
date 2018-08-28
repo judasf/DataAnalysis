@@ -69,7 +69,7 @@ public class uploadify : IHttpHandler, IRequiresSessionState
             {
                 Directory.CreateDirectory(floderPath);
             }
-            if (fileExtension != ".doc" && fileExtension != ".docx"&&fileExtension != ".jpg" && fileExtension != ".jpeg"&&fileExtension != ".gif" && fileExtension != ".bmp"&&fileExtension != ".png")
+            if (fileExtension != ".doc" && fileExtension != ".docx"&&fileExtension != ".jpg" && fileExtension != ".jpeg"&&fileExtension != ".gif" && fileExtension != ".bmp"&&fileExtension != ".png"&&fileExtension != ".rar"&&fileExtension != ".zip")
             {
                 Response.Write("{\"success\":false,\"msg\":\"文件格式不正确，请选择正确的文件！\"}");
                 return;

@@ -429,7 +429,7 @@
             'height': '24',
             'multi': true,
             'fileTypeDesc': '支持的格式：',
-            'fileTypeExts': '*.doc;*.docx;*.jpg;*.jpeg;*.gif;*.bmp;;*.png;',
+            'fileTypeExts': '*.doc;*.docx;*.jpg;*.jpeg;*.gif;*.bmp;*.png;*.rar;*.zip',
             'fileSizeLimit': '5MB',
             'removeTimeout': 1,
             'queueSizeLimit': 1,
