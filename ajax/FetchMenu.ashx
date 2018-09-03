@@ -114,11 +114,11 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
     /// </summary>
     bool isTOWN = false;
     /// <summary>
-    /// 20：能耗管理
+    /// 20：能耗管理员
     /// </summary>
     bool isEC = false;
     /// <summary>
-    /// 21：能耗管理
+    /// 21：能耗部门主管
     /// </summary>
     bool isECMana = false;
     /// <summary>
@@ -660,7 +660,7 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             subMenu.Length = 0;
             //运维物料管理 end
             // 专项整治事项管理 begin
-            if (isAdmin || isKG || isYW || isFaultReapir)
+            if (isAdmin || isKG || isYW || isFaultReapir|| isEC || isECMana)
             {
 
                 //accordion 头
@@ -683,7 +683,7 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
                     subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"物料型号管理\",\"icon\": \"ext-icon-table\",");
                     subMenu.Append("\"url\": \"NetWorkSpecialProject/TypeInfo.aspx\",\"iframename\": \"spframe\"}");
                 }
-                if (isFaultReapir)
+                if (isFaultReapir|| isEC || isECMana)
                 {
                     subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"故障工单管理\",\"icon\": \"ext-icon-table\",");
                     subMenu.Append("\"url\": \"NetWorkSpecialProject/FaultOrder.aspx\",\"iframename\": \"gzgdgl\"}");
