@@ -2,5 +2,6 @@
 # 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
 ################################################################################
 
-/StandingBook
+
 /MaintainMaterial/upfiles/20180830
+/Web.Config

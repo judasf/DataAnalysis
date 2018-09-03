@@ -210,7 +210,7 @@
                        },
                       {
                           width: '200',
-                          title: '机房名称',
+                          title: '局站名称',//2018-9-3机房名称改为局站名称
                           field: 'roomname',
                           halign: 'center',
                           align: 'center'
