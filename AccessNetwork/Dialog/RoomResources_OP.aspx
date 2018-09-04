@@ -119,7 +119,7 @@
             </td>
             </tr>
         <tr>
-            <td class="left_td">机房名称：
+            <td class="left_td">局站名称：
             </td>
             <td class="tdinput"  colspan="3">
                 <input name="roomname" id="roomname" class="inputBorder easyui-validatebox" style="width:400px;" data-options="required:true" />
