@@ -337,7 +337,7 @@
                 <tr>
                      <td style="width: 65px; font-weight: 700;"></td>
                     <td colspan="5" align="left">
-                         <% if((roleid==4)&& (uname=="ligang171"||uname=="wankun")||roleid ==2){%>
+                         <% if((roleid==4)&& (uname=="ligang171"||uname=="wankun" ||uname=="lihp37")||roleid ==2){%>
                         <a href="javascript:void(0);" style="margin-right: 10px;" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
                             onclick="addFun();">物料库存录入</a>
                         <a href="javascript:void(0);" style="margin-right: 10px;" class="easyui-linkbutton" data-options="iconCls:'icon-reload',plain:false"
