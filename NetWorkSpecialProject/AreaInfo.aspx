@@ -106,7 +106,7 @@
         $(function () {
             grid = $('#grid').datagrid({
                 title: '领料单位表',
-                url: '../ajax/Srv_NetWorkSpecialProject.ashx/GetNetWorkSpecialProjectAreaInfo',
+                url: '../ajax/Srv_NetWorkSpecialProject.ashx/GetNPSMaintainMaterialAreaInfo',
                 striped: true,
                 rownumbers: true,
                 pagination: true,

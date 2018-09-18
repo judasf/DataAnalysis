@@ -123,7 +123,7 @@
                 var dialog = parent.parent.$.modalDialog({
                     title: '物料调拨',
                     width: 580,
-                    height: 400,
+                    height: 480,
                     iconCls: 'icon-add',
                     href: 'NetWorkSpecialProject/dialogop/UnitStockAllot_OP.aspx?id='+row.id,
                     buttons: [{
@@ -348,6 +348,8 @@
                           <%} %>
                       <%--  <a href="javascript:void(0);" class="easyui-linkbutton" style="margin-right: 10px;" data-options="iconCls:'icon-remove',plain:false"
                             onclick="removeFun();">领料信息录入</a>--%>
+                           <a href="../template/物资调拨领用单.xlsx" class="easyui-linkbutton" style="margin-right: 10px;" data-options="iconCls:'icon-save',plain:false"
+                            onclick="void('0');">物料调拨领用单下载</a>
                     </td>
                 </tr>
                 <%} %>

@@ -1014,6 +1014,15 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         int allotnum = Convert.ToInt32(Request.Form["allotnum"]);
         string allotrq = DateTime.Now.ToString("yyyy-MM-dd");
         string memo = Convert.ToString(Server.HtmlEncode(Request.Form["memo"]));
+        string reportpath = "";
+        //判断是否上传调拨单
+        if (String.IsNullOrEmpty(Request.Form["report"]))
+        {
+            Response.Write("{\"success\":false,\"msg\":\"请上传调拨单!\"}");
+            return;
+        }
+        else
+            reportpath = Convert.ToString(Request.Form["report"]);
         //生成库存表中调拨单编号
         Random myrdn = new Random();//产生随机数
         string allotOrderNo = "Allot-" + DateTime.Now.ToString("yyyyMMddhhmmss") + myrdn.Next(1000);
@@ -1027,10 +1036,11 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         paras.Add(new SqlParameter("@memo", memo));
         paras.Add(new SqlParameter("@allotorderno", allotOrderNo));
         paras.Add(new SqlParameter("@allotuser", Session["uname"].ToString()));
+        paras.Add(new SqlParameter("@reportpath", reportpath));
 
         sql.Append("IF EXISTS(SELECT * FROM  dbo.NSP_MaintainMaterial_Stock WHERE id=@id AND Amount>=@allotnum) ");
         sql.Append(" begin ");
-        sql.Append("INSERT INTO dbo.NSP_MaintainMaterial_Allotlog SELECT @allotrq,@allotunitid,@allotorderno,Storeorderno,UnitName,TypeID,@allotnum,Price,@allotnum*Price,GETDATE(),@memo,@allotuser FROM dbo.NSP_MaintainMaterial_Stock WHERE id=@id;");
+        sql.Append("INSERT INTO dbo.NSP_MaintainMaterial_Allotlog SELECT @allotrq,@allotunitid,@allotorderno,Storeorderno,UnitName,TypeID,@allotnum,Price,@allotnum*Price,GETDATE(),@memo,@allotuser,@reportpath FROM dbo.NSP_MaintainMaterial_Stock WHERE id=@id;");
         sql.Append(" UPDATE dbo.NSP_MaintainMaterial_Stock SET Amount=Amount-@allotnum WHERE id=@id; ");
         sql.Append(" INSERT INTO dbo.NSP_MaintainMaterial_Stock SELECT b.UnitName, @allotorderno, TypeID, @allotnum, Price FROM dbo.NSP_MaintainMaterial_Stock as a join NSP_MaintainMaterial_UnitInfo b  on a.id = @id and b.id=@allotunitid; ");
         sql.Append(" end ");
