@@ -409,7 +409,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
         SqlParameter paras = new SqlParameter("@anid", SqlDbType.VarChar);
         paras.Value = anid;
         StringBuilder sql = new StringBuilder();
-        sql.Append("delete from  AccessNetWork_RoomResources set  where anid=@anid;");
+        sql.Append("delete from  AccessNetWork_RoomResources  where anid=@anid;");
         //sql.Append("Update AccessNetWork_EqInfo set IsDel=1 Where anid=@anid;");
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), paras);
         if (result >= 1)
