@@ -425,7 +425,7 @@
             'multi': true,
             'fileTypeDesc': '支持的格式：',
             'fileTypeExts': '*.doc;*.docx;*.jpg;*.jpeg;*.gif;*.bmp;*.png;*.rar;*.zip',
-            'fileSizeLimit': '20MB',
+            'fileSizeLimit': '30MB',
             'removeTimeout': 1,
             'queueSizeLimit': 1,
             'uploadLimit': 1,
