@@ -413,7 +413,7 @@
             //上传成功后是否在列表中删除
             'removeCompleted': false,
             //在文件上传时需要一同提交的数据
-            'formData': { 'floderName': 'StandingBook' },
+            'formData': { 'floderName': 'NetWorkSpecialProject' },
             'buttonText': '浏览',
             //flash
             'swf': "Script/uploadify/uploadify.swf?var=" + (new Date()).getTime(),
