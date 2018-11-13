@@ -244,6 +244,8 @@
                         var body = $(this).data().datagrid.dc.body2;
                         body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
                     }
+                    //取消全选
+                    $(this).datagrid('unselectAll');
                     //提示框
                     $(this).datagrid('tooltip', ['memo']);
                     //故障确认单展示插件
@@ -342,7 +344,7 @@
                     <td style="width: 85px; text-align: right;">商城出库单号：
                     </td>
                     <td align="left">
-                        <input type="text" name="storeorderno" id="storeorderno" style="width: 140; height: 20px;" class="combo" />
+                        <input type="text" name="storeorderno" id="storeorderno" style="width: 140px; height: 20px;" class="combo" />
                     </td>
                 </tr>
                 <tr>
