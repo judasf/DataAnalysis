@@ -198,7 +198,7 @@
                       formatter: function (value, row) {
                           var str = '';
                           //str += $.formatString('<a href="javascript:editOrder(\'{0}\');" title="编辑" style="cursor:pointer;" >编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;', row.id);
-                          str += $.formatString('<a href="javascript:removeFun(\'{0}\');" title="删除" style="cursor:pointer;" >删除</a>', row.repairorderno);
+                          //str += $.formatString('<a href="javascript:removeFun(\'{0}\');" title="删除" style="cursor:pointer;" >删除</a>', row.repairorderno);
                           return str;
                       }
                   },
@@ -350,7 +350,7 @@
             pager.pagination({
                 layout: ['list', 'sep', 'first', 'prev', 'sep', 'links', 'sep', 'next', 'last', 'sep', 'refresh', 'sep', 'manual']
             });
-            if (roleid != 0)
+//            if (roleid != 0)
                 $('#repairGrid').datagrid('hideColumn', 'action');
         });
     </script>
@@ -372,7 +372,7 @@
                     <td style="width: 40px; text-align: right;">单位：
                     </td>
                     <td>
-                        <select style="width: 160px;"" id="cityname" class="combo easyui-combobox" name="cityname" data-options="panelHeight:'auto',editable:false">
+                        <select style="width: 160px;" id="cityname" class="combo easyui-combobox" name="cityname" data-options="panelHeight:'auto',editable:false">
                             <option value="">全部</option>
                             <option>运行维护部</option>
                             <option>客户支撑中心</option>
