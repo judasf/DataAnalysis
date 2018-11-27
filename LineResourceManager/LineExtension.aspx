@@ -48,11 +48,11 @@
                 width: 600,
                 height: 600,
                 iconCls: 'icon-add',
-                href: 'StandingBook/Dialog/FaultOrder_OP.aspx',
+                href: 'LineResourceManager/Dialog/LineExtension_OP.aspx',
                 buttons: [{
                     text: '提交',
                     handler: function () {
-                        parent.onFormSubmit(dialog, orderGrid);
+                        parent.onFormSubmit(dialog, leGrid);
                     }
                 },
                     {
@@ -71,11 +71,11 @@
                 width: 600,
                 height: 600,
                 iconCls: 'icon-edit',
-                href: 'StandingBook/Dialog/FaultOrder_OP.aspx?id=' + id,
+                href: 'LineResourceManager/Dialog/FaultOrder_OP.aspx?id=' + id,
                 buttons: [{
                     text: '保存',
                     handler: function () {
-                        parent.onFormSubmit(dialog, orderGrid);
+                        parent.onFormSubmit(dialog, leGrid);
                     }
                 },
                     {
@@ -91,7 +91,7 @@
         var removeFun = function (orderno) {
             parent.$.messager.confirm('询问', '您确定要删除该故障信息？', function (r) {
                 if (r) {
-                    $.post('../ajax/Srv_StandingBook.ashx/RemoveFaultOrderByOrderNo', {
+                    $.post('../ajax/Srv_LineResource.ashx/RemoveFaultOrderByOrderNo', {
                         orderno: orderno
                     }, function (result) {
                         if (result.success) {
@@ -104,7 +104,7 @@
                                     top: document.body.scrollTop + document.documentElement.scrollTop
                                 }
                             });
-                            orderGrid.datagrid('reload');
+                            leGrid.datagrid('reload');
                         } else {
                             parent.$.messager.alert('提示', result.msg, 'error');
                         }
@@ -129,42 +129,42 @@
             //        }
             //    });
             var dialog = parent.$.modalDialog({
-                title: '故障工单详情',
+                title: '线路延伸详情',
                 width: 600,
                 height: 600,
                 iconCls: 'ext-icon-page',
-                href: 'StandingBook/Dialog/ViewFaultOrderDetail_OP.aspx?id=' + id,
+                href: 'LineResourceManager/Dialog/ViewFaultOrderDetail_OP.aspx?id=' + id,
                 buttons: btns
             });
         };
         //查询功能
         var searchGrid = function () {
-            orderGrid.datagrid('load', $.serializeObject($('#searchForm')));
+            leGrid.datagrid('load', $.serializeObject($('#searchForm')));
         };
         //重置查询
         var resetGrid = function () {
             $('#searchForm').form('reset');
-            orderGrid.datagrid('load', {});
+            leGrid.datagrid('load', {});
         };
-        //导出故障工单明细excel
+        //导出线路延伸明细excel
         var exportFaultOrder = function () {
-            jsPostForm('../ajax/Srv_StandingBook.ashx/ExportFaultOrder', $.serializeObject($('#searchForm')));
+            jsPostForm('../ajax/Srv_LineResource.ashx/ExportFaultOrder', $.serializeObject($('#searchForm')));
         };
         //生成领料单word
         var exportToWord = function () {
-            var row = orderGrid.datagrid('getSelected');
+            var row = leGrid.datagrid('getSelected');
             if (!row) {
                 parent.$.messager.alert('提示', '请选择一条维修台账！', 'error');
             }
             else
-                jsPostForm('../ajax/Srv_StandingBook.ashx/ExportWordByID', { id: row.id });
+                jsPostForm('../ajax/Srv_LineResource.ashx/ExportWordByID', { id: row.id });
         };
-        //故障工单台账
-        var orderGrid;
+        //线路延伸台账
+        var leGrid;
         $(function () {
-            orderGrid = $('#orderGrid').datagrid({
-                title: '故障工单台账',
-                url: '../ajax/Srv_StandingBook.ashx/GetFaultOrder',
+            leGrid = $('#leGrid').datagrid({
+                title: '线路延伸台账',
+                url: '../ajax/Srv_LineResource.ashx/GetLineExtension',
                 striped: true,
                 rownumbers: true,
                 pagination: true,
@@ -183,114 +183,150 @@
                            halign: 'center',
                            formatter: function (value, row) {
                                var str = '';
-                               //str += $.formatString('<a href="javascript:editOrder(\'{0}\');" title="编辑" style="cursor:pointer;" >编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;', row.id);
-                               str += $.formatString('<a href="javascript:removeFun(\'{0}\');" title="删除" style="cursor:pointer;" >删除</a>', row.faultorderno);
+                               if (roleid == 1) {//工单管理查看详情
+                                   str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
+                               }
+                               if (roleid == 8) {//线路主管，核查资源和能否建设
+                                   if (row.status == 1)//核查中
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="checkResource(\'{0}\');">资源核查</a>&nbsp;', row.id);
+                                   if (row.status == -1)//被退回的可以删除
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="removeBackAccountReimburseByAudit(\'{0}\');">删除</a>', row.id);
+                               }
+                               if (roleid == 7) { //施工单位（浩翔，中通服），施工操作
+                                   if (row.status == 2)//施工中
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="cancelFinishAccount(\'{0}\');">建设施工</a>&nbsp;', row.id);
+                                  
+                                   if (row.status == 0)//待送审的可以删除
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="removeAccountReimburse(\'{0}\');">删除</a>', row.id);
+                               }
                                return str;
                            }
                        }, {
-                           width: '120',
-                           title: '故障单号',
-                           field: 'faultorderno',
+                           width: '80',
+                           title: '日期',
+                           field: 'inputdate',
                            halign: 'center',
                            align: 'center'
                        }, {
                            width: '80',
-                           title: '故障日期',
-                           field: 'faultdate',
+                           title: '单位',
+                           field: 'deptname',
                            halign: 'center',
                            align: 'center'
                        }, {
                            width: '160',
-                           title: '局站编码',
-                           field: 'stationid',
+                           title: '宽带账号',
+                           field: 'account',
                            halign: 'center',
                            align: 'center'
                        },
                       {
                           width: '200',
-                          title: '机房名称',
-                          field: 'roomname',
+                          title: '标准地址',
+                          field: 'address',
                           halign: 'center',
                           align: 'center'
+                      }, {
+                          width: '100',
+                          title: '分纤盒号',
+                          field: 'boxno',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '终端数量',
+                          field: 'terminalnumber',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '装维经理',
+                          field: 'linkman',
+                          halign: 'center',
+                          align: 'center'
+                      }
+                      , {
+                          width: '100',
+                          title: '联系电话',
+                          field: 'linkphone',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '100',
+                          title: '录入人',
+                          field: 'username',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '当前进度',
+                          field: 'status',
+                          halign: 'center',
+                          align: 'center',
+                          formatter: function (value, row, index) {
+                              switch (value) {
+                                  case '-2':
+                                      return '施工退回';
+                                      break;
+                                  case '-1':
+                                      return '核查退回';
+                                      break;
+                                  case '0':
+                                      return '待提交'
+                                      break;
+                                  case '1':
+                                      return '核查中'
+                                      break;
+                                  case '2':
+                                      return '施工中'
+                                      break;
+                                  case '3':
+                                      return '已完工'
+                                      break;
+                              }
+                          }
                       }, {
                           width: '180',
-                          title: '故障地点',
-                          field: 'faultplace',
+                          title: '核查信息',
+                          field: 'checkinfo',
                           halign: 'center',
                           align: 'center'
                       }, {
                           width: '80',
-                          title: '单位    ',
-                          field: 'cityname',
-                          halign: 'center',
-                          align: 'center'
-                      }, {
-                          width: '60',
-                          title: '网点类别',
-                          field: 'pointtype',
-                          halign: 'center',
-                          align: 'center'
-                      }
-                      , {
-                          width: '120',
-                          title: '设备类型',
-                          field: 'eqtype',
-                          halign: 'center',
-                          align: 'center'
-                      }, {
-                          width: '120',
-                          title: '设备型号',
-                          field: 'eqmodel',
-                          halign: 'center',
-                          align: 'center'
-                      }, {
-                          width: '180',
-                          title: '故障现象',
-                          field: 'faultmsg',
+                          title: '核查人',
+                          field: 'checkuser',
                           halign: 'center',
                           align: 'center'
                       }, {
                           width: '80',
-                          title: '是否外包范围',
-                          field: 'inscope',
+                          title: '核查时间',
+                          field: 'checktime',
                           halign: 'center',
                           align: 'center'
                       }, {
                           width: '80',
-                          title: '报障人',
-                          field: 'faultuser',
+                          title: '施工单位',
+                          field: 'constructionunit',
                           halign: 'center',
                           align: 'center'
                       }, {
                           width: '80',
-                          title: '确认人',
-                          field: 'confirmuser',
-                          halign: 'center',
-                          align: 'center'
-                      }, {
-                          width: '140',
-                          title: '确认单扫描件',
-                          field: 'confirmordername',
-                          halign: 'center',
-                          align: 'center'
-                      }, {
-                          width: '80',
-                          title: '备注',
-                          field: 'memo',
+                          title: '施工信息',
+                          field: 'constructioninfo',
                           halign: 'center',
                           align: 'center'
                       }
                       , {
                           width: '80',
-                          title: '录单日期',
-                          field: 'inputdate',
+                          title: '上报资料',
+                          field: 'reportpath',
                           halign: 'center',
                           align: 'center'
                       }
                       , {
                           width: '80',
-                          title: '录单人',
-                          field: 'inputuser',
+                          title: '完工时间',
+                          field: 'finishtime',
                           halign: 'center',
                           align: 'center'
                       }
@@ -316,12 +352,12 @@
                 }
             });
             //设置分页属性
-            var pager = $('#orderGrid').datagrid('getPager');
+            var pager = $('#leGrid').datagrid('getPager');
             pager.pagination({
                 layout: ['list', 'sep', 'first', 'prev', 'sep', 'links', 'sep', 'next', 'last', 'sep', 'refresh', 'sep', 'manual']
             });
             if (roleid != 0)
-                $('#orderGrid').datagrid('hideColumn', 'action');
+                $('#leGrid').datagrid('hideColumn', 'action');
         });
     </script>
 </head>
@@ -337,25 +373,17 @@
                         <input style="width: 80px;" name="sdate" id="sdate" class="Wdate" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'edate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />-<input style="width: 80px;" name="edate" id="edate" class="Wdate"
                             onfocus="WdatePicker({minDate:'#F{$dp.$D(\'sdate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />
                     </td>
-                    <%if ((roleid ==0 || roleid==4))
-                        { %>
                     <td style="width: 40px; text-align: right;">单位：
                     </td>
                     <td>
                         <select id="cityname" class="combo easyui-combobox" name="cityname" data-options="panelHeight:'auto',editable:false">
                             <option value="">全部</option>
-                            <option>运行维护部</option>
-                            <option>客户支撑中心</option>
-                            <option>网络维护中心</option>
-                            <option>网络优化中心</option>
-                            <option>安阳县</option>
-                            <option>汤阴县</option>
-                            <option>内黄县</option>
-                            <option>滑县</option>
-                            <option>林州市</option>
+                            <option>北关营销中心</option>
+                            <option>红旗营销中心</option>
+                            <option>铁西营销中心</option>
+                            <option>文峰营销中心</option>
                         </select>
                     </td>
-                    <%} %>
                     <td style="width: 80px; text-align: right;">机房名称：</td>
                     <td>
                         <input style="width: 160px; height: 20px" type="text" class="combo" name="roomname" />
@@ -364,12 +392,12 @@
                     <td>
                         <input style="width: 160px; height: 20px" type="text" class="combo" name="stationid" />
                     </td>
-                    
+
                 </tr>
                 <tr>
                     <td></td>
                     <td style="width: 80px; text-align: right;">故障单号：</td>
-                    <td style="text-align:left;">
+                    <td style="text-align: left;">
                         <input style="width: 160px; height: 20px" type="text" class="combo" name="faultorderno" />
                     </td>
                     <td colspan="6" style="text-align: left;">
@@ -377,22 +405,22 @@
                             onclick="searchGrid();">查询</a>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:true"
                             onclick="resetGrid();">重置</a>
-                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
                             onclick="exportFaultOrder();">导出</a>
-                       <%--  <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
+                        <%--  <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
                             onclick="exportToWord();">生成领料单</a>--%>
                     </td>
                 </tr>
-                 <tr>
+                <tr>
                     <td></td>
-                     <td colspan="6" style="text-align: left;">
-                         <%if (roleid == 18 || roleid == 21 || roleid == 20 || roleid == 4)
+                    <td colspan="6" style="text-align: left;">
+                        <%if (roleid == 18 || roleid == 21 || roleid == 20 || roleid == 4)
                             { %>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
                             onclick="addOrder();">新增障碍工单</a>
                         <%} %>
-                         </td>
-                    </tr>
+                    </td>
+                </tr>
             </table>
         </form>
         <div style="background: url(../Script/easyui/themes/icons/tip.png) no-repeat 10px 5px; line-height: 24px; padding-left: 30px;">
@@ -403,7 +431,7 @@
         <p class="sitepath">
             <b>当前位置：</b>线路资源管理 > <a href="javascript:void(0);">接入资源扩容</a>
         </p>
-        <table id="orderGrid" data-options="fit:false,border:false">
+        <table id="leGrid" data-options="fit:false,border:false">
         </table>
     </div>
 </body>
