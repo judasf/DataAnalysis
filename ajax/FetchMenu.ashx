@@ -232,6 +232,21 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             StringBuilder subMenu = new StringBuilder();
             menuList.Append("{\"flag\":\"1\",\"msg\":\"succ\",\"menus\":");
             menuList.Append("[");
+                  //线路资源管理 begin
+            if (isAdmin || isSX || isXLZG || isWB)
+            {
+                //accordion 头
+                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"线路资源管理\",\"icon\": \"icon-server\",\"menus\": [");
+                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"光缆延伸管理\",\"icon\": \"ext-icon-table\",");
+                subMenu.Append("\"url\": \"LineResourceManager/LineExtension.aspx\",\"iframename\": \"xlysgl\"}");
+                //accordion 尾
+                subMenu.Append("]}");
+
+
+            }
+            menuArr.Add(subMenu.ToString());
+            subMenu.Length = 0;
+            //线路资源管理 end
             //能耗台账管理 begin
             if (isAdmin || isEC || isECMana || isYW || isCW)
             {

@@ -16,7 +16,7 @@
 
 </script>
 <%}
-     id = string.IsNullOrEmpty(Request.QueryString["roleId"]) ? "" : Request.QueryString["roleId"].ToString();
+   string  id = string.IsNullOrEmpty(Request.QueryString["roleId"]) ? "" : Request.QueryString["roleId"].ToString();
 %>
  
 <script type="text/javascript">

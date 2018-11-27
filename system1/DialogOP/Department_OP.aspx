@@ -16,7 +16,7 @@
 
 </script>
 <%}
-     id = string.IsNullOrEmpty(Request.QueryString["deptid"]) ? "" : Request.QueryString["deptid"].ToString();
+    string id = string.IsNullOrEmpty(Request.QueryString["deptid"]) ? "" : Request.QueryString["deptid"].ToString();
 %>
 <script type="text/javascript">
     var onDeptFormSubmit = function ($dialog, $grid) {

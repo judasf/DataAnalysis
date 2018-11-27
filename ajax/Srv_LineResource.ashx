@@ -99,22 +99,19 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         //提交截止日期
         if (!string.IsNullOrEmpty(Request.Form["edate"]))
             list.Add(" FaultDate <='" + Request.Form["edate"] + "'");
-        //按所属县市
-        if (!string.IsNullOrEmpty(Request.Form["cityname"]))
-            list.Add(" cityname ='" + Request.Form["cityname"] + "'");
+        //按所属单位
+        if (!string.IsNullOrEmpty(Request.Form["deptname"]))
+            list.Add(" deptname ='" + Request.Form["deptname"] + "'");
         //按局站编码
         if (!string.IsNullOrEmpty(Request.Form["stationid"]))
             list.Add(" stationid like'%" + Request.Form["stationid"] + "%'");
         //按机房名称
         if (!string.IsNullOrEmpty(Request.Form["roomname"]))
             list.Add(" roomname like'%" + Request.Form["roomname"] + "%'");
-        //按故障单号
-        if (!string.IsNullOrEmpty(Request.Form["faultorderno"]))
-            list.Add(" faultorderno like'%" + Request.Form["faultorderno"] + "%'");
-        //管理员和运维部查看所有，其余只看本部门
-        if (roleid != "0" && roleid != "4")
+        //管理员和客户支撑中心查看所有，其余只看本部门
+        if (roleid != "0" && roleid != "8")
         {
-            list.Add(" cityname='" + deptname + "' ");
+            list.Add(" deptname='" + deptname + "' ");
         }
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
@@ -145,20 +142,39 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         Response.Write(JsonConvert.GetJsonFromDataTable(ds));
     }
     /// <summary>
-    ///  通过故障单号获取信息详情
+    /// 核查线路资源
     /// </summary>
-    public void GetFaultOrderInfoByFaultNo()
+    public void CheckLineResourceByID()
     {
-        string faultno = Convert.ToString(Request.Form["faultno"]);
-        SqlParameter paras = new SqlParameter("@faultno", SqlDbType.VarChar);
-        paras.Value = faultno;
-        //本单位的维修台账只能从本单位的故障工单信息获取，并且一张故障工单只能生成一张维修台账
-        string where = " and cityname='" + deptname + "'";
-        string sql = "IF NOT  EXISTS(SELECT * FROM dbo.SB_DailyRepairInfo WHERE faultorderno=@faultno) ";
-        sql += "SELECT * FROM LRM_LineExtension  where FaultOrderNo=@faultno" + where;
-        sql += " else  select * from LRM_LineExtension where id=0";
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
-        Response.Write(JsonConvert.GetJsonFromDataTable(ds));
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string isNext = Convert.ToString(Request.Form["isNext"]);
+        string status = "";
+        string checkinfo = "";
+        string constructionunit = "";
+        if (isNext == "0")//退回发起单位
+        {
+            status = "-1";
+            checkinfo = Convert.ToString(Request.Form["checkinfo"]);
+        }
+        else
+        {
+            status = "2";
+            constructionunit = Convert.ToString(Request.Form["constructionunit"]);
+        }
+        string sql = "update LRM_LineExtension set status=@status,checkinfo=@checkinfo,constructionunit=@constructionunit,checkuser=@checkuser,checktime=getdate() where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        _paras.Add(new SqlParameter("@status", status));
+        _paras.Add(new SqlParameter("@checkinfo", checkinfo));
+        _paras.Add(new SqlParameter("@constructionunit", constructionunit));
+        _paras.Add(new SqlParameter("@checkuser", Session["uname"].ToString()));
+
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"核查成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
 
     /// <summary>
@@ -193,77 +209,6 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         dt.Columns[15].ColumnName = "录单日期";
         ExcelHelper.ExportByWeb(dt, "", "故障工单台账.xls", "故障工单台账");
     }
-    /*
-   /// <summary>
-   /// 更新故障工单信息
-   /// </summary>
-   public void UpdateFaultOrderInfo()
-   {
-       int id = Convert.ToInt32(Request.Form["id"]);
-       //局站编码
-       string anid = Convert.ToString(Request.Form["anid"]);
-       //机房名称
-       string roomname = Convert.ToString(Request.Form["roomname"]);
-       //所属县市
-       string cityname = Convert.ToString(Request.Form["cityname"]);
-       //详细地址
-       string address = Convert.ToString(Request.Form["address"]);
-       //网点类型
-       string pointtype = Convert.ToString(Request.Form["pointtype"]);
-       //设备分类
-       string eqtype = Convert.ToString(Request.Form["eqtype"]);
-       //经度
-       string longitude = Convert.ToString(Request.Form["longitude"]);
-       //纬度
-       string dimension = Convert.ToString(Request.Form["dimension"]);
-       //面积
-       string area = Convert.ToString(Request.Form["area"]);
-       //产权性质
-       string propertyright = Convert.ToString(Request.Form["propertyright"]);
-       //动环监控
-       string demstatus = Convert.ToString(Request.Form["demstatus"]);
-       //动环设备厂家
-       string demem = Convert.ToString(Request.Form["demem"]);
-       //机房接地电阻
-       string roomresistance = Convert.ToString(Request.Form["roomresistance"]);
-       //机房供电方式
-       string powersupplymode = Convert.ToString(Request.Form["powersupplymode"]);
-       //机房负载电流
-       string roomloadcurrent = Convert.ToString(Request.Form["roomloadcurrent"]);
-       string memo1 = Convert.ToString(Request.Form["memo1"]);
-       string memo2 = Convert.ToString(Request.Form["memo2"]);
-       string memo3 = Convert.ToString(Request.Form["memo3"]);
-       string memo4 = Convert.ToString(Request.Form["memo4"]);
-       List<SqlParameter> _paras = new List<SqlParameter>();
-       _paras.Add(new SqlParameter("@id", id));
-       _paras.Add(new SqlParameter("@anid", anid));
-       _paras.Add(new SqlParameter("@roomname", roomname));
-       _paras.Add(new SqlParameter("@cityname", cityname));
-       _paras.Add(new SqlParameter("@address", address));
-       _paras.Add(new SqlParameter("@eqtype", eqtype));
-       _paras.Add(new SqlParameter("@pointtype", pointtype));
-       _paras.Add(new SqlParameter("@longitude", longitude));
-       _paras.Add(new SqlParameter("@dimension", dimension));
-       _paras.Add(new SqlParameter("@area", area));
-       _paras.Add(new SqlParameter("@propertyright", propertyright));
-       _paras.Add(new SqlParameter("@demstatus", demstatus));
-       _paras.Add(new SqlParameter("@demem", demem));
-       _paras.Add(new SqlParameter("@roomresistance", roomresistance));
-       _paras.Add(new SqlParameter("@powersupplymode", powersupplymode));
-       _paras.Add(new SqlParameter("@roomloadcurrent", roomloadcurrent));
-       _paras.Add(new SqlParameter("@memo1", memo1));
-       _paras.Add(new SqlParameter("@memo2", memo2));
-       _paras.Add(new SqlParameter("@memo3", memo3));
-       _paras.Add(new SqlParameter("@memo4", memo3));
-       StringBuilder sql = new StringBuilder();
-       sql.Append("update  LRM_LineExtension set anid=@anid,roomname=@roomname,cityname=@cityname,pointtype=@pointtype,address=@address,eqtype=@eqtype,longitude=@longitude,dimension=@dimension,area=@area,propertyright=@propertyright,demstatus=@demstatus,demem=@demem,roomresistance=@roomresistance,powersupplymode=@powersupplymode,roomloadcurrent=@roomloadcurrent,memo1=@memo1,memo2=@memo2,memo3=@memo3,memo4=@memo4,InputTime=getdate()  where id=@id");
-       int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), _paras.ToArray());
-       if (result == 1)
-           Response.Write("{\"success\":true,\"msg\":\"资源更新成功！\"}");
-       else
-           Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
-   }
-       */
     //<summary>
     //新增线路延伸工单
     //</summary>
@@ -311,18 +256,6 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
                 }
             }
         }
-    }
-    /// <summary>
-    /// 通过工单自动编号AutoNo获取附件列表
-    /// </summary>
-    public void GetAttachmentByAutoNo()
-    {
-        string InfoAutoID = Convert.ToString(Request.Form["no"]);
-        SqlParameter paras = new SqlParameter("@InfoAutoID", SqlDbType.VarChar);
-        paras.Value = InfoAutoID;
-        string sql = "SELECT * FROM SB_Attachment  where InfoAutoID=@InfoAutoID";
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
-        Response.Write(JsonConvert.GetJsonFromDataTable(ds));
     }
 
     /// <summary>

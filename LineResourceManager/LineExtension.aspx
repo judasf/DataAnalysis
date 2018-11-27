@@ -45,8 +45,8 @@
         var addOrder = function () {
             var dialog = parent.$.modalDialog({
                 title: '新增',
-                width: 600,
-                height: 600,
+                width: 530,
+                height: 440,
                 iconCls: 'icon-add',
                 href: 'LineResourceManager/Dialog/LineExtension_OP.aspx',
                 buttons: [{
@@ -64,6 +64,7 @@
                 ]
             });
         };
+        /*
         //编辑
         var editOrder = function (id) {
             var dialog = parent.$.modalDialog({
@@ -87,9 +88,10 @@
                 ]
             });
         };
+        */
         //删除
         var removeFun = function (orderno) {
-            parent.$.messager.confirm('询问', '您确定要删除该故障信息？', function (r) {
+            parent.$.messager.confirm('询问', '您确定要需求单信息？', function (r) {
                 if (r) {
                     $.post('../ajax/Srv_LineResource.ashx/RemoveFaultOrderByOrderNo', {
                         orderno: orderno
@@ -133,8 +135,31 @@
                 width: 600,
                 height: 600,
                 iconCls: 'ext-icon-page',
-                href: 'LineResourceManager/Dialog/ViewFaultOrderDetail_OP.aspx?id=' + id,
+                href: 'LineResourceManager/Dialog/ViewLineExtensionDetail_OP.aspx?id=' + id,
                 buttons: btns
+            });
+        };
+        ///资源核查回单
+        var checkResource = function (id) {
+            var dialog = parent.$.modalDialog({
+                title: '资源核查',
+                width: 600,
+                height: 600,
+                iconCls: 'ext-icon-page',
+                href: 'LineResourceManager/Dialog/LineExtensionCheck_OP.aspx?id=' + id,
+                buttons: [{
+                    text: '提交',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, leGrid);
+                    }
+                },
+                {
+                    text: '关闭',
+                    handler: function () {
+                        dialog.dialog('close');
+                    }
+                }
+                ]
             });
         };
         //查询功能
@@ -149,15 +174,6 @@
         //导出线路延伸明细excel
         var exportFaultOrder = function () {
             jsPostForm('../ajax/Srv_LineResource.ashx/ExportFaultOrder', $.serializeObject($('#searchForm')));
-        };
-        //生成领料单word
-        var exportToWord = function () {
-            var row = leGrid.datagrid('getSelected');
-            if (!row) {
-                parent.$.messager.alert('提示', '请选择一条维修台账！', 'error');
-            }
-            else
-                jsPostForm('../ajax/Srv_LineResource.ashx/ExportWordByID', { id: row.id });
         };
         //线路延伸台账
         var leGrid;
@@ -183,21 +199,20 @@
                            halign: 'center',
                            formatter: function (value, row) {
                                var str = '';
-                               if (roleid == 1) {//工单管理查看详情
+                               if (roleid == 1||roleid==0) {//工单管理查看详情
                                    str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
                                }
                                if (roleid == 8) {//线路主管，核查资源和能否建设
                                    if (row.status == 1)//核查中
                                        str += $.formatString('<a href="javascript:void(0)" onclick="checkResource(\'{0}\');">资源核查</a>&nbsp;', row.id);
-                                   if (row.status == -1)//被退回的可以删除
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="removeBackAccountReimburseByAudit(\'{0}\');">删除</a>', row.id);
+                                   else
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
+                                   //if (row.status == -1)//被退回的可以删除
+                                   //    str += $.formatString('<a href="javascript:void(0)" onclick="removeBackAccountReimburseByAudit(\'{0}\');">删除</a>', row.id);
                                }
                                if (roleid == 7) { //施工单位（浩翔，中通服），施工操作
                                    if (row.status == 2)//施工中
                                        str += $.formatString('<a href="javascript:void(0)" onclick="cancelFinishAccount(\'{0}\');">建设施工</a>&nbsp;', row.id);
-                                  
-                                   if (row.status == 0)//待送审的可以删除
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="removeAccountReimburse(\'{0}\');">删除</a>', row.id);
                                }
                                return str;
                            }
@@ -356,8 +371,8 @@
             pager.pagination({
                 layout: ['list', 'sep', 'first', 'prev', 'sep', 'links', 'sep', 'next', 'last', 'sep', 'refresh', 'sep', 'manual']
             });
-            if (roleid != 0)
-                $('#leGrid').datagrid('hideColumn', 'action');
+            //if (roleid != 0)
+            //    $('#leGrid').datagrid('hideColumn', 'action');
         });
     </script>
 </head>
@@ -414,10 +429,10 @@
                 <tr>
                     <td></td>
                     <td colspan="6" style="text-align: left;">
-                        <%if (roleid == 18 || roleid == 21 || roleid == 20 || roleid == 4)
+                        <%if (roleid == 1 ||roleid == 8||roleid == 0)
                             { %>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
-                            onclick="addOrder();">新增障碍工单</a>
+                            onclick="addOrder();">需求发起</a>
                         <%} %>
                     </td>
                 </tr>

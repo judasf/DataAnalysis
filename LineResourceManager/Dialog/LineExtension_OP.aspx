@@ -1,11 +1,19 @@
 ﻿<%@ Page Language="C#" %>
 
 <style type="text/css">
-    #leForm td { padding: 7px 2px; }
+    #leForm td {
+        padding: 7px 2px;
+    }
 
-    #leForm .tdinput { text-align: left; }
+    #leForm .tdinput {
+        text-align: left;
+    }
 
-    #leForm .left_td { text-align: right; background: #fafafa; width: 100px; }
+    #leForm .left_td {
+        text-align: right;
+        background: #fafafa;
+        width: 100px;
+    }
 </style>
 <% 
     /** 
@@ -39,7 +47,7 @@
             } else {
                 url = '../ajax/Srv_LineResource.ashx/UpdateFaultOrderInfo';
             }
-          
+
             parent.$.messager.progress({
                 title: '提示',
                 text: '数据处理中，请稍后....'
@@ -64,10 +72,10 @@
             }, 'json');
         }
     };
- 
-   
+
+
     $(function () {
-      
+
         //if ($('#id').val().length > 0) {
         //    parent.$.messager.progress({
         //        text: '数据加载中....'
@@ -105,49 +113,59 @@
 
 </script>
 <form method="post" id="leForm">
-    <table cellspacing="0" cellpadding="0" bordercolor="#CCCCCC" border="1" style="border-collapse: collapse;">
+    <table  cellspacing="0" cellpadding="0" bordercolor="#CCCCCC" border="1" style="border-collapse: collapse;">
+        <tr>
+            <td colspan="4" style="text-align: center; line-height: 30px; font-size: 16px; font-weight: 700;">光缆延伸需求单</td>
+
+        </tr>
         <tr>
             <td class="left_td">宽带账号：
             </td>
-            <td class="tdinput" style="width: 180px;">
-                <input name="account" id="account" class="inputBorder" data-options="required:true"/><input type="hidden" id="id" name="id" value="<%=id %>" />
+            <td class="tdinput" colspan="3">
+                <input name="account" id="account" style="width: 400px" class="inputBorder easyui-validatebox" data-options="required:true" /><input type="hidden" id="id" name="id" value="<%=id %>" />
             </td>
-        
+
         </tr>
         <tr>
             <td class="left_td">标准地址：
             </td>
-            <td class="tdinput">
-                <input name="address" style="width: 400px" id="address" class="inputBorder" data-options="required:true"/>
+            <td class="tdinput" colspan="3">
+                <input name="address" style="width: 400px" id="address" class="inputBorder easyui-validatebox" data-options="required:true" />
             </td>
         </tr>
         <tr>
-            <td class="left_td">分纤箱号：
-            <td class="tdinput" >
-                <input name="boxno" style="width: 180px" id="boxno" class="inputBorder easyui-validatebox" data-options="required:true" />
+            <td class="left_td">
+            分纤箱号：
+            <td class="tdinput" colspan="3">
+                <input name="boxno" style="width: 400px" id="boxno" class="inputBorder easyui-validatebox" data-options="required:true" />
             </td>
+        </tr>
+        <tr>
             <td class="left_td">终端数量：
             </td>
-            <td class="tdinput" >
-                <input name="terminalnumber" style="width: 180px" id="terminalnumber" class="inputBorder easyui-validatebox" data-options="required:true" />
+            <td class="tdinput" colspan="3">
+                <input name="terminalnumber" style="width: 400px" id="terminalnumber" class="inputBorder easyui-numberbox" data-options="required:true,precision:0" />
             </td>
         </tr>
         <tr>
-            <td class="left_td">装维经理：
-            <td class="tdinput" >
-                <input name="linkman" style="width: 180px" id="linkman" class="inputBorder easyui-validatebox" data-options="required:true" />
+            <td class="left_td">
+            装维经理：
+            <td class="tdinput" colspan="3">
+                <input name="linkman" style="width: 400px" id="linkman" class="inputBorder easyui-validatebox" data-options="required:true" />
             </td>
+        </tr>
+        <tr>
             <td class="left_td">联系电话：
             </td>
-            <td class="tdinput" >
-                <input name="linkphone" style="width: 180px" id="linkphone" class="inputBorder easyui-validatebox" data-options="required:true" />
+            <td class="tdinput" colspan="3">
+                <input name="linkphone" style="width: 400px" id="linkphone" class="inputBorder easyui-validatebox" data-options="required:true" />
             </td>
         </tr>
         <tr>
             <td class="left_td">备注：
             </td>
             <td class="tdinput" colspan="3">
-                <input name="memo" id="memo" class="inputBorder easyui-validatebox" style="width: 435px" />
+                <input name="memo" id="memo" class="inputBorder easyui-validatebox" style="width: 400px" />
             </td>
         </tr>
     </table>

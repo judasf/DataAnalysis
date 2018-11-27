@@ -48,6 +48,7 @@
             parent.$.messager.progress({
                 text: '数据加载中....'
             });
+
             $.post('../ajax/Srv_LineResource.ashx/GetLineExtensionByID', {
                 ID: $('#id').val()
             }, function (result) {
@@ -79,14 +80,19 @@
 </script>
 <table cellspacing="0" cellpadding="0" bordercolor="#CCCCCC" border="1" style="border-collapse: collapse;" id="detailTable">
     <tr>
+        <td colspan="4" style="text-align: center; line-height: 30px; font-size: 16px; font-weight: 700;">光缆延伸需求单</td>
+
+    </tr>
+    <tr>
         <td class="left_td">日期：
         </td>
-        <td class="tdinput" style="width: 180px;" >
+        <td class="tdinput" style="width: 180px;">
+            <input type="hidden" value="<%=id %>" name="id" id="id" />
             <span id="inputtime"></span>
         </td>
-          <td class="left_td">单位：
+        <td class="left_td">单位：
         </td>
-        <td class="tdinput" style="width: 180px;" >
+        <td class="tdinput" style="width: 180px;">
             <span id="deptname"></span>
         </td>
     </tr>
@@ -107,12 +113,14 @@
     <tr>
         <td class="left_td">分纤箱号：
         </td>
-        <td class="tdinput">
+        <td class="tdinput" colspan="3">
             <span id="boxno"></span>
         </td>
+    </tr>
+    <tr>
         <td class="left_td">终端数量：
         </td>
-        <td class="tdinput">
+        <td class="tdinput" colspan="3">
             <span id="terminalnumber"></span>
         </td>
     </tr>
@@ -142,6 +150,10 @@
             <span id="memo"></span>
         </td>
     </tr>
+     <tr>
+        <td colspan="4" style="text-align: center; line-height: 20px; font-size: 14px; font-weight: 700;">资源核查信息</td>
+
+    </tr>
     <tr>
 
         <td class="left_td">核查人：
@@ -167,7 +179,7 @@
         <td class="tdinput">
             <div id="constructionunit"></div>
         </td>
-         <td class="left_td">完工时间：</td>
+        <td class="left_td">完工时间：</td>
         <td class="tdinput">
             <div id="finishtime"></div>
         </td>
@@ -179,7 +191,7 @@
             <span id="constructioninfo"></span>
         </td>
     </tr>
-     <tr>
+    <tr>
         <td class="left_td">上报资料：
         </td>
         <td class="tdinput" colspan="3">
