@@ -195,8 +195,8 @@
             leGrid.datagrid('load', {});
         };
         //导出线路延伸明细excel
-        var exportFaultOrder = function () {
-            jsPostForm('../ajax/Srv_LineResource.ashx/ExportFaultOrder', $.serializeObject($('#searchForm')));
+        var exportLineExtension = function () {
+            jsPostForm('../ajax/Srv_LineResource.ashx/ExportLineExtension', $.serializeObject($('#searchForm')));
         };
         //线路延伸台账
         var leGrid;
@@ -277,7 +277,7 @@
                            align: 'center'
                        }, {
                            width: '80',
-                           title: '单位',
+                           title: '发起单位',
                            field: 'deptname',
                            halign: 'center',
                            align: 'center'
@@ -361,7 +361,7 @@
                       , {
                           width: '80',
                           title: '上报资料',
-                          field: 'reportpath',
+                          field: 'reportname',
                           halign: 'center',
                           align: 'center'
                       }
@@ -422,42 +422,52 @@
                         <input style="width: 80px;" name="sdate" id="sdate" class="Wdate" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'edate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />-<input style="width: 80px;" name="edate" id="edate" class="Wdate"
                             onfocus="WdatePicker({minDate:'#F{$dp.$D(\'sdate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />
                     </td>
-                    <td style="width: 40px; text-align: right;">单位：
+                    <%if (roleid == 8)
+                        {%>
+                    <td style="width: 80px; text-align: right;">发起单位：
                     </td>
                     <td>
-                        <select id="cityname" class="combo easyui-combobox" name="cityname" data-options="panelHeight:'auto',editable:false">
+                        <select id="deptname" style="width: 100px;" class="combo easyui-combobox" name="deptname" data-options="panelHeight:'auto',editable:false">
                             <option value="">全部</option>
                             <option>北关营销中心</option>
                             <option>红旗营销中心</option>
                             <option>铁西营销中心</option>
                             <option>文峰营销中心</option>
+                            <option>客户支撑中心</option>
                         </select>
                     </td>
-                    <td style="width: 80px; text-align: right;">机房名称：</td>
+                    <%} %>
+                    <td style="width: 80px; text-align: right;">装维经理：</td>
                     <td>
-                        <input style="width: 160px; height: 20px" type="text" class="combo" name="roomname" />
-                    </td>
-                    <td style="width: 80px; text-align: right;">局站编码：</td>
-                    <td>
-                        <input style="width: 160px; height: 20px" type="text" class="combo" name="stationid" />
+                        <input style="width: 160px; height: 20px" type="text" class="combo" name="linkman" />
                     </td>
 
                 </tr>
                 <tr>
                     <td></td>
-                    <td style="width: 80px; text-align: right;">故障单号：</td>
+                    <td style="width: 80px; text-align: right;">需求进度：</td>
                     <td style="text-align: left;">
-                        <input style="width: 160px; height: 20px" type="text" class="combo" name="faultorderno" />
+                        <input style="width: 160px" name="status" id="status" class="easyui-combobox" data-options="panelHeight:'auto',editable:false,valueField:'value',textField:'text',data:[{'value':'-2','text':'施工退回'},{'value':'-1','text':'核查退回'},{'value':'1','text':'核查中'},{'value':'2','text':'施工中'},{'value':'3','text':'已完工'}]" />
                     </td>
-                    <td colspan="6" style="text-align: left;">
+                    <%if (roleid == 8)
+                        {%>
+                    <td style="width: 80px; text-align: right;">施工单位：
+                    </td>
+                    <td>
+                        <select id="constructionunit" style="width: 100px;" class="combo easyui-combobox" name="constructionunit" data-options="panelHeight:'auto',editable:false">
+                            <option value="">全部</option>
+                            <option>浩翔</option>
+                            <option>中通服</option>
+                        </select>
+                    </td>
+                    <%} %>
+                    <td colspan="2" style="text-align: left;">
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:true"
                             onclick="searchGrid();">查询</a>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:true"
                             onclick="resetGrid();">重置</a>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
-                            onclick="exportFaultOrder();">导出</a>
-                        <%--  <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
-                            onclick="exportToWord();">生成领料单</a>--%>
+                            onclick="exportLineExtension();">导出</a>
                     </td>
                 </tr>
                 <tr>
@@ -478,7 +488,7 @@
     </div>
     <div data-options="region:'center',fit:true,border:false">
         <p class="sitepath">
-            <b>当前位置：</b>线路资源管理 > <a href="javascript:void(0);">接入资源扩容</a>
+            <b>当前位置：</b>线路资源管理 > <a href="javascript:void(0);">光缆延伸需求管理</a>
         </p>
         <table id="leGrid" data-options="fit:false,border:false">
         </table>

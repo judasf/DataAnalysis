@@ -88,32 +88,35 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
     /// 设置线路延伸查询条件
     /// </summary>
     /// <returns></returns>
-    public string SetQueryConditionForFault()
+    public string SetQueryConditionForLE()
     {
         string queryStr = "";
         //设置查询条件
         List<string> list = new List<string>();
         //提交开始日期
         if (!string.IsNullOrEmpty(Request.Form["sdate"]))
-            list.Add(" FaultDate >='" + Request.Form["sdate"] + "'");
+            list.Add(" CONVERT(VARCHAR(50),inputtime,23) >='" + Request.Form["sdate"] + "'");
         //提交截止日期
         if (!string.IsNullOrEmpty(Request.Form["edate"]))
-            list.Add(" FaultDate <='" + Request.Form["edate"] + "'");
+            list.Add(" CONVERT(VARCHAR(50),inputtime,23) <='" + Request.Form["edate"] + "'");
         //按所属单位
         if (!string.IsNullOrEmpty(Request.Form["deptname"]))
             list.Add(" deptname ='" + Request.Form["deptname"] + "'");
-        //按局站编码
-        if (!string.IsNullOrEmpty(Request.Form["stationid"]))
-            list.Add(" stationid like'%" + Request.Form["stationid"] + "%'");
-        //按机房名称
-        if (!string.IsNullOrEmpty(Request.Form["roomname"]))
-            list.Add(" roomname like'%" + Request.Form["roomname"] + "%'");
+        //按装维经理
+        if (!string.IsNullOrEmpty(Request.Form["linkman"]))
+            list.Add(" linkman like'%" + Request.Form["linkman"] + "%'");
+        //按进度
+        if (!string.IsNullOrEmpty(Request.Form["status"]))
+            list.Add(" status ='" + Request.Form["status"] + "'");
+        //按施工单位
+        if (!string.IsNullOrEmpty(Request.Form["constructionunit"]))
+            list.Add(" constructionunit ='" + Request.Form["constructionunit"] + "'");
         //管理员和客户支撑中心查看所有，其余只看本部门
-        if (roleid != "0" && roleid != "8"&& roleid != "3")
+        if (roleid != "0" && roleid != "8" && roleid != "3")
         {
             list.Add(" deptname='" + deptname + "' ");
         }
-        else if(roleid=="3")
+        else if (roleid == "3")
             list.Add(" constructionunit='" + deptname + "' ");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
@@ -125,7 +128,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
     public void GetLineExtension()
     {
         int total = 0;
-        string where = SetQueryConditionForFault();
+        string where = SetQueryConditionForLE();
         string tableName = " LRM_LineExtension ";
         string fieldStr = "*,CONVERT(VARCHAR(50),inputtime,23) as inputdate";
         DataSet ds = SqlHelper.GetPagination(tableName, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
@@ -151,17 +154,15 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         int id = Convert.ToInt32(Request.Form["id"]);
         string isNext = Convert.ToString(Request.Form["isNext"]);
         string status = "";
-        string checkinfo = "";
-        string constructionunit = "";
+        string checkinfo = Convert.ToString(Request.Form["checkinfo"]);
+        string constructionunit = Convert.ToString(Request.Form["constructionunit"]);
         if (isNext == "0")//退回发起单位
         {
             status = "-1";
-            checkinfo = Convert.ToString(Request.Form["checkinfo"]);
         }
         else//指派施工单位
         {
             status = "2";
-            constructionunit = Convert.ToString(Request.Form["constructionunit"]);
         }
         string sql = "update LRM_LineExtension set status=@status,checkinfo=@checkinfo,constructionunit=@constructionunit,checkuser=@checkuser,checktime=getdate() where id=@id";
         //设定参数
@@ -178,60 +179,85 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         else
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
-        /// <summary>
-        /// 建设施工
-        /// </summary>
+    /// <summary>
+    /// 建设施工
+    /// </summary>
     public void FinishLineResourceByID()
     {
         int id = Convert.ToInt32(Request.Form["id"]);
         string isNext = Convert.ToString(Request.Form["isNext"]);
         string status = "";
-        string backinfo = "";
-        string report = "";
-        string reportName = "";
-        string reportNum = "";
-             //资料扫描件
-        string attachfilepath = Convert.ToString(Request.Form["report"]);
-        string attachfile = "";
-        //保存维修资料
-        if (string.IsNullOrEmpty(attachfilepath))
+        string constructioninfo = Convert.ToString(Request.Form["constructioninfo"]);
+        string reportname = Convert.ToString(Request.Form["reportName"]);
+        string reportpath = Convert.ToString(Request.Form["report"]);
+
+        if (isNext == "0")//退回发起单位
         {
-            Response.Write("{\"success\":false,\"msg\":\"请上传资料！\"}");
-            return;
+            status = "-2";
         }
-       
+        else//施工完成，需要上传资料
+        {
+            status = "3";
+            //建设资料
+            if (string.IsNullOrEmpty(reportpath))
+            {
+                Response.Write("{\"success\":false,\"msg\":\"请上传资料！\"}");
+                return;
+            }
+        }
+        string sql = "update LRM_LineExtension set status=@status,constructioninfo=@constructioninfo,reportname=@reportname,reportpath=@reportpath,finishuser=@finishuser,finishtime=getdate() where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        _paras.Add(new SqlParameter("@status", status));
+        _paras.Add(new SqlParameter("@constructioninfo", constructioninfo));
+        _paras.Add(new SqlParameter("@reportname", reportname));
+        _paras.Add(new SqlParameter("@reportpath", reportpath));
+        _paras.Add(new SqlParameter("@finishuser", Session["uname"].ToString()));
+
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"提交成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
     /// <summary>
-    /// 导出故障工单明细
+    /// 导出光缆延伸明细
     /// </summary>
-    public void ExportFaultOrder()
+    public void ExportLineExtension()
     {
-        string where = SetQueryConditionForFault();
+        string where = SetQueryConditionForLE();
         if (where != "")
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
-        sql.Append("select FaultOrderNo,FaultDate,StationID,RoomName,FaultPlace,CityName,PointType,EqType,EqModel,FaultMsg,InScope,FaultUser,ConfirmUser,ConfirmOrderName,Memo,InputTime ");
+        sql.Append("select id,");
+        sql.Append("status= case when status=-2 then '施工退回' when status=-1 then '核查退回' when status=1 then '核查中' ");
+        sql.Append(" when status=2 then '施工中'  when status=3 then '已完工' end,");
+        sql.Append("inputtime,deptname,account,address,boxno,terminalnumber,linkman,linkphone,username,checkuser,checkinfo,checktime,constructionunit,constructioninfo,reportname,finishtime,memo");
         sql.Append(" from LRM_LineExtension ");
         sql.Append(where);
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
         DataTable dt = ds.Tables[0];
-        dt.Columns[0].ColumnName = "故障单号";
-        dt.Columns[1].ColumnName = "故障日期";
-        dt.Columns[2].ColumnName = "局站编码";
-        dt.Columns[3].ColumnName = "机房名称";
-        dt.Columns[4].ColumnName = "故障地点";
-        dt.Columns[5].ColumnName = "单位";
-        dt.Columns[6].ColumnName = "网点类别";
-        dt.Columns[7].ColumnName = "设备类型";
-        dt.Columns[8].ColumnName = "设备型号";
-        dt.Columns[9].ColumnName = "故障现象";
-        dt.Columns[10].ColumnName = "是否外包范围";
-        dt.Columns[11].ColumnName = "报障人";
-        dt.Columns[12].ColumnName = "确认人";
-        dt.Columns[13].ColumnName = "确认单扫描件";
-        dt.Columns[14].ColumnName = "备注";
-        dt.Columns[15].ColumnName = "录单日期";
-        ExcelHelper.ExportByWeb(dt, "", "故障工单台账.xls", "故障工单台账");
+        dt.Columns[0].ColumnName = "序号";
+        dt.Columns[1].ColumnName = "当前进度";
+        dt.Columns[2].ColumnName = "录入时间";
+        dt.Columns[3].ColumnName = "发起单位";
+        dt.Columns[4].ColumnName = "宽带账号";
+        dt.Columns[5].ColumnName = "标准地址";
+        dt.Columns[6].ColumnName = "分纤箱号";
+        dt.Columns[7].ColumnName = "终端数量";
+        dt.Columns[8].ColumnName = "装维经理";
+        dt.Columns[9].ColumnName = "联系电话";
+        dt.Columns[10].ColumnName = "录入人";
+        dt.Columns[11].ColumnName = "核查人";
+        dt.Columns[12].ColumnName = "核查信息";
+        dt.Columns[13].ColumnName = "核查时间";
+        dt.Columns[14].ColumnName = "施工单位";
+        dt.Columns[15].ColumnName = "施工信息";
+        dt.Columns[16].ColumnName = "施工资料";
+        dt.Columns[17].ColumnName = "完工时间";
+        dt.Columns[18].ColumnName = "备注";
+        ExcelHelper.ExportByWeb(dt, "", "光缆延伸台账.xls", "光缆延伸台账");
     }
     //<summary>
     //新增线路延伸工单
@@ -282,613 +308,8 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         }
     }
 
-    /// <summary>
-    /// 删除故障工单；1、工单信息；2、上传的维修前照片附件
-    /// </summary>
-    public void RemoveFaultOrderByOrderNo()
-    {
-        string orderno = Convert.ToString(Request.Form["orderno"]);
-        SqlParameter paras = new SqlParameter("@orderno", SqlDbType.VarChar);
-        paras.Value = orderno;
-        StringBuilder sql = new StringBuilder();
-        sql.Append("DELETE FROM LRM_LineExtension WHERE faultorderno=@orderno;");
-        sql.Append("DELETE FROM SB_Attachment WHERE InfoAutoID=@orderno;");
-        //使用事务提交操作
-        using (SqlConnection conn = SqlHelper.GetConnection())
-        {
-            conn.Open();
-            using (SqlTransaction trans = conn.BeginTransaction())
-            {
-                try
-                {
-                    SqlHelper.ExecuteNonQuery(trans, CommandType.Text, sql.ToString(), paras);
-                    trans.Commit();
-                    Response.Write("{\"success\":true,\"msg\":\"执行成功\"}");
-                }
-                catch
-                {
-                    trans.Rollback();
-                    Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
-                    throw;
-                }
-            }
-        }
-    }
-    /*
-/// <summary>
-/// 通过id删除附件
-/// </summary>
-public void RemoveAttachById()
-{
-int id = 0;
-int.TryParse(Request.Form["id"], out id);
-SqlParameter paras = new SqlParameter("@id", SqlDbType.Int);
-paras.Value = id;
-string sql = "DELETE FROM Attachment WHERE id=@id";
-int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
-if (result == 1)
-    Response.Write("{\"success\":true,\"msg\":\"执行成功\"}");
-else
-    Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
-}
-*/
 
-    #endregion 故障工单管理
-    #region 日常维修台账
-    /// <summary>
-    /// 设置日常维修台账查询条件
-    /// </summary>
-    /// <returns></returns>
-    public string SetQueryConditionForRepair()
-    {
-        string queryStr = "";
-        //设置查询条件
-        List<string> list = new List<string>();
-        //提交开始日期
-        if (!string.IsNullOrEmpty(Request.Form["sdate"]))
-            list.Add(" repairdate >='" + Request.Form["sdate"] + "'");
-        //提交截止日期
-        if (!string.IsNullOrEmpty(Request.Form["edate"]))
-            list.Add(" repairdate <='" + Request.Form["edate"] + "'");
-        //按所属县市
-        if (!string.IsNullOrEmpty(Request.Form["cityname"]))
-            list.Add(" cityname ='" + Request.Form["cityname"] + "'");
-        //按局站编码
-        if (!string.IsNullOrEmpty(Request.Form["stationid"]))
-            list.Add(" stationid like'%" + Request.Form["stationid"] + "%'");
-        //按机房名称
-        if (!string.IsNullOrEmpty(Request.Form["roomname"]))
-            list.Add(" roomname like'%" + Request.Form["roomname"] + "%'");
-        //按维修单号
-        if (!string.IsNullOrEmpty(Request.Form["repairorderno"]))
-            list.Add(" repairorderno like'%" + Request.Form["repairorderno"] + "%'");
-        //按故障单号
-        if (!string.IsNullOrEmpty(Request.Form["faultorderno"]))
-            list.Add(" faultorderno like'%" + Request.Form["faultorderno"] + "%'");
-        //管理员和运维部查看所有，其余只看本部门
-        if (roleid != "0" && roleid != "4")
-        {
-            list.Add(" cityname='" + deptname + "' ");
-        }
-        if (list.Count > 0)
-            queryStr = string.Join(" and ", list.ToArray());
-        return queryStr;
-    }
-    /// <summary>
-    /// 获取日常维修台账 数据page:1 rows:10 sort:id order:asc
-    /// </summary>
-    public void GetDailyRepairInfo()
-    {
-        int total = 0;
-        string where = SetQueryConditionForRepair();
-        string tableName = " SB_DailyRepairInfo ";
-        string fieldStr = "*";
-        DataSet ds = SqlHelper.GetPagination(tableName, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
-        Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
-    }
-    /// <summary>
-    ///  SB_DailyRepairInfo
-    /// </summary>
-    public void GetDailyRepairInfoByID()
-    {
-        int id = Convert.ToInt32(Request.Form["id"]);
-        SqlParameter paras = new SqlParameter("@id", SqlDbType.Int);
-        paras.Value = id;
-        string sql = "SELECT * FROM SB_DailyRepairInfo  where ID=@id";
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
-        Response.Write(JsonConvert.GetJsonFromDataTable(ds));
-    }
-    /// <summary>
-    /// 获取维修单自动编号
-    /// </summary>
-    public void GetRepairOrderNo()
-    {
-        DataSet dr = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "SELECT RepairOrderNo  FROM SB_AutoNo");
-        string currentId = dr.Tables[0].Rows[0][0].ToString();
-        int newno = 0;
-        string datePre = DateTime.Now.ToString("yyyyMM");
-        string autono = "WX";
-        if (currentId.Substring(0, 6) == datePre)
-            newno = int.Parse(currentId.Substring(6)) + 1;
-
-        else
-            newno = 1;
-        autono += datePre + newno.ToString().PadLeft(5, '0');
-        SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, "update SB_AutoNo set RepairOrderNo =" + datePre + newno.ToString().PadLeft(5, '0'));
-        Response.Write("{\"success\":true,\"msg\":\"成功\",\"autono\":\"" + autono + "\"}");
-    }
-    /// <summary>
-    /// 通过维修台账编号repairorderno获取采购项目列表
-    /// </summary>
-    public void GetRepairMaterialListByNo()
-    {
-        string repairorderno = Convert.ToString(Request.Form["no"]);
-        SqlParameter paras = new SqlParameter("@repairorderno", SqlDbType.VarChar);
-        paras.Value = repairorderno;
-        string sql = "SELECT b.ClassName,b.TypeName,a.amount,b.Units FROM dbo.SB_DailyRepairInfo_Material AS a LEFT JOIN dbo.MaintainMaterial_TypeInfo b ON a.TypeID=b.ID  WHERE a.repairorderno=@repairorderno";
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
-        Response.Write(JsonConvert.GetJsonFromDataTable(ds));
-    }
-    // <summary>
-    // 导出日常维修台账
-    // </summary>
-    public void ExportDailyRepairInfo()
-    {
-        string where = SetQueryConditionForRepair();
-        if (where != "")
-            where = " where " + where;
-        StringBuilder sql = new StringBuilder();
-        sql.Append("select repairorderno,repairdate,stationid,RoomName,repairplace,CityName,pointtype,eqtype,repairitem,RepairMaterials,reimmoney,reimtime,faultorderno,jobplanno,reportno,memo1,memo2,memo3 ");
-        sql.Append(" from SB_DailyRepairInfo ");
-        sql.Append(where);
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
-        DataTable dt = ds.Tables[0];
-        dt.Columns[0].ColumnName = "维修单号";
-        dt.Columns[1].ColumnName = "维修日期";
-        dt.Columns[2].ColumnName = "局站编码";
-        dt.Columns[3].ColumnName = "机房名称";
-        dt.Columns[4].ColumnName = "维修地点";
-        dt.Columns[5].ColumnName = "单位";
-        dt.Columns[6].ColumnName = "网点类别";
-        dt.Columns[7].ColumnName = "设备类型";
-        dt.Columns[8].ColumnName = "维修事项";
-        dt.Columns[9].ColumnName = "维修用料";
-        dt.Columns[10].ColumnName = "报账金额";
-        dt.Columns[11].ColumnName = "报账时间";
-        dt.Columns[12].ColumnName = "故障单号";
-        dt.Columns[13].ColumnName = "作业计划编号";
-        dt.Columns[14].ColumnName = "签报编号";
-        dt.Columns[15].ColumnName = "备注1";
-        dt.Columns[16].ColumnName = "备注2";
-        dt.Columns[17].ColumnName = "备注3";
-        ExcelHelper.ExportByWeb(dt, "", "日常维修台账.xls", "日常维修台账");
-    }
-    /*
-/// <summary>
-/// 更新日常维修台账
-/// </summary>
-public void UpdateDailyRepairInfo()
-{
-int id = Convert.ToInt32(Request.Form["id"]);
-//单位
-string deptname = Convert.ToString(Request.Form["deptname"]);
-//接入网机房编号
-string anid = Convert.ToString(Request.Form["anid"]);
-//接入机房名称
-string roomname = Convert.ToString(Request.Form["roomname"]);
-//所属县市
-string cityname = Convert.ToString(Request.Form["cityname"]);
-//维修事项
-string repairinfo = Convert.ToString(Request.Form["repairinfo"]);
-//维修签报单号
-string repairreportno = Convert.ToString(Request.Form["repairreportno"]);
-//申请时间
-string applytime = Convert.ToString(Request.Form["applytime"]);
-//通知维修时间
-string noticerepairtime = Convert.ToString(Request.Form["noticerepairtime"]);
-//维修完成时间
-string repairfinishtime = Convert.ToString(Request.Form["repairfinishtime"]);
-//保修截止日期
-string warrantyexpirationdate = Convert.ToString(Request.Form["warrantyexpirationdate"]);
-//维修内容
-string repaircontent = Convert.ToString(Request.Form["repaircontent"]);
-//验收情况(包括验收人员名单)
-string checkinfo = Convert.ToString(Request.Form["checkinfo"]);
-//维修方名称
-string repairperson = Convert.ToString(Request.Form["repairperson"]);
-//维修方联系方式
-string repairpersontel = Convert.ToString(Request.Form["repairpersontel"]);
-//申请金额
-string applymoney = Convert.ToString(Request.Form["applymoney"]);
-//报账金额
-string reimnursemoney = Convert.ToString(Request.Form["reimnursemoney"]);
-//立项时间
-string projecttime = Convert.ToString(Request.Form["projecttime"]);
-//报账时间
-string reimbursetime = Convert.ToString(Request.Form["reimbursetime"]);
-//备注
-string memo = Convert.ToString(Request.Form["memo"]);
-List<SqlParameter> _paras = new List<SqlParameter>();
-_paras.Add(new SqlParameter("@id", id));
-_paras.Add(new SqlParameter("@deptname", deptname));
-_paras.Add(new SqlParameter("@anid", anid));
-_paras.Add(new SqlParameter("@roomname", roomname));
-_paras.Add(new SqlParameter("@cityname", cityname));
-_paras.Add(new SqlParameter("@repairinfo", repairinfo));
-_paras.Add(new SqlParameter("@repairreportno", repairreportno));
-_paras.Add(new SqlParameter("@applytime", applytime));
-_paras.Add(new SqlParameter("@noticerepairtime", noticerepairtime));
-_paras.Add(new SqlParameter("@repairfinishtime", repairfinishtime));
-_paras.Add(new SqlParameter("@warrantyexpirationdate", warrantyexpirationdate));
-_paras.Add(new SqlParameter("@repaircontent", repaircontent));
-_paras.Add(new SqlParameter("@checkinfo", checkinfo));
-_paras.Add(new SqlParameter("@repairperson", repairperson));
-_paras.Add(new SqlParameter("@repairpersontel", repairpersontel));
-_paras.Add(new SqlParameter("@applymoney", applymoney));
-_paras.Add(new SqlParameter("@reimnursemoney", reimnursemoney));
-_paras.Add(new SqlParameter("@projecttime", projecttime));
-_paras.Add(new SqlParameter("@reimbursetime", reimbursetime));
-_paras.Add(new SqlParameter("@memo", memo));
-StringBuilder sql = new StringBuilder();
-sql.Append("UPDATE SB_DailyRepairInfo SET  DeptName = @deptname,  ANID = @anid, ");
-sql.Append(" RoomName = @roomname,  CityName = @cityname,  RepairInfo = @repairinfo,  ");
-sql.Append("RepairReportNo = @repairreportno,  ApplyTime = @applytime,  NoticeRepairTime = @noticerepairtime,");
-sql.Append("  RepairFinishTime = @repairfinishtime,  WarrantyExpirationDate = @warrantyexpirationdate,");
-sql.Append("  RepairContent = @repaircontent,  CheckInfo = @checkinfo,  RepairPerson = @repairperson, ");
-sql.Append(" RepairPersonTel = @repairpersontel,  ApplyMoney = @applymoney,  ReimnurseMoney = @reimnursemoney, ");
-sql.Append(" ProjectTime = @projecttime,  ReimburseTime = @reimbursetime,  Memo = @memo,InputTime=getdate()  where id=@id");
-int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), _paras.ToArray());
-if (result == 1)
-Response.Write("{\"success\":true,\"msg\":\"台账更新成功！\"}");
-else
-Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
-}
-
-    //<summary>
-    //新增日常维修台账
-    //</summary>
-    public void SaveDailyRepairInfo()
-    {
-        //1、获取参数
-        string repairorderno = Convert.ToString(Request.Form["repairorderno"]);
-        string repairdate = Convert.ToString(Request.Form["repairdate"]);
-        string stationid = Convert.ToString(Request.Form["stationid"]);
-        string roomname = Convert.ToString(Request.Form["roomname"]);
-        string repairplace = Convert.ToString(Request.Form["repairplace"]);
-        string cityname = Convert.ToString(Request.Form["cityname"]);
-        string pointtype = Convert.ToString(Request.Form["pointtype"]);
-        string eqtype = Convert.ToString(Request.Form["eqtype"]);
-        string repairitem = Convert.ToString(Request.Form["repairitem"]);
-        string repairmaterials = Convert.ToString(Request.Form["repairmaterials"]);
-        string reimmoney = Convert.ToString(Request.Form["reimmoney"]);
-        string reimtime = Convert.ToString(Request.Form["reimtime"]);
-        string faultorderno = Convert.ToString(Request.Form["faultorderno"]);
-        string jobplanno = Convert.ToString(Request.Form["jobplanno"]);
-        string reportno = Convert.ToString(Request.Form["reportno"]);
-        string memo1 = Convert.ToString(Request.Form["memo1"]);
-        string memo2 = Convert.ToString(Request.Form["memo2"]);
-        string memo3 = Convert.ToString(Request.Form["memo3"]);
-        //资料扫描件
-        string attachfilepath = Convert.ToString(Request.Form["report"]);
-        string attachfile = "";
-        //保存故障确认单扫描件
-        if (string.IsNullOrEmpty(attachfilepath))
-        {
-            Response.Write("{\"success\":false,\"msg\":\"请上传扫描件资料！\"}");
-            return;
-        }
-        else
-        {
-            attachfile = attachfilepath.Substring(attachfilepath.LastIndexOf('/') + 1);
-        }
-
-
-        //设定参数
-        List<SqlParameter> _paras = new List<SqlParameter>();
-        _paras.Add(new SqlParameter("@repairorderno", repairorderno));
-        _paras.Add(new SqlParameter("@repairdate", repairdate));
-        _paras.Add(new SqlParameter("@stationid", stationid));
-        _paras.Add(new SqlParameter("@roomname", roomname));
-        _paras.Add(new SqlParameter("@repairplace", repairplace));
-        _paras.Add(new SqlParameter("@cityname", cityname));
-        _paras.Add(new SqlParameter("@pointtype", pointtype));
-        _paras.Add(new SqlParameter("@eqtype", eqtype));
-        _paras.Add(new SqlParameter("@repairitem", repairitem));
-        _paras.Add(new SqlParameter("@repairmaterials", repairmaterials));
-        _paras.Add(new SqlParameter("@reimmoney", reimmoney));
-        _paras.Add(new SqlParameter("@reimtime", reimtime));
-        _paras.Add(new SqlParameter("@attachfile", attachfile));
-        _paras.Add(new SqlParameter("@attachfilepath", attachfilepath));
-        _paras.Add(new SqlParameter("@faultorderno", faultorderno));
-        _paras.Add(new SqlParameter("@jobplanno", jobplanno));
-        _paras.Add(new SqlParameter("@reportno", reportno));
-        _paras.Add(new SqlParameter("@memo1", memo1));
-        _paras.Add(new SqlParameter("@memo2", memo2));
-        _paras.Add(new SqlParameter("@memo3", memo3));
-        _paras.Add(new SqlParameter("@inputuser", Session["uname"].ToString()));
-
-
-        //2、保存
-        StringBuilder sql = new StringBuilder();
-        sql.Append("if exists(select * from LRM_LineExtension where faultorderno=@faultorderno)");
-        sql.Append("insert SB_DailyRepairInfo(repairorderno,repairdate,stationid,roomname,repairplace,cityname,pointtype,eqtype,repairitem,repairmaterials,reimmoney,reimtime,attachfile,attachfilepath,faultorderno,jobplanno,reportno,memo1,memo2,memo3,inputUser) values(");
-        sql.Append("@repairorderno,@repairdate,@stationid,@roomname,@repairplace,@cityname,@pointtype,@eqtype,@repairitem,@repairmaterials,@reimmoney,@reimtime,@attachfile,@attachfilepath,@faultorderno,@jobplanno,@reportno,@memo1,@memo2,@memo3,inputuser);");
-
-        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), _paras.ToArray());
-        if (result == 1)
-            Response.Write("{\"success\":true,\"msg\":\"新增日常维修台账成功！\"}");
-        else
-            Response.Write("{\"success\":false,\"msg\":\"故障单编号不存在！！\"}");
-    }
-        */
-    //<summary>
-    //新增日常维修台账,选择用料情况并出库
-    //</summary>
-    public void SaveDailyRepairInfo()
-    {
-        //1、获取参数
-        string repairorderno = Convert.ToString(Request.Form["repairorderno"]);
-        string repairdate = Convert.ToString(Request.Form["repairdate"]);
-        string stationid = Convert.ToString(Request.Form["stationid"]);
-        string roomname = Convert.ToString(Request.Form["roomname"]);
-        string repairplace = Convert.ToString(Request.Form["repairplace"]);
-        string cityname = Convert.ToString(Request.Form["cityname"]);
-        string pointtype = Convert.ToString(Request.Form["pointtype"]);
-        string eqtype = Convert.ToString(Request.Form["eqtype"]);
-        string repairitem = Convert.ToString(Request.Form["repairitem"]);
-        string reimmoney = Convert.ToString(Request.Form["reimmoney"]);
-        string reimtime = Convert.ToString(Request.Form["reimtime"]);
-        string faultorderno = Convert.ToString(Request.Form["faultorderno"]);
-        string jobplanno = Convert.ToString(Request.Form["jobplanno"]);
-        string reportno = Convert.ToString(Request.Form["reportno"]);
-        string memo1 = Convert.ToString(Request.Form["memo1"]);
-        string memo2 = Convert.ToString(Request.Form["memo2"]);
-        string memo3 = Convert.ToString(Request.Form["memo3"]);
-        //是否使用物料
-        string isusematerial = Convert.ToString(Request.Form["isusematerial"]);
-        //获取数据行数
-        int rowsCount = 0;
-        Int32.TryParse(Request.Form["rowsCount"], out rowsCount);
-        if (rowsCount == 0 && isusematerial == "是")
-        {
-            Response.Write("{\"success\":false,\"msg\":\"请录入用料信息\"}");
-            return;
-        }
-        //资料扫描件
-        string attachfilepath = Convert.ToString(Request.Form["report"]);
-        string attachfile = "";
-        //保存维修资料
-        if (string.IsNullOrEmpty(attachfilepath))
-        {
-            Response.Write("{\"success\":false,\"msg\":\"请上传扫描件资料！\"}");
-            return;
-        }
-        else
-        {
-            attachfile = attachfilepath.Substring(attachfilepath.LastIndexOf('/') + 1);
-        }
-        //物料编号集合
-        ArrayList stockDrawIDList = new ArrayList();
-        //当前物料编号
-        string stockDrawID;
-        if (isusematerial == "是")
-        {
-            //判断重复物料编号
-            for (int i = 1; i <= rowsCount; i++)
-            {
-                stockDrawID = Request.Form["stockdrawid" + i.ToString()].ToString();
-                //页面录入的物料编号判断
-                if (stockDrawIDList.Contains(stockDrawID))
-                {
-                    Response.Write("{\"success\":false,\"msg\":\"请不要重复选择物料编号：" + stockDrawID + "！\"}");
-                    return;
-                }
-                else
-                    stockDrawIDList.Add(stockDrawID);
-            }
-        }
-        //根据数据行数生成sql语句和参数列表
-        StringBuilder sql = new StringBuilder();
-        List<SqlParameter> paras = new List<SqlParameter>();
-        paras.Add(new SqlParameter("@repairorderno", repairorderno));
-        paras.Add(new SqlParameter("@repairdate", repairdate));
-        paras.Add(new SqlParameter("@stationid", stationid));
-        paras.Add(new SqlParameter("@roomname", roomname));
-        paras.Add(new SqlParameter("@repairplace", repairplace));
-        paras.Add(new SqlParameter("@cityname", cityname));
-        paras.Add(new SqlParameter("@pointtype", pointtype));
-        paras.Add(new SqlParameter("@eqtype", eqtype));
-        paras.Add(new SqlParameter("@repairitem", repairitem));
-        paras.Add(new SqlParameter("@reimmoney", reimmoney));
-        paras.Add(new SqlParameter("@reimtime", reimtime));
-        paras.Add(new SqlParameter("@attachfile", attachfile));
-        paras.Add(new SqlParameter("@attachfilepath", attachfilepath));
-        paras.Add(new SqlParameter("@faultorderno", faultorderno));
-        paras.Add(new SqlParameter("@jobplanno", jobplanno));
-        paras.Add(new SqlParameter("@reportno", reportno));
-        paras.Add(new SqlParameter("@memo1", memo1));
-        paras.Add(new SqlParameter("@memo2", memo2));
-        paras.Add(new SqlParameter("@memo3", memo3));
-        paras.Add(new SqlParameter("@inputuser", Session["uname"].ToString()));
-        paras.Add(new SqlParameter("@isusematerial", isusematerial));
-        //生成维修台账记录
-        sql.Append("if exists(select * from LRM_LineExtension where faultorderno=@faultorderno)");
-        sql.Append(" begin ");
-        sql.Append(" if not exists(select * from  SB_DailyRepairInfo where faultorderno=@faultorderno)  ");
-        sql.Append(" begin ");
-        sql.Append("insert SB_DailyRepairInfo(repairorderno,repairdate,stationid,roomname,repairplace,cityname,pointtype,eqtype,repairitem,reimmoney,reimtime,attachfile,attachfilepath,faultorderno,jobplanno,reportno,memo1,memo2,memo3,inputUser,isusematerial) values(");
-        sql.Append("@repairorderno,@repairdate,@stationid,@roomname,@repairplace,@cityname,@pointtype,@eqtype,@repairitem,@reimmoney,@reimtime,@attachfile,@attachfilepath,@faultorderno,@jobplanno,@reportno,@memo1,@memo2,@memo3,@inputuser,@isusematerial) ");
-        if (isusematerial == "是")
-        {
-            for (int i = 1; i <= rowsCount; i++)
-            {
-                paras.Add(new SqlParameter("@typeid" + i.ToString(), Request.Form["typeid" + i.ToString()]));
-                paras.Add(new SqlParameter("@stockdrawid" + i.ToString(), Server.UrlDecode(Request.Form["stockdrawid" + i.ToString()])));
-                paras.Add(new SqlParameter("@amount" + i.ToString(), Request.Form["amount" + i.ToString()]));
-                sql.Append(" UPDATE MaintainMaterial_StockDraw 	SET currentstock =currentstock-@amount" + i.ToString() + "	where id = @stockdrawid" + i.ToString() + "; ");
-                sql.Append("INSERT INTO SB_DailyRepairInfo_Material values(@stockdrawid" + i.ToString() + ",@typeid" + i.ToString() + ",@repairorderno,@amount" + i.ToString() + ");");
-            }
-        }
-        sql.Append(" end ");
-        sql.Append(" end ");
-        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), paras.ToArray());
-        if (result >= 1)
-            Response.Write("{\"success\":true,\"msg\":\"日常维修台账添加成功！\"}");
-        else
-            Response.Write("{\"success\":false,\"msg\":\"添加失败,故障单号不存在或已生成维修台账！\"}");
-    }
-    /*
-/// <summary>
-/// 根据维修单生成运维物料领料单
-/// </summary>
-public void ExportWordByID()
-{
-    int id = Convert.ToInt32(Request.Form["id"]);
-    Random myrdn = new Random();//产生随机数
-                                //新文件名
-    string lldh = DateTime.Now.ToString("yyyyMMdd") + myrdn.Next(1000);
-    SqlParameter[] paras = new SqlParameter[]
-    {
-        new SqlParameter("@id", id),
-        new SqlParameter("@lldh", lldh)
-    };
-    string sql = "SELECT @lldh as lldh,faultorderno,FaultPlace,FaultMsg FROM LRM_LineExtension  where ID=@id";
-    DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), paras);
-    if (ds.Tables[0].Rows.Count == 1)
-    {
-
-        WordHelper wop = new WordHelper();
-        try
-        {
-
-            string path = Server.MapPath("../StandingBook/TPL/"); //目录地址
-            string templatePath = path + "Template.doc";  //自己做好的word
-                                                          //Response.Write(templatePath);
-            wop.OpenTempelte(templatePath); //打开模板文件
-                                            //以下为添加内容到Word
-            string FileName = "安阳联通运维物料领料单.doc";
-
-            DataRow dr = ds.Tables[0].Rows[0];
-            //遍历数据
-            foreach (DataColumn dc in ds.Tables[0].Columns)
-            {
-                wop.FillLable(dc.ColumnName, dr[dc.ColumnName].ToString()); //替换word中指定书签的位置
-            }
-
-            wop.ResponseOut(FileName); //传入的是导出文档的文件名，导出文件
-        }
-        catch
-        {
-
-        }
-    }
-
-}
-    */
-    /// <summary>
-    /// 删除维修台账
-    /// </summary>
-    public void RemoveRepairOrderByOrderNo()
-    {
-        string orderno = Convert.ToString(Request.Form["orderno"]);
-        SqlParameter paras = new SqlParameter("@orderno", SqlDbType.VarChar);
-        paras.Value = orderno;
-        StringBuilder sql = new StringBuilder();
-        sql.Append("DELETE FROM SB_DailyRepairInfo WHERE repairorderno=@orderno;");
-        //使用事务提交操作
-        using (SqlConnection conn = SqlHelper.GetConnection())
-        {
-            conn.Open();
-            using (SqlTransaction trans = conn.BeginTransaction())
-            {
-                try
-                {
-                    SqlHelper.ExecuteNonQuery(trans, CommandType.Text, sql.ToString(), paras);
-                    trans.Commit();
-                    Response.Write("{\"success\":true,\"msg\":\"执行成功\"}");
-                }
-                catch
-                {
-                    trans.Rollback();
-                    Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
-                    throw;
-                }
-            }
-        }
-    }
-    /// <summary>
-    /// 设置物料领取页面显示在维修台账中的用料明细的查询条件
-    /// </summary>
-    /// <returns></returns>
-    public string SetQueryConditionForDrawMaterial()
-    {
-        //设置查询条件
-        string queryStr = "";
-        //设置查询条件
-        List<string> list = new List<string>();
-        //当前领料编号
-        if (!string.IsNullOrEmpty(Request.QueryString["id"]))
-            list.Add(" a.StockDrawID='" + Request.QueryString["id"] + "' ");
-        //维修台账开始日期
-        if (!string.IsNullOrEmpty(Request.Form["sdate"]))
-            list.Add(" c.repairdate >='" + Request.Form["sdate"] + "'");
-        //维修台账截止日期
-        if (!string.IsNullOrEmpty(Request.Form["edate"]))
-            list.Add(" repairdate <='" + Request.Form["edate"] + "'");
-        //按机房名称
-        if (!string.IsNullOrEmpty(Request.Form["roomname"]))
-            list.Add(" c.roomname like'%" + Request.Form["roomname"] + "%'");
-        //按维修单号
-        if (!string.IsNullOrEmpty(Request.Form["repairorderno"]))
-            list.Add(" a.repairorderno like'%" + Request.Form["repairorderno"] + "%'");
-        if (list.Count > 0)
-            queryStr = string.Join(" and ", list.ToArray());
-        return queryStr;
-    }
-    /// <summary>
-    ///  在物料领取页面显示在维修台账中的用料明细 数据page:1 rows:10 sort:id order:asc
-    /// </summary>
-    public void GetStockDrawMaterialInfo()
-    {
-        int total = 0;
-        string where = SetQueryConditionForDrawMaterial();
-        StringBuilder sql = new StringBuilder(" dbo.SB_DailyRepairInfo_Material a");
-        sql.Append(" LEFT JOIN dbo.MaintainMaterial_StockDraw b ON a.StockDrawID=b.id ");
-        sql.Append(" LEFT JOIN dbo.SB_DailyRepairInfo c ON a.repairorderno=c.repairorderno ");
-        sql.Append(" LEFT JOIN dbo.MaintainMaterial_TypeInfo d ON a.TypeID=d.ID ");
-        string tableName = sql.ToString();
-        string fieldStr = "c.id,a.repairorderno,c.repairdate,c.stationid,c.RoomName,c.repairplace,c.repairitem,d.TypeName,a.amount";
-        DataSet ds = SqlHelper.GetPagination(tableName, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
-        Response.Write(JsonConvert.GetJsonFromDataTable(ds.Tables[0], total, true, "amount", "repairorderno", "合计"));
-    }
-    // <summary>
-    // 导出领料信息的维修台账使用明细
-    // </summary>
-    public void ExportStockDrawMaterialInfo()
-    {
-        string where = SetQueryConditionForDrawMaterial();
-        if (where != "")
-            where = " where " + where;
-        StringBuilder sql = new StringBuilder();
-        sql.Append("select a.repairorderno,c.repairdate,c.RoomName,c.repairplace,c.repairitem,d.TypeName,a.amount  ");
-        sql.Append(" from dbo.SB_DailyRepairInfo_Material a ");
-        sql.Append(" LEFT JOIN dbo.MaintainMaterial_StockDraw b ON a.StockDrawID=b.id ");
-        sql.Append(" LEFT JOIN dbo.SB_DailyRepairInfo c ON a.repairorderno=c.repairorderno ");
-        sql.Append(" LEFT JOIN dbo.MaintainMaterial_TypeInfo d ON a.TypeID=d.ID ");
-        sql.Append(where);
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
-        DataTable dt = ds.Tables[0];
-        dt.Columns[0].ColumnName = "维修单号";
-        dt.Columns[1].ColumnName = "维修日期";
-        dt.Columns[2].ColumnName = "机房名称";
-        dt.Columns[3].ColumnName = "维修地点";
-        dt.Columns[4].ColumnName = "维修事项";
-        dt.Columns[5].ColumnName = "物料型号";
-        dt.Columns[6].ColumnName = "用料数量";
-        ExcelHelper.ExportByWeb(dt, "", "物料使用明细.xls", "物料使用明细");
-    }
-    #endregion 日常维修台账
-
+    #endregion 光缆延伸工单管理
     public bool IsReusable
     {
         get

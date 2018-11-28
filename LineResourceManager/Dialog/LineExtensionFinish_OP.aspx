@@ -26,7 +26,7 @@
     var onFormSubmit = function ($dialog, $grid) {
         var url = './ajax/Srv_LineResource.ashx/FinishLineResourceByID';
         if ($('form').form('validate')) {
-            parent.$.messager.confirm('询问', '确认提交建设信息？', function (r) {
+            parent.$.messager.confirm('询问', '确认提交施工信息？', function (r) {
                 if (r) {
                     if ($('#isNext').combobox('getValues')=="1" && $('#report').val() == "") {
                         parent.$.messager.alert('提示', '请上传资料后再提交！', 'error');
@@ -320,7 +320,7 @@
         <tr>
             <td class="left_td">施工信息：</td>
             <td class="tdinput" colspan="3">
-                <textarea name="backinfo" id="backinfo" cols="" style="width: 400px;" class="easyui-validatebox" required rows="2"></textarea>
+                <textarea name="constructioninfo" id="constructioninfo" cols="" style="width: 400px;" class="easyui-validatebox" required rows="2"></textarea>
             </td>
         </tr>
         <tr>

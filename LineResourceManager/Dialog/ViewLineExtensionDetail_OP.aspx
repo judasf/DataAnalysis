@@ -72,7 +72,7 @@
                     $('#constructioninfo').html(result.rows[0].constructioninfo);
                     $('#finishuser').html(result.rows[0].finishuser);
                     $('#finishtime').html(result.rows[0].finishtime);
-                    if (result.rows[0].reportname != undefined)
+                    if (result.rows[0].reportname.length>0)
                         showReport(result.rows[0].reportname, result.rows[0].reportpath);
                 }
             }, 'json');
@@ -176,7 +176,7 @@
         </td>
     </tr>
      <tr>
-        <td colspan="4" style="text-align: center; line-height: 20px; font-size: 14px; font-weight: 700;">施工信息</td>
+        <td colspan="4" style="text-align: center; line-height: 20px; font-size: 14px; font-weight: 700;">建设施工信息</td>
     </tr>
     <tr>
         <td class="left_td">施工单位：</td>
