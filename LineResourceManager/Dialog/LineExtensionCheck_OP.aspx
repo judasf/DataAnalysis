@@ -80,15 +80,16 @@
         $('#isNext').combobox({
             editable: false,
             onSelect: function (rec) {
-                if (rec.value == '0') {
+                if (rec.value == '1') {
+                    el.insertAfter($('tr:eq(9)', '#LCTable'));
+                    backEl.insertAfter($('tr:eq(9)', '#LCTable'));
+                    $.parser.parse(backEl);
+                    $.parser.parse(el);
+                }
+                else {
                     backEl.insertAfter($('tr:eq(9)', '#LCTable'));
                     $.parser.parse(backEl);
                     el.detach();
-                }
-                else {
-                    el.insertAfter($('tr:eq(9)', '#LCTable'));
-                    $.parser.parse(el);
-                    backEl.detach();
                 }
 
             }
@@ -196,7 +197,7 @@
             </td>
         </tr>
         <tr>
-            <td class="left_td">退回原因：</td>
+            <td class="left_td">核查信息：</td>
             <td class="tdinput" colspan="3">
                 <textarea name="checkinfo" id="checkinfo" cols="" style="width: 400px;" class="easyui-validatebox" required rows="4"></textarea>
             </td>

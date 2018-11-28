@@ -162,6 +162,29 @@
                 ]
             });
         };
+        ///建设施工回单
+        var finishOrder = function (id) {
+            var dialog = parent.$.modalDialog({
+                title: '建设施工',
+                width: 600,
+                height: 600,
+                iconCls: 'ext-icon-page',
+                href: 'LineResourceManager/Dialog/LineExtensionFinish_OP.aspx?id=' + id,
+                buttons: [{
+                    text: '提交',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, leGrid);
+                    }
+                },
+                {
+                    text: '关闭',
+                    handler: function () {
+                        dialog.dialog('close');
+                    }
+                }
+                ]
+            });
+        };
         //查询功能
         var searchGrid = function () {
             leGrid.datagrid('load', $.serializeObject($('#searchForm')));
@@ -199,7 +222,7 @@
                            halign: 'center',
                            formatter: function (value, row) {
                                var str = '';
-                               if (roleid == 1||roleid==0) {//工单管理查看详情
+                               if (roleid == 1 || roleid == 0) {//工单管理查看详情
                                    str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
                                }
                                if (roleid == 8) {//线路主管，核查资源和能否建设
@@ -210,11 +233,41 @@
                                    //if (row.status == -1)//被退回的可以删除
                                    //    str += $.formatString('<a href="javascript:void(0)" onclick="removeBackAccountReimburseByAudit(\'{0}\');">删除</a>', row.id);
                                }
-                               if (roleid == 7) { //施工单位（浩翔，中通服），施工操作
+                               if (roleid == 3) { //施工单位（浩翔，中通服），施工操作
                                    if (row.status == 2)//施工中
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="cancelFinishAccount(\'{0}\');">建设施工</a>&nbsp;', row.id);
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="finishOrder(\'{0}\');">建设施工</a>&nbsp;', row.id);
+                                   else
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
                                }
                                return str;
+                           }
+                       }, {
+                           width: '80',
+                           title: '当前进度',
+                           field: 'status',
+                           halign: 'center',
+                           align: 'center',
+                           formatter: function (value, row, index) {
+                               switch (value) {
+                                   case '-2':
+                                       return '施工退回';
+                                       break;
+                                   case '-1':
+                                       return '核查退回';
+                                       break;
+                                   case '0':
+                                       return '待提交'
+                                       break;
+                                   case '1':
+                                       return '核查中'
+                                       break;
+                                   case '2':
+                                       return '施工中'
+                                       break;
+                                   case '3':
+                                       return '已完工'
+                                       break;
+                               }
                            }
                        }, {
                            width: '80',
@@ -273,37 +326,10 @@
                           halign: 'center',
                           align: 'center'
                       }, {
-                          width: '80',
-                          title: '当前进度',
-                          field: 'status',
-                          halign: 'center',
-                          align: 'center',
-                          formatter: function (value, row, index) {
-                              switch (value) {
-                                  case '-2':
-                                      return '施工退回';
-                                      break;
-                                  case '-1':
-                                      return '核查退回';
-                                      break;
-                                  case '0':
-                                      return '待提交'
-                                      break;
-                                  case '1':
-                                      return '核查中'
-                                      break;
-                                  case '2':
-                                      return '施工中'
-                                      break;
-                                  case '3':
-                                      return '已完工'
-                                      break;
-                              }
-                          }
-                      }, {
                           width: '180',
                           title: '核查信息',
                           field: 'checkinfo',
+                          hidden: true,
                           halign: 'center',
                           align: 'center'
                       }, {
@@ -328,6 +354,7 @@
                           width: '80',
                           title: '施工信息',
                           field: 'constructioninfo',
+                          hidden: true,
                           halign: 'center',
                           align: 'center'
                       }
@@ -340,11 +367,18 @@
                       }
                       , {
                           width: '80',
-                          title: '完工时间',
-                          field: 'finishtime',
+                          title: '回单人',
+                          field: 'finishuser',
                           halign: 'center',
                           align: 'center'
                       }
+                       , {
+                           width: '80',
+                           title: '完工时间',
+                           field: 'finishtime',
+                           halign: 'center',
+                           align: 'center'
+                       }
                   ]
                 ],
                 toolbar: '#agTip',
@@ -429,7 +463,7 @@
                 <tr>
                     <td></td>
                     <td colspan="6" style="text-align: left;">
-                        <%if (roleid == 1 ||roleid == 8||roleid == 0)
+                        <%if (roleid == 1 || roleid == 8 || roleid == 0)
                             { %>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
                             onclick="addOrder();">需求发起</a>

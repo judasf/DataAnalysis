@@ -146,7 +146,7 @@ public partial class right : System.Web.UI.Page
                 isTOWN = Session["pre"].ToString().Trim() != "" ? true : false;
 
                 SZGW = getRoleNameById(Session["roleid"].ToString());
-
+/*
                 if (isSX)//工单管理员
                 {
                     //提示被盗工单未恢复
@@ -253,6 +253,7 @@ public partial class right : System.Web.UI.Page
                     DataSet ds = DirectDataAccessor.QueryForDataSet("select count(id)  from xlzgxx where  wbqr=1 and xgqr=0  and  zgtd=0 and pfdw='" + Session["deptname"].ToString() + "'" + GetZGSqlByDeptname());
                     gztx.InnerHtml = "您有<a href='xlzggd/" + JudgeZGLinkByDeptname() + "'> &nbsp;" + ds.Tables[0].Rows[0][0].ToString() + "&nbsp;</a>条整改工单未确认区域维护领料单，请及时处理！";
                 }
+                */
             }
         }
     }

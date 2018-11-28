@@ -41,7 +41,7 @@
     var showReport = function (filename, filepath) {
         /// <summary>显示建设资料详情</summary>
         $('#reportinfo').empty();
-        $('#reportinfo').append('<span style="margin-right:10px;"><a class="ext-icon-attach" style="padding-left:20px;" href="' + filepath + '"  title="' + filename + '">' + filename + '</a></span>');
+        $('#reportinfo').append('<span style="margin-right:10px;"><a class="ext-icon-attach" target="_blank" style="padding-left:20px;" href="' + filepath + '"  title="' + filename + '">' + filename + '</a></span>');
     };
     $(function () {
         if ($('#id').val().length > 0) {
@@ -70,8 +70,10 @@
                     $('#checktime').html(result.rows[0].checktime);
                     $('#constructionunit').html(result.rows[0].constructionunit);
                     $('#constructioninfo').html(result.rows[0].constructioninfo);
+                    $('#finishuser').html(result.rows[0].finishuser);
                     $('#finishtime').html(result.rows[0].finishtime);
-                    showReport(result.rows[0].reportname, result.rows[0].reportpath);
+                    if (result.rows[0].reportname != undefined)
+                        showReport(result.rows[0].reportname, result.rows[0].reportpath);
                 }
             }, 'json');
         }
@@ -150,9 +152,8 @@
             <span id="memo"></span>
         </td>
     </tr>
-     <tr>
+    <tr>
         <td colspan="4" style="text-align: center; line-height: 20px; font-size: 14px; font-weight: 700;">资源核查信息</td>
-
     </tr>
     <tr>
 
@@ -174,14 +175,13 @@
             <div id="checkinfo"></div>
         </td>
     </tr>
+     <tr>
+        <td colspan="4" style="text-align: center; line-height: 20px; font-size: 14px; font-weight: 700;">施工信息</td>
+    </tr>
     <tr>
         <td class="left_td">施工单位：</td>
-        <td class="tdinput">
+        <td class="tdinput" colspan="3">
             <div id="constructionunit"></div>
-        </td>
-        <td class="left_td">完工时间：</td>
-        <td class="tdinput">
-            <div id="finishtime"></div>
         </td>
     </tr>
     <tr>
@@ -196,6 +196,16 @@
         </td>
         <td class="tdinput" colspan="3">
             <span id="reportinfo"></span>
+        </td>
+    </tr>
+     <tr>
+        <td class="left_td">回单人：</td>
+        <td class="tdinput">
+            <div id="finishuser"></div>
+        </td>
+        <td class="left_td">完工时间：</td>
+        <td class="tdinput">
+            <div id="finishtime"></div>
         </td>
     </tr>
 </table>

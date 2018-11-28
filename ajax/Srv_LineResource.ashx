@@ -109,10 +109,12 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         if (!string.IsNullOrEmpty(Request.Form["roomname"]))
             list.Add(" roomname like'%" + Request.Form["roomname"] + "%'");
         //管理员和客户支撑中心查看所有，其余只看本部门
-        if (roleid != "0" && roleid != "8")
+        if (roleid != "0" && roleid != "8"&& roleid != "3")
         {
             list.Add(" deptname='" + deptname + "' ");
         }
+        else if(roleid=="3")
+            list.Add(" constructionunit='" + deptname + "' ");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
         return queryStr;
@@ -156,7 +158,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             status = "-1";
             checkinfo = Convert.ToString(Request.Form["checkinfo"]);
         }
-        else
+        else//指派施工单位
         {
             status = "2";
             constructionunit = Convert.ToString(Request.Form["constructionunit"]);
@@ -176,7 +178,29 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         else
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
-
+        /// <summary>
+        /// 建设施工
+        /// </summary>
+    public void FinishLineResourceByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string isNext = Convert.ToString(Request.Form["isNext"]);
+        string status = "";
+        string backinfo = "";
+        string report = "";
+        string reportName = "";
+        string reportNum = "";
+             //资料扫描件
+        string attachfilepath = Convert.ToString(Request.Form["report"]);
+        string attachfile = "";
+        //保存维修资料
+        if (string.IsNullOrEmpty(attachfilepath))
+        {
+            Response.Write("{\"success\":false,\"msg\":\"请上传资料！\"}");
+            return;
+        }
+       
+    }
     /// <summary>
     /// 导出故障工单明细
     /// </summary>

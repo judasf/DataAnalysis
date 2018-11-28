@@ -130,7 +130,7 @@
             <td class="left_td">标准地址：
             </td>
             <td class="tdinput" colspan="3">
-                <input name="address" style="width: 400px" id="address" class="inputBorder easyui-validatebox" data-options="required:true" />
+                <textarea name="address" id="address" class="inputBorder easyui-validatebox" data-options="required:true" style="width: 400px;height:50px;"  cols="" rows="3"></textarea>
             </td>
         </tr>
         <tr>
