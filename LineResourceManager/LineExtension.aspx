@@ -473,7 +473,7 @@
                 <tr>
                     <td></td>
                     <td colspan="6" style="text-align: left;">
-                        <%if (roleid == 1 || roleid == 8 || roleid == 0)
+                        <%if (roleid == 1 || roleid == 8)
                             { %>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
                             onclick="addOrder();">需求发起</a>
