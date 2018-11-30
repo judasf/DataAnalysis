@@ -173,7 +173,7 @@
         var exportRepairInfo = function () {
             jsPostForm('../ajax/Srv_StandingBook.ashx/ExportDailyRepairInfo', $.serializeObject($('#searchForm')));
         };
-       
+
         //日常维修台账
         var repairGrid;
         $(function () {
@@ -198,7 +198,7 @@
                       formatter: function (value, row) {
                           var str = '';
                           //str += $.formatString('<a href="javascript:editOrder(\'{0}\');" title="编辑" style="cursor:pointer;" >编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;', row.id);
-                          //str += $.formatString('<a href="javascript:removeFun(\'{0}\');" title="删除" style="cursor:pointer;" >删除</a>', row.repairorderno);
+                          str += $.formatString('<a href="javascript:removeFun(\'{0}\');" title="删除" style="cursor:pointer;" >删除</a>', row.repairorderno);
                           return str;
                       }
                   },
@@ -350,7 +350,7 @@
             pager.pagination({
                 layout: ['list', 'sep', 'first', 'prev', 'sep', 'links', 'sep', 'next', 'last', 'sep', 'refresh', 'sep', 'manual']
             });
-//            if (roleid != 0)
+            if (roleid != 0)
                 $('#repairGrid').datagrid('hideColumn', 'action');
         });
     </script>
@@ -367,7 +367,7 @@
                         <input style="width: 80px;" name="sdate" id="sdate" class="Wdate" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'edate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />-<input style="width: 80px;" name="edate" id="edate" class="Wdate"
                             onfocus="WdatePicker({minDate:'#F{$dp.$D(\'sdate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />
                     </td>
-                    <%if (roleid ==0 || roleid==4)
+                    <%if (roleid == 0 || roleid == 4)
                         { %>
                     <td style="width: 40px; text-align: right;">单位：
                     </td>
@@ -416,14 +416,14 @@
                 </tr>
                 <tr>
                     <td></td>
-                     <td colspan="6" style="text-align: left;">
-                          <%if (roleid == 18 || roleid == 21 || roleid == 20 || roleid == 4)
+                    <td colspan="6" style="text-align: left;">
+                        <%if (roleid == 18 || roleid == 21 || roleid == 20 || roleid == 4)
                             { %>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
                             onclick="addRepairInfo();">新增维修台账</a>
                         <%} %>
-                         </td>
-                    </tr>
+                    </td>
+                </tr>
             </table>
         </form>
         <div style="background: url(../Script/easyui/themes/icons/tip.png) no-repeat 10px 5px; line-height: 24px; padding-left: 30px;">

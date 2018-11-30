@@ -1677,7 +1677,22 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         SqlParameter paras = new SqlParameter("@orderno", SqlDbType.VarChar);
         paras.Value = orderno;
         StringBuilder sql = new StringBuilder();
+        //增加使用用料判断
+        DataSet dsMaterial = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "Select StockDrawID,TypeID,amount From NSP_SB_DailyRepairInfo_Material  WHERE repairorderno=@orderno", paras);
+        //有用料信息
+        if (dsMaterial.Tables[0].Rows.Count > 0)
+        {
+            foreach (DataRow row in dsMaterial.Tables[0].Rows)
+            {
+                sql.Append(" update NSP_MaintainMaterial_StockDraw set Currentstock=currentstock+" + row[2] + " where id=" + row[0]+";");
+            }
+
+            //删除维修台账用料明细
+            sql.Append("DELETE FROM NSP_SB_DailyRepairInfo_Material WHERE repairorderno=@orderno;");
+        }
+        //删除维修台账记录
         sql.Append("DELETE FROM NSP_SB_DailyRepairInfo WHERE repairorderno=@orderno;");
+
         //使用事务提交操作
         using (SqlConnection conn = SqlHelper.GetConnection())
         {
