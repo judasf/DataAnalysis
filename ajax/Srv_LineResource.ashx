@@ -231,9 +231,9 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
         sql.Append("select id,");
-        sql.Append("status= case when status=-2 then '施工退回' when status=-1 then '核查退回' when status=1 then '核查中' ");
-        sql.Append(" when status=2 then '施工中'  when status=3 then '已完工' end,");
-        sql.Append("inputtime,deptname,account,address,boxno,terminalnumber,linkman,linkphone,username,checkuser,checkinfo,checktime,constructionunit,constructioninfo,reportname,finishtime,memo");
+        sql.Append("status= case when status=-3 then '资料有误' when status=-2 then '施工退回' when status=-1 then '核查退回' when status=1 then '核查中' ");
+        sql.Append(" when status=2 then '施工中'  when status=3 then '已完工' when status=4 then '已录入' end,");
+        sql.Append("inputtime,deptname,account,address,boxno,terminalnumber,linkman,linkphone,username,checkuser,checkinfo,checktime,constructionunit,constructioninfo,reportname,finishtime,inputfiletime,memo");
         sql.Append(" from LRM_LineExtension ");
         sql.Append(where);
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
@@ -256,7 +256,8 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         dt.Columns[15].ColumnName = "施工信息";
         dt.Columns[16].ColumnName = "施工资料";
         dt.Columns[17].ColumnName = "完工时间";
-        dt.Columns[18].ColumnName = "备注";
+        dt.Columns[18].ColumnName = "资料录入时间";
+        dt.Columns[19].ColumnName = "备注";
         ExcelHelper.ExportByWeb(dt, "", "光缆延伸台账.xls", "光缆延伸台账");
     }
     //<summary>
@@ -296,7 +297,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
                 {
                     SqlHelper.ExecuteNonQuery(trans, CommandType.Text, sql.ToString(), _paras.ToArray());
                     trans.Commit();
-                    Response.Write("{\"success\":true,\"msg\":\"录入成功!\"}");
+                    Response.Write("{\"success\":true,\"msg\":\"提交成功!\"}");
                 }
                 catch
                 {
@@ -307,8 +308,68 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             }
         }
     }
+    /// <summary>
+    /// 进度完成，设置为已录入状态
+    /// </summary>
+    public void FinishAllByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string sql = "update LRM_LineExtension set status=4,inputfiletime=getdate() where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"设置成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
+    /// <summary>
+    /// 资料有误，退回施工单位重新上传资料
+    /// </summary>
+    public void BackToUnitByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string sql = "update LRM_LineExtension set status=-3 where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"已退回施工单位！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
+    /// <summary>
+    /// 重新上传施工资料
+    /// </summary>
+    public void UploadConstructionFileByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string status = "";
+        string reportname = Convert.ToString(Request.Form["reportName"]);
+        string reportpath = Convert.ToString(Request.Form["report"]);
+        status = "3";
+        //建设资料
+        if (string.IsNullOrEmpty(reportpath))
+        {
+            Response.Write("{\"success\":false,\"msg\":\"请上传资料！\"}");
+            return;
+        }
+        string sql = "update LRM_LineExtension set status=@status,reportname=@reportname,reportpath=@reportpath,finishtime=getdate() where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        _paras.Add(new SqlParameter("@status", status));
+        _paras.Add(new SqlParameter("@reportname", reportname));
+        _paras.Add(new SqlParameter("@reportpath", reportpath));
 
-
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"施工资料提交成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
     #endregion 光缆延伸工单管理
     public bool IsReusable
     {

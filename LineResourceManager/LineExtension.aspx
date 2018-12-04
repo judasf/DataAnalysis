@@ -139,6 +139,33 @@
                 buttons: btns
             });
         };
+        //核验上传的施工资料
+        var checkFile = function (id) {
+            var btns = [{
+                text: '完成录入',
+                handler: function () {
+                    parent.onFormSubmit(dialog, leGrid);
+                }
+            }, {
+                text: '退回施工',
+                handler: function () {
+                    parent.backToUnit(dialog, leGrid);
+                }
+            }, {
+                text: '关闭',
+                handler: function () {
+                    dialog.dialog('close');
+                }
+            }];
+            var dialog = parent.$.modalDialog({
+                title: '线路延伸详情',
+                width: 600,
+                height: 600,
+                iconCls: 'ext-icon-page',
+                href: 'LineResourceManager/Dialog/ViewLineExtensionDetail_OP.aspx?id=' + id,
+                buttons: btns
+            });
+        };
         ///资源核查回单
         var checkResource = function (id) {
             var dialog = parent.$.modalDialog({
@@ -170,6 +197,29 @@
                 height: 600,
                 iconCls: 'ext-icon-page',
                 href: 'LineResourceManager/Dialog/LineExtensionFinish_OP.aspx?id=' + id,
+                buttons: [{
+                    text: '提交',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, leGrid);
+                    }
+                },
+                {
+                    text: '关闭',
+                    handler: function () {
+                        dialog.dialog('close');
+                    }
+                }
+                ]
+            });
+        };
+        ///重新上传资料
+        var uploadFile = function (id) {
+            var dialog = parent.$.modalDialog({
+                title: '资料上传',
+                width: 600,
+                height: 600,
+                iconCls: 'ext-icon-page',
+                href: 'LineResourceManager/Dialog/LineExtensionUploadFile_OP.aspx?id=' + id,
                 buttons: [{
                     text: '提交',
                     handler: function () {
@@ -228,6 +278,8 @@
                                if (roleid == 8) {//线路主管，核查资源和能否建设
                                    if (row.status == 1)//核查中
                                        str += $.formatString('<a href="javascript:void(0)" onclick="checkResource(\'{0}\');">资源核查</a>&nbsp;', row.id);
+                                   else if (row.status == 3)
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="checkFile(\'{0}\');">资料核验</a>&nbsp;', row.id);
                                    else
                                        str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
                                    //if (row.status == -1)//被退回的可以删除
@@ -236,6 +288,8 @@
                                if (roleid == 3) { //施工单位（浩翔，中通服），施工操作
                                    if (row.status == 2)//施工中
                                        str += $.formatString('<a href="javascript:void(0)" onclick="finishOrder(\'{0}\');">建设施工</a>&nbsp;', row.id);
+                                   else if (row.status == -3)//资料有误，重新上传
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="uploadFile(\'{0}\');">上传资料</a>&nbsp;', row.id);
                                    else
                                        str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
                                }
@@ -339,13 +393,13 @@
                           halign: 'center',
                           align: 'center'
                       }, {
-                          width: '80',
+                          width: '85',
                           title: '核查人',
                           field: 'checkuser',
                           halign: 'center',
                           align: 'center'
                       }, {
-                          width: '80',
+                          width: '90',
                           title: '核查时间',
                           field: 'checktime',
                           halign: 'center',
@@ -372,16 +426,24 @@
                           align: 'center'
                       }
                       , {
-                          width: '80',
+                          width: '85',
                           title: '回单人',
+                          hidden: true,
                           field: 'finishuser',
                           halign: 'center',
                           align: 'center'
                       }
                        , {
-                           width: '80',
+                           width: '90',
                            title: '完工时间',
                            field: 'finishtime',
+                           halign: 'center',
+                           align: 'center'
+                       }
+                       , {
+                           width: '100',
+                           title: '资料录入时间',
+                           field: 'inputfiletime',
                            halign: 'center',
                            align: 'center'
                        }
@@ -453,7 +515,7 @@
                     <td></td>
                     <td style="width: 80px; text-align: right;">需求进度：</td>
                     <td style="text-align: left;">
-                        <input style="width: 160px" name="status" id="status" class="easyui-combobox" data-options="panelHeight:'auto',editable:false,valueField:'value',textField:'text',data:[{'value':'-2','text':'施工退回'},{'value':'-1','text':'核查退回'},{'value':'1','text':'核查中'},{'value':'2','text':'施工中'},{'value':'3','text':'已完工'}]" />
+                        <input style="width: 160px" name="status" id="status" class="easyui-combobox" data-options="panelHeight:'auto',editable:false,valueField:'value',textField:'text',data:[{'value':'-3','text':'资料有误'},{'value':'-2','text':'施工退回'},{'value':'-1','text':'核查退回'},{'value':'1','text':'核查中'},{'value':'2','text':'施工中'},{'value':'3','text':'已完工'},{'value':'4','text':'已录入'}]" />
                     </td>
                     <%if (roleid == 8)
                         {%>
