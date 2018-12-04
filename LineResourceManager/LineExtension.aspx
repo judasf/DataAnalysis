@@ -249,6 +249,9 @@
                            align: 'center',
                            formatter: function (value, row, index) {
                                switch (value) {
+                                   case '-3':
+                                       return '资料有误';
+                                       break;
                                    case '-2':
                                        return '施工退回';
                                        break;
@@ -266,6 +269,9 @@
                                        break;
                                    case '3':
                                        return '已完工'
+                                       break;
+                                   case '4':
+                                       return '已录入'
                                        break;
                                }
                            }
