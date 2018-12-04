@@ -1187,6 +1187,9 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         //按故障单号
         if (!string.IsNullOrEmpty(Request.Form["faultorderno"]))
             list.Add(" faultorderno like'%" + Request.Form["faultorderno"] + "%'");
+         //按设备类型
+        if (!string.IsNullOrEmpty(Request.Form["eqtype"]))
+            list.Add(" eqtype ='" + Request.Form["eqtype"] + "'");
         //管理员和运维部查看所有，其余只看本部门
         if (roleid != "0" && roleid != "4")
         {
@@ -1464,6 +1467,9 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         //按故障单号
         if (!string.IsNullOrEmpty(Request.Form["faultorderno"]))
             list.Add(" faultorderno like'%" + Request.Form["faultorderno"] + "%'");
+          //按设备类型
+        if (!string.IsNullOrEmpty(Request.Form["eqtype"]))
+            list.Add(" eqtype ='" + Request.Form["eqtype"] + "'");
         //管理员和运维部查看所有，其余只看本部门
         if (roleid != "0" && roleid != "4")
         {

@@ -233,7 +233,8 @@
                           title: '缴费年月',
                           field: 'paymentyearmonth',
                           halign: 'center',
-                          align: 'center'
+                          align: 'center',
+                          sortable:true
                       }, {
                           width: '80',
                           title: '起度',

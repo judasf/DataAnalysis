@@ -111,6 +111,9 @@ public class Srv_StandingBook : IHttpHandler, IRequiresSessionState
         //按故障单号
         if (!string.IsNullOrEmpty(Request.Form["faultorderno"]))
             list.Add(" faultorderno like'%" + Request.Form["faultorderno"] + "%'");
+        //按设备类型
+        if (!string.IsNullOrEmpty(Request.Form["eqtype"]))
+            list.Add(" eqtype ='" + Request.Form["eqtype"] + "'");
         //管理员和运维部查看所有，其余只看本部门
         if (roleid != "0" && roleid != "4")
         {
@@ -474,6 +477,9 @@ else
         //按故障单号
         if (!string.IsNullOrEmpty(Request.Form["faultorderno"]))
             list.Add(" faultorderno like'%" + Request.Form["faultorderno"] + "%'");
+        //按设备类型
+        if (!string.IsNullOrEmpty(Request.Form["eqtype"]))
+            list.Add(" eqtype ='" + Request.Form["eqtype"] + "'");
         //管理员和运维部查看所有，其余只看本部门
         if (roleid != "0" && roleid != "4")
         {
@@ -910,7 +916,7 @@ public void ExportWordByID()
         {
             foreach (DataRow row in dsMaterial.Tables[0].Rows)
             {
-                sql.Append(" update MaintainMaterial_StockDraw set Currentstock=currentstock+" + row[2] + " where id=" + row[0]+";");
+                sql.Append(" update MaintainMaterial_StockDraw set Currentstock=currentstock+" + row[2] + " where id=" + row[0] + ";");
             }
 
             //删除维修台账用料明细

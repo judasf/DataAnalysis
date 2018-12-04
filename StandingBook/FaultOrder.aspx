@@ -339,10 +339,10 @@
                     </td>
                     <%if ((roleid ==0 || roleid==4))
                         { %>
-                    <td style="width: 40px; text-align: right;">单位：
+                    <td style="width: 80px; text-align: right;">单位：
                     </td>
                     <td>
-                        <select id="cityname" class="combo easyui-combobox" name="cityname" data-options="panelHeight:'auto',editable:false">
+                        <select style="width: 120px;" id="cityname" class="combo easyui-combobox" name="cityname" data-options="panelHeight:'auto',editable:false">
                             <option value="">全部</option>
                             <option>运行维护部</option>
                             <option>客户支撑中心</option>
@@ -372,7 +372,18 @@
                     <td style="text-align:left;">
                         <input style="width: 160px; height: 20px" type="text" class="combo" name="faultorderno" />
                     </td>
-                    <td colspan="6" style="text-align: left;">
+                     <td style="width: 80px; text-align: right;">设备类型：
+                    </td>
+                    <td style="text-align: left;">
+                        <select id="eqtype" class="easyui-combobox" name="eqtype" style="width: 120px;" data-options="panelHeight:'auto',editable:false">
+                            <option value="">全部</option>
+                            <option>光缆线路</option>
+                            <option>空调</option>
+                            <option>发电机</option>
+                            <option>其他</option>
+                        </select>
+                    </td>
+                    <td colspan="4" style="text-align: left;">
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:true"
                             onclick="searchGrid();">查询</a>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:true"
