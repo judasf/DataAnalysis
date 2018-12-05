@@ -295,7 +295,7 @@
                        <td style="width: 65px; text-align: right;">物料类型：
                     </td>
                     <td>
-                        <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_NetWorkSpecialProject.ashx/GetNetWorkSpecialProject_TypeInfoComboboxAll?classname='+encodeURIComponent(rec.value);$('#typeid').combobox('reload', url); }">
+                        <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_NetWorkSpecialProject.ashx/GetNSP_MaintainMaterial_TypeInfoComboboxAll?classname='+encodeURIComponent(rec.value);$('#typeid').combobox('reload', url); }">
                             <option value="">全部</option>
                             <option>光缆</option>
                             <option>电力电缆</option>
