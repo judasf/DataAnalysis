@@ -371,6 +371,174 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
     #endregion 光缆延伸工单管理
+    #region 专线客户光缆
+    /// <summary>
+    /// 设置专线客户光缆查询条件
+    /// </summary>
+    /// <returns></returns>
+    public string SetQueryConditionForSL()
+    {
+        string queryStr = "";
+        //设置查询条件
+        List<string> list = new List<string>();
+        //提交开始日期
+        if (!string.IsNullOrEmpty(Request.Form["sdate"]))
+            list.Add(" CONVERT(VARCHAR(50),inputtime,23) >='" + Request.Form["sdate"] + "'");
+        //提交截止日期
+        if (!string.IsNullOrEmpty(Request.Form["edate"]))
+            list.Add(" CONVERT(VARCHAR(50),inputtime,23) <='" + Request.Form["edate"] + "'");
+        //按业务类型
+        if (!string.IsNullOrEmpty(Request.Form["bussinesstype"]))
+            list.Add(" bussinesstype like'%" + Request.Form["bussinesstype"] + "%'");
+        //按计费编码
+        if (!string.IsNullOrEmpty(Request.Form["chargingcode"]))
+            list.Add(" chargingcode like'%" + Request.Form["chargingcode"] + "%'");
+        //按局向
+        if (!string.IsNullOrEmpty(Request.Form["direction"]))
+            list.Add(" direction like'%" + Request.Form["direction"] + "%'");
+        //按施工单位
+        if (!string.IsNullOrEmpty(Request.Form["constructionunit"]))
+            list.Add(" constructionunit ='" + Request.Form["constructionunit"] + "'");
+        else if (roleid == "3")
+            list.Add(" constructionunit='" + deptname + "' ");
+        if (list.Count > 0)
+            queryStr = string.Join(" and ", list.ToArray());
+        return queryStr;
+    }
+    /// <summary>
+    /// 获取专线客户光缆 数据page:1 rows:10 sort:id order:asc
+    /// </summary>
+    public void GetSpecialLine()
+    {
+        int total = 0;
+        string where = SetQueryConditionForSL();
+        string tableName = " LRM_SpecialLine ";
+        string fieldStr = "*,CONVERT(VARCHAR(50),inputtime,23) as inputdate";
+        DataSet ds = SqlHelper.GetPagination(tableName, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
+        Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
+    }
+    /// <summary>
+    ///  LRM_SpecialLine
+    /// </summary>
+    public void GetSpecialLineByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        SqlParameter paras = new SqlParameter("@id", SqlDbType.Int);
+        paras.Value = id;
+        string sql = "SELECT * FROM LRM_SpecialLine  where ID=@id";
+        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
+        Response.Write(JsonConvert.GetJsonFromDataTable(ds));
+    }
+    //<summary>
+    //新增专线客户光缆工单
+    //</summary>
+    public void SaveSpecialLineInfo()
+    {
+        StringBuilder sql = new StringBuilder();
+        string bussinesstype = Convert.ToString(Request.Form["bussinesstype"]);
+        string chargingcode = Convert.ToString(Request.Form["chargingcode"]);
+        string customername = Convert.ToString(Request.Form["customername"]);
+        string address = Convert.ToString(Request.Form["address"]);
+        string customercontact = Convert.ToString(Request.Form["customercontact"]);
+        string customerphone = Convert.ToString(Request.Form["customerphone"]);
+        string customermanager = Convert.ToString(Request.Form["customermanager"]);
+        string direction = Convert.ToString(Request.Form["direction"]);
+        string route = Convert.ToString(Request.Form["route"]);
+        string constructionunit = Convert.ToString(Request.Form["constructionunit"]);
+        string memo = Convert.ToString(Request.Form["memo"]);
+        //3、保存信息
+        sql.Append("insert LRM_SpecialLine(inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,constructionunit,memo,username) values(getdate(),@bussinesstype,@chargingcode,@customername,@address,@customercontact,@customerphone,@customermanager,@direction,@route,@constructionunit,@memo,@username);");
+
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@bussinesstype", bussinesstype));
+        _paras.Add(new SqlParameter("@chargingcode", chargingcode));
+        _paras.Add(new SqlParameter("@customername", customername));
+        _paras.Add(new SqlParameter("@address", address));
+        _paras.Add(new SqlParameter("@customercontact", customercontact));
+        _paras.Add(new SqlParameter("@customerphone", customerphone));
+        _paras.Add(new SqlParameter("@customermanager", customermanager));
+        _paras.Add(new SqlParameter("@direction", direction));
+        _paras.Add(new SqlParameter("@route", route));
+        _paras.Add(new SqlParameter("@constructionunit", constructionunit));
+        _paras.Add(new SqlParameter("@username", Session["uname"].ToString()));
+        _paras.Add(new SqlParameter("@memo", memo));
+        //使用事务提交操作
+        using (SqlConnection conn = SqlHelper.GetConnection())
+        {
+            conn.Open();
+            using (SqlTransaction trans = conn.BeginTransaction())
+            {
+                try
+                {
+                    SqlHelper.ExecuteNonQuery(trans, CommandType.Text, sql.ToString(), _paras.ToArray());
+                    trans.Commit();
+                    Response.Write("{\"success\":true,\"msg\":\"提交成功!\"}");
+                }
+                catch
+                {
+                    trans.Rollback();
+                    Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+                    throw;
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 施工回单
+    /// </summary>
+    public void ReceiptSpecialLineByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string receiptroute = Convert.ToString(Request.Form["receiptroute"]);
+        string sql = "update LRM_SpecialLine set receiptroute=@receiptroute,receiptuser=@receiptuser,receipttime=getdate() where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        _paras.Add(new SqlParameter("@receiptroute", receiptroute));
+        _paras.Add(new SqlParameter("@receiptuser", Session["uname"].ToString()));
+
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"回单成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
+         /// <summary>
+    /// 导出专线客户光缆
+    /// </summary>
+    public void ExportSpecialLine()
+    {
+        string where = SetQueryConditionForSL();
+        if (where != "")
+            where = " where " + where;
+        StringBuilder sql = new StringBuilder();
+        sql.Append("select id,");
+        sql.Append("inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,username,constructionunit,receiptroute,receiptuser,receipttime,memo ");
+        sql.Append(" from LRM_SpecialLine ");
+        sql.Append(where);
+        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
+        DataTable dt = ds.Tables[0];
+        dt.Columns[0].ColumnName = "序号";
+        dt.Columns[1].ColumnName = "派单时间";
+        dt.Columns[2].ColumnName = "业务类型";
+        dt.Columns[3].ColumnName = "计费编码";
+        dt.Columns[4].ColumnName = "客户名称";
+        dt.Columns[5].ColumnName = "安装地址";
+        dt.Columns[6].ColumnName = "客户联系人";
+        dt.Columns[7].ColumnName = "客户电话";
+        dt.Columns[8].ColumnName = "联通客户经理";
+        dt.Columns[9].ColumnName = "局向";
+        dt.Columns[10].ColumnName = "指定路由";
+        dt.Columns[11].ColumnName = "录入人";
+        dt.Columns[12].ColumnName = "施工单位";
+        dt.Columns[13].ColumnName = "回单路由";
+        dt.Columns[14].ColumnName = "回单人";
+        dt.Columns[15].ColumnName = "回单时间";
+        dt.Columns[16].ColumnName = "备注";
+        ExcelHelper.ExportByWeb(dt, "", "专线客户光缆.xls", "专线客户光缆");
+    }
+    #endregion 专线客户光缆
     public bool IsReusable
     {
         get

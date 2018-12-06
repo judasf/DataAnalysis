@@ -137,6 +137,10 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
     /// 18：故障维修工单
     /// </summary>
     bool isFaultReapir = false;
+    /// <summary>
+    /// 19:专线客户光缆管理
+    /// </summary>
+    bool isZXGL = false;
     public void ProcessRequest(HttpContext context)
     {
         //不让浏览器缓存
@@ -202,6 +206,8 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             isTOWN = Session["pre"].ToString().Trim() != "" ? true : false;
             //管理员roleid=0,和运维部roleid=4,可跟踪市公司和县公司的整改和电缆延伸情况
             isFaultReapir = Session["roleid"].ToString() == "18" ? true : false;
+            //专线客户光缆管理
+            isZXGL = Session["roleid"].ToString() == "19" ? true : false;
 
 
             isCW = Session["deptname"].ToString() == "财务部" ? true : false;
@@ -232,13 +238,22 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             StringBuilder subMenu = new StringBuilder();
             menuList.Append("{\"flag\":\"1\",\"msg\":\"succ\",\"menus\":");
             menuList.Append("[");
-                  //线路资源管理 begin
-            if (isAdmin || isSX || isXLZG || isWB)
+            //线路资源管理 begin
+            if (isAdmin || isSX || isXLZG || isWB || isZXGL)
             {
                 //accordion 头
                 subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"线路资源管理\",\"icon\": \"icon-server\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"光缆延伸管理\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"LineResourceManager/LineExtension.aspx\",\"iframename\": \"xlysgl\"}");
+
+                if (!isZXGL)
+                {
+                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"光缆延伸管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"LineResourceManager/LineExtension.aspx\",\"iframename\": \"xlysgl\"}");
+                }
+                if (!isSX && !isXLZG)
+                {
+                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"专线客户光缆\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"LineResourceManager/SpecialLine.aspx\",\"iframename\": \"zxkhgl\"}");
+                }
                 //accordion 尾
                 subMenu.Append("]}");
 
@@ -675,7 +690,7 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             subMenu.Length = 0;
             //运维物料管理 end
             // 专项整治事项管理 begin
-            if (isAdmin || isKG || isYW || isFaultReapir|| isEC || isECMana)
+            if (isAdmin || isKG || isYW || isFaultReapir || isEC || isECMana)
             {
 
                 //accordion 头
@@ -698,7 +713,7 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
                     subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"物料型号管理\",\"icon\": \"ext-icon-table\",");
                     subMenu.Append("\"url\": \"NetWorkSpecialProject/TypeInfo.aspx\",\"iframename\": \"spframe\"}");
                 }
-                if (isFaultReapir|| isEC || isECMana)
+                if (isFaultReapir || isEC || isECMana)
                 {
                     subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"故障工单管理\",\"icon\": \"ext-icon-table\",");
                     subMenu.Append("\"url\": \"NetWorkSpecialProject/FaultOrder.aspx\",\"iframename\": \"gzgdgl\"}");
