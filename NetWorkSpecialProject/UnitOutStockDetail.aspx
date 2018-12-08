@@ -88,6 +88,9 @@
                     if (result) {
                         $(this).combobox('clear');
                     }
+                },
+                onLoadError: function () {
+                    parent.$.messager.alert('提示', '该物料类型下未配置型号！', 'error');
                 }
             });
             grid = $('#grid').datagrid({
@@ -237,7 +240,7 @@
                     <td style="width: 65px; text-align: right;">出库单位：
                     </td>
                     <td>
-                        <select id="unitname" class="combo easyui-combobox" name="unitname" style="width: 120px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_NetWorkSpecialProject.ashx/GetNetWorkSpecialProject_UnitAreaComboboxAll?unitname='+encodeURIComponent(rec.value);$('#areaid').combobox('reload', url); }">
+                        <select id="unitname" class="combo easyui-combobox" name="unitname" style="width: 120px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_NetWorkSpecialProject.ashx/GetNSP_MaintainMaterial_TypeInfoComboboxAll?unitname='+encodeURIComponent(rec.value);$('#areaid').combobox('reload', url); }">
                             <%if (roleid == 2)
                                 { %>
                             <option><%=Session["deptname"] %></option>

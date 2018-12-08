@@ -1,11 +1,19 @@
 ﻿<%@ Page Language="C#" %>
 
 <style type="text/css">
-    #resForm td { padding: 7px 2px; }
+    #resForm td {
+        padding: 7px 2px;
+    }
 
-    #resForm .tdinput { text-align: left; }
+    #resForm .tdinput {
+        text-align: left;
+    }
 
-    #resForm .left_td { text-align: right; background: #fafafa; width: 100px; }
+    #resForm .left_td {
+        text-align: right;
+        background: #fafafa;
+        width: 100px;
+    }
 </style>
 <% 
     /** 
@@ -75,15 +83,15 @@
                     //插入维修日期
                     postDate['repairdate'] = $('#repairdate').val();
                     //插入故障单编号
-                    postDate['faultorderno'] = $('#faultorderno').val(); 
+                    postDate['faultorderno'] = $('#faultorderno').val();
                     //插入机房名称
                     postDate['roomname'] = $('input[name="roomname"]').val();
                     //插入局站编码
-                    postDate['stationid'] = $('#stationid').val(); 
+                    postDate['stationid'] = $('#stationid').val();
                     //插入维修地点
-                    postDate['repairplace'] = $('#repairplace').val(); 
+                    postDate['repairplace'] = $('#repairplace').val();
                     //插入单位
-                    postDate['cityname'] = $('input[name="cityname"]').val(); 
+                    postDate['cityname'] = $('input[name="cityname"]').val();
                     //插入网点类别
                     postDate['pointtype'] = $('input[name="pointtype"]').val();
                     //插入设备类型
@@ -104,7 +112,7 @@
                     postDate['memo2'] = $('#memo2').val();
                     //插入备注3
                     postDate['memo3'] = $('#memo3').val();
-                   //上传资料
+                    //上传资料
                     postDate['report'] = $('#report').val();
                     //判断是否重复选择同一商城出库单号
                     repeatstockDrawIDArr = getRepeatNum(stockDrawIDArr);
@@ -607,27 +615,29 @@
             </td>
         </tr>
         <tr>
-            <td colspan="4"><input type="hidden" id="index" value="1">
+            <td colspan="4">
+                <input type="hidden" id="index" value="1">
                 <table class="doc-table" id="wxylList">
                     <caption style="font-size: 14px; line-height: 35px; font-weight: 700;">
                         维修用料
-                    </caption>     <tr>
+                    </caption>
+                    <tr>
                         <th>物料类型
                         </th>
                         <th>物料型号
                         </th>
-                        <th style="width:95px">物料编号
+                        <th style="width: 95px">物料编号
                         </th>
                         <th>使用数量
                         </th>
                         <th>库存
                         </th>
-                         <th>单位
+                        <th>单位
                         </th>
                         <th>操作
                         </th>
                     </tr>
-               
+
                     <tr align="center">
                         <td>
                             <input type="text" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="
@@ -637,6 +647,9 @@
                     panelHeight:'auto',
                     editable: false,
                     required:true,
+                    onLoadError:function(){ 
+                       parent.$.messager.alert('提示', '该工号下没有可用物料！', 'error');
+                      },
                     onSelect:function(rec){
                      var url = '../ajax/Srv_NetWorkSpecialProject.ashx/GetTypeInfoComboboxForDailyRepair?classname='+encodeURIComponent(rec.text);
                     $('#typeid1').combobox('setValue','').combobox('reload', url); 
@@ -653,7 +666,7 @@
                    " />
                         </td>
                         <td>
-                            <input type="text" id="stockdrawid1" name="stockdrawid" style="width:100px;" />
+                            <input type="text" id="stockdrawid1" name="stockdrawid" style="width: 100px;" />
                         </td>
                         <td>
                             <input type="text" id="amount1" name="amount" class="inputBorder easyui-numberbox" style="width: 50px" data-options="min:0,required:true" onblur="checkStock(1,this);" />
@@ -661,7 +674,9 @@
                         <td>
                             <label id="stock1"></label>
                         </td>
-                        <td><label id="units1"></label></td>
+                        <td>
+                            <label id="units1"></label>
+                        </td>
                         <td>
                             <img src="../../Script/easyui/themes/icons/edit_add.png" onclick="addList();" style="cursor: pointer;" />
                         </td>

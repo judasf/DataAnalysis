@@ -130,6 +130,9 @@
                     if (result) {
                         $(this).combobox('clear');
                     }
+                },
+                onLoadError: function () {
+                    parent.$.messager.alert('提示', '该物料类型下未配置型号！', 'error');
                 }
             });
             grid = $('#grid').datagrid({

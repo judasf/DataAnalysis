@@ -156,7 +156,7 @@
             </td>
         </tr>
         <tr>
-             <td class="left_td">联通客户经理： </td>
+            <td class="left_td">联通客户经理： </td>
             <td class="tdinput">
                 <input name="customermanager" style="width: 180px" id="customermanager" class="inputBorder easyui-validatebox" data-options="required:true" />
             </td>
@@ -165,14 +165,14 @@
                 <input name="direction" style="width: 180px" id="direction" class="inputBorder easyui-validatebox" data-options="required:true" />
             </td>
         </tr>
-         <tr>
+        <tr>
             <td class="left_td">指定路由：
             </td>
             <td class="tdinput" colspan="3">
                 <textarea name="route" id="route" class="inputBorder easyui-validatebox" data-options="required:true" style="width: 400px; height: 50px;" cols="" rows="3"></textarea>
             </td>
         </tr>
-         <tr>
+        <tr>
             <td class="left_td">指派施工单位：
             </td>
             <td colspan="3">
@@ -180,6 +180,7 @@
                     <option></option>
                     <option>浩翔</option>
                     <option>中通服</option>
+                    <option>长线局</option>
                 </select>
             </td>
         </tr>
