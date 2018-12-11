@@ -131,7 +131,7 @@
         };
         //查询功能
         var searchGrid = function () {
-            slGrid.datagrid('load', $.serializeObject($('#slslsearchForm')));
+            slGrid.datagrid('load', $.serializeObject($('#slsearchForm')));
         };
         //重置查询
         var resetGrid = function () {
