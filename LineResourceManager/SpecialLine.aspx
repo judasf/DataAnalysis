@@ -64,31 +64,7 @@
                 ]
             });
         };
-        /*
-        //编辑
-        var editOrder = function (id) {
-            var dialog = parent.$.modalDialog({
-                title: '编辑',
-                width: 600,
-                height: 600,
-                iconCls: 'icon-edit',
-                href: 'LineResourceManager/Dialog/FaultOrder_OP.aspx?id=' + id,
-                buttons: [{
-                    text: '保存',
-                    handler: function () {
-                        parent.onFormSubmit(dialog, slGrid);
-                    }
-                },
-                    {
-                        text: '取消',
-                        handler: function () {
-                            dialog.dialog('close');
-                        }
-                    }
-                ]
-            });
-        };
-        */
+
         //查看工单
         var viewOrderDetail = function (id) {
             var btns = [{
@@ -129,6 +105,54 @@
                 ]
             });
         };
+        ///设置专线状态为在用/删除
+        var setLineStatus = function (id) {
+            var dialog = parent.$.modalDialog({
+                title: '设置专线状态',
+                width: 600,
+                height: 600,
+                iconCls: 'ext-icon-page',
+                href: 'LineResourceManager/Dialog/SpecialLineStatus_OP.aspx?id=' + id,
+                buttons: [{
+                    text: '提交',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, slGrid);
+                    }
+                },
+                {
+                    text: '关闭',
+                    handler: function () {
+                        dialog.dialog('close');
+                    }
+                }
+                ]
+            });
+        };
+        //删除
+        var removeFun = function (id) {
+            parent.$.messager.confirm('询问', '您确定该条电路信息？', function (r) {
+                if (r) {
+                    $.post('../ajax/Srv_LineResource.ashx/RemoveSpecialLineById', {
+                        id: id
+                    }, function (result) {
+                        if (result.success) {
+                            $.messager.show({
+                                title: '提示',
+                                msg: result.msg,
+                                showType: 'slide',
+                                timeout: '2000',
+                                style: {
+                                    top: document.body.scrollTop + document.documentElement.scrollTop
+                                }
+                            });
+                            slGrid.datagrid('reload');
+                        } else {
+                            parent.$.messager.alert('提示', result.msg, 'error');
+                        }
+                    }, 'json');
+                }
+            });
+        };
         //查询功能
         var searchGrid = function () {
             slGrid.datagrid('load', $.serializeObject($('#slsearchForm')));
@@ -162,12 +186,17 @@
                        {
                            title: '操作',
                            field: 'action',
-                           width: '75',
+                           width: '120',
                            halign: 'center',
                            formatter: function (value, row) {
                                var str = '';
                                if (roleid == 19 || roleid == 0) {//工单管理查看详情
-                                   str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
+                                   //str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
+                                   if (row.receipttime.length > 0)
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="setLineStatus(\'{0}\');">线路状态</a>&nbsp', row.id);
+                                   else
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="receiptOrder(\'{0}\');">回单</a>&nbsp;', row.id);
+                                   str += $.formatString('<a href="javascript:void(0)" onclick="removeFun(\'{0}\');">删除</a>&nbsp', row.id);
                                }
 
                                if (roleid == 3) { //施工单位（浩翔，中通服），施工操作
@@ -266,6 +295,13 @@
                           halign: 'center',
                           align: 'center'
                       }
+                      , {
+                          width: '80',
+                          title: '线路状态',
+                          field: 'speciallinestatus',
+                          halign: 'center',
+                          align: 'center'
+                      }
                   ]
                 ],
                 toolbar: '#slTip',
@@ -325,17 +361,26 @@
                     <td></td>
                     <td style="width: 80px; text-align: right;">局向：</td>
                     <td>
-                        <input style="width: 160px; height: 20px" type="text" class="combo" name="direction" />
+                        <input style="width: 165px; height: 20px" type="text" class="combo" name="direction" />
                     </td>
 
                     <td style="width: 80px; text-align: right;">施工单位：
                     </td>
                     <td>
-                        <select id="constructionunit" style="width: 100px;" class="combo easyui-combobox" name="constructionunit" data-options="panelHeight:'auto',editable:false">
+                        <select id="constructionunit" style="width: 160px;" class="combo easyui-combobox" name="constructionunit" data-options="panelHeight:'auto',editable:false">
                             <option value="">全部</option>
                             <option>浩翔</option>
                             <option>中通服</option>
                             <option>长线局</option>
+                        </select>
+                    </td>
+                    <td style="width: 80px; text-align: right;">线路状态：
+                    </td>
+                    <td>
+                        <select id="speciallinestatus" style="width: 160px;" class="combo easyui-combobox" name="speciallinestatus" data-options="panelHeight:'auto',editable:false">
+                            <option value="">全部</option>
+                            <option>在用</option>
+                            <option>拆机</option>
                         </select>
                     </td>
                     <td colspan="2" style="text-align: left;">

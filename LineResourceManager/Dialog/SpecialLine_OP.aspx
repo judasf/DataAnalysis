@@ -176,7 +176,7 @@
             <td class="left_td">指派施工单位：
             </td>
             <td colspan="3">
-                <select name="constructionunit" id="constructionunit" class="easyui-combobox" style="width: 180px;" data-options="required:true,panelHeight:'auto',editable:true">
+                <select name="constructionunit" id="constructionunit" class="easyui-combobox" style="width: 180px;" data-options="required:true,panelHeight:'auto',editable:false">
                     <option></option>
                     <option>浩翔</option>
                     <option>中通服</option>

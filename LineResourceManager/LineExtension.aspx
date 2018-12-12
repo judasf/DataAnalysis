@@ -90,11 +90,11 @@
         };
         */
         //删除
-        var removeFun = function (orderno) {
+        var removeFun = function (id) {
             parent.$.messager.confirm('询问', '您确定要需求单信息？', function (r) {
                 if (r) {
-                    $.post('../ajax/Srv_LineResource.ashx/RemoveFaultOrderByOrderNo', {
-                        orderno: orderno
+                    $.post('../ajax/Srv_LineResource.ashx/RemoveLineResourceById', {
+                        id: id
                     }, function (result) {
                         if (result.success) {
                             $.messager.show({
@@ -282,8 +282,7 @@
                                        str += $.formatString('<a href="javascript:void(0)" onclick="checkFile(\'{0}\');">资料核验</a>&nbsp;', row.id);
                                    else
                                        str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
-                                   //if (row.status == -1)//被退回的可以删除
-                                   //    str += $.formatString('<a href="javascript:void(0)" onclick="removeBackAccountReimburseByAudit(\'{0}\');">删除</a>', row.id);
+                                   str += $.formatString('<a href="javascript:void(0)" onclick="removeFun(\'{0}\');">删除</a>&nbsp;', row.id);
                                }
                                if (roleid == 3) { //施工单位（浩翔，中通服），施工操作
                                    if (row.status == 2)//施工中

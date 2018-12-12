@@ -310,7 +310,7 @@
             <td class="left_td">施工完成情况：
             </td>
             <td>
-                <select name="isNext" id="isNext" class="easyui-combobox" data-options="required:true,panelHeight:'auto',editable:true">
+                <select name="isNext" id="isNext" class="easyui-combobox" data-options="required:true,panelHeight:'auto',editable:false">
                     <option></option>
                     <option value="0">退回发起单位</option>
                     <option value="1">建设施工完成</option>

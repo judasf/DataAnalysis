@@ -370,6 +370,22 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         else
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
+    /// <summary>
+    /// 删除需求单信息
+    /// </summary>
+    public void RemoveLineResourceById()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string sql = "Delete  LRM_LineExtension  where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"删除成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
     #endregion 光缆延伸工单管理
     #region 专线客户光缆
     /// <summary>
@@ -401,6 +417,9 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             list.Add(" constructionunit ='" + Request.Form["constructionunit"] + "'");
         else if (roleid == "3")
             list.Add(" constructionunit='" + deptname + "' ");
+        //按线路状态
+        if (!string.IsNullOrEmpty(Request.Form["speciallinestatus"]))
+            list.Add(" speciallinestatus ='" + Request.Form["speciallinestatus"] + "'");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
         return queryStr;
@@ -504,7 +523,42 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         else
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
-         /// <summary>
+    /// <summary>
+    /// 设置专线电路状态
+    /// </summary>
+    public void SetSpecialLineStatusByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string speciallinestatus = Convert.ToString(Request.Form["speciallinestatus"]);
+        string sql = "update LRM_SpecialLine set speciallinestatus=@speciallinestatus where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        _paras.Add(new SqlParameter("@speciallinestatus", speciallinestatus));
+
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"设置成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
+    /// <summary>
+    /// 删除专线客户光缆信息
+    /// </summary>
+    public void RemoveSpecialLineById()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string sql = "delete from  LRM_SpecialLine  where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"删除成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
+    /// <summary>
     /// 导出专线客户光缆
     /// </summary>
     public void ExportSpecialLine()
@@ -514,7 +568,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
         sql.Append("select id,");
-        sql.Append("inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,username,constructionunit,receiptroute,receiptuser,receipttime,memo ");
+        sql.Append("inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,username,constructionunit,receiptroute,receiptuser,receipttime,memo,speciallinestatus ");
         sql.Append(" from LRM_SpecialLine ");
         sql.Append(where);
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
@@ -536,6 +590,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         dt.Columns[14].ColumnName = "回单人";
         dt.Columns[15].ColumnName = "回单时间";
         dt.Columns[16].ColumnName = "备注";
+        dt.Columns[17].ColumnName = "线路状态";
         ExcelHelper.ExportByWeb(dt, "", "专线客户光缆.xls", "专线客户光缆");
     }
     #endregion 专线客户光缆

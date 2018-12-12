@@ -84,6 +84,7 @@
                     $('#receiptroute').html(result.rows[0].receiptroute);
                     $('#receiptuser').html(result.rows[0].receiptuser);
                     $('#receipttime').html(result.rows[0].receipttime);
+                    $('#speciallinestatus').html(result.rows[0].speciallinestatus);
                 }
             }, 'json');
         }
@@ -198,6 +199,13 @@
             <td class="left_td">完工时间：</td>
             <td class="tdinput">
                 <div id="receipttime"></div>
+            </td>
+        </tr>
+          <tr>
+            <td class="left_td">电路状态：
+            </td>
+            <td class="tdinput" colspan="3">
+                <span id="speciallinestatus"></span>
             </td>
         </tr>
     </table>
