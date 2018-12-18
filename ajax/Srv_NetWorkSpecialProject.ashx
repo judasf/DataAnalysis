@@ -905,7 +905,12 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
 
             list.Add(" a.unitname ='" + Request.Form["unitname"] + "'");
         }
+        //故障维修、能耗、能耗管理员
+         if (roleid == "18" || roleid == "20" || roleid == "21")
+        {
+            list.Add(" a.llr ='" + Session["uname"].ToString() + "'");
 
+        }
         //按领料单位
         if (!string.IsNullOrEmpty(Request.Form["areaid"]))
             list.Add(" a.areaid =" + Request.Form["areaid"]);
@@ -1084,7 +1089,7 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         //按单位
         if (Session["roleid"].ToString() == "2")
         {
-            list.Add(" c.unitname ='" + Session["deptname"].ToString() + "' or a.oldunitname='" + Session["deptname"].ToString() + "'");
+            list.Add(" (c.unitname ='" + Session["deptname"].ToString() + "' or a.oldunitname='"+Session["deptname"].ToString()+"' ) ");
         }
         else if (!string.IsNullOrEmpty(Request.Form["unitname"]) && Request.Form["unitname"] != "全部")
         {

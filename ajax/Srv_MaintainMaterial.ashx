@@ -996,7 +996,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
     /// <summary>
     /// 导出领料单位领料明细
     /// </summary>
-    public void ExportUnitOutStockDetail()
+    public void ExportUnitDrawStockDetail()
     {
         string where = SetQueryConditionForOutStock();
         if (where != "")
@@ -1021,7 +1021,37 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         dt.Columns[10].ColumnName = "单价（元）";
         dt.Columns[11].ColumnName = "金额（元）";
         dt.Columns[12].ColumnName = "备注";
-        ExcelHelper.ExportByWeb(dt, "", "物料领用明细.xls", "物料领用明细");
+        ExcelHelper.ExportByWeb(dt, "", "物料领用管理.xls", "物料领用管理");
+    }
+    /// <summary>
+    /// 导出领料单位领料明细
+    /// </summary>
+    public void ExportUnitOutStockDetail()
+    {
+        string where = SetQueryConditionForOutStock();
+        if (where != "")
+            where = " where " + where;
+        StringBuilder sql = new StringBuilder();
+        sql.Append("SELECT a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,b.classname,b.TypeName,a.amount,b.Units,d.price,a.amount*d.price as allFee,a.memo,a.faultorderno");
+        sql.Append(" from  MaintainMaterial_StockOut AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID JOIN MaintainMaterial_AreaInfo AS c ON a.areaid=c.ID left join MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ");
+        sql.Append(where);
+        sql.Append(" order by a.id ");
+        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
+        DataTable dt = ds.Tables[0];
+        dt.Columns[0].ColumnName = "领料日期";
+        dt.Columns[1].ColumnName = "出库单位";
+        dt.Columns[2].ColumnName = "领料单位";
+        dt.Columns[3].ColumnName = "领料人";
+        dt.Columns[4].ColumnName = "商城出库单号";
+        dt.Columns[5].ColumnName = "物料类型";
+        dt.Columns[6].ColumnName = "物料型号";
+        dt.Columns[7].ColumnName = "领取数量";
+        dt.Columns[8].ColumnName = "单位";
+        dt.Columns[9].ColumnName = "单价（元）";
+        dt.Columns[10].ColumnName = "金额（元）";
+        dt.Columns[11].ColumnName = "备注";
+        dt.Columns[12].ColumnName = "故障单号";
+        ExcelHelper.ExportByWeb(dt, "", "领料明细（旧）.xls", "领料明细");
     }
     /*
 /// <summary>
@@ -1162,7 +1192,7 @@ public void ExportUnitOutStockDetail()
         //按单位
         if (Session["roleid"].ToString() == "2")
         {
-            list.Add(" c.unitname ='" + Session["deptname"].ToString() + "'");
+            list.Add(" (c.unitname ='" + Session["deptname"].ToString() + "' or a.oldunitname='"+Session["deptname"].ToString()+"' ) ");
         }
         else if (!string.IsNullOrEmpty(Request.Form["unitname"]) && Request.Form["unitname"] != "全部")
         {

@@ -59,7 +59,7 @@
         };
         //导出入库明细excel
         var exportOutStockDetail = function () {
-            jsPostForm('../ajax/Srv_MaintainMaterial.ashx/ExportUnitOutStockDetail', $.serializeObject($('#searchForm')));
+            jsPostForm('../ajax/Srv_MaintainMaterial.ashx/ExportUnitDrawStockDetail', $.serializeObject($('#searchForm')));
         };
         //显示当前物料的使用明细
         var viewRepairMaterialDetail = function (id) {
@@ -132,6 +132,7 @@
                     width: '100',
                     title: '领料单位',
                     field: 'lldw',
+                    hidden: true,
                     halign: 'center',
                     align: 'center'
                 }, {
@@ -195,8 +196,7 @@
                         var str = '';
                         if (row.currentstock == row.amount)
                             str += '无用料明细';
-                            else
-                        {
+                        else {
                             str += $.formatString('<a href="javascript:void(0);" onclick="viewRepairMaterialDetail(\'{0}\');"  title="点击查看用料明细" style="cursor:pointer;text-decoration:none;color:#ff8800" >用料明细</a>', row.id);
                         }
                         return str;
@@ -327,7 +327,7 @@
                         </select>
                     </td>
 
-                  <%--  <td style="width: 65px; text-align: right;">领料单位：
+                    <%--  <td style="width: 65px; text-align: right;">领料单位：
                     </td>
                     <td>
                         <input id="areaId" type="text" name="areaId" style="width: 140px;" class="combo easyui-combobox" data-options="

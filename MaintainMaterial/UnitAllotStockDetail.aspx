@@ -285,6 +285,7 @@
                             <option>内黄县</option>
                             <option>林州市</option>
                             <option>汤阴县</option>
+                            <option>市维护中心</option>
                             <%} %>
                         </select>
                     </td>
@@ -303,6 +304,7 @@
                             <option>内黄县</option>
                             <option>林州市</option>
                             <option>汤阴县</option>
+                            <option>市维护中心</option>
                         </select>
                     </td>
                     <td style="width: 85px; text-align: right;">商城出库单号：

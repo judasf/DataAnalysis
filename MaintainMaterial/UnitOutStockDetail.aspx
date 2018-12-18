@@ -18,7 +18,7 @@
     <script src="../Script/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
     <script src="../Script/extJquery.js" type="text/javascript"></script>
     <script src="../Script/extEasyUI.js" type="text/javascript"></script>
-       <%--引入图片展示插件--%>
+    <%--引入图片展示插件--%>
     <link href="../Script/ImgPopup/ImgPopup.css" rel="stylesheet" />
     <script src="../Script/ImgPopup/ImgPopup.min.js"></script>
     <link type="text/css" href="../css/style.css" rel="Stylesheet" />
@@ -61,8 +61,8 @@
         var exportOutStockDetail = function () {
             jsPostForm('../ajax/Srv_MaintainMaterial.ashx/ExportUnitOutStockDetail', $.serializeObject($('#searchForm')));
         };
-        
-      
+
+
         $(function () {
             //初始化型号下拉框
             $('#typeid').combobox({
@@ -144,9 +144,9 @@
                     field: 'lldpath',
                     halign: 'center',
                     align: 'center',
-                    formatter: function (index,row) {
-                        var str='';
-                        if(row.lldpath)
+                    formatter: function (index, row) {
+                        var str = '';
+                        if (row.lldpath)
                             str += $.formatString('<a href="javascript:void(0);" data-mfp-src="../{0}"  title="点击查看领料单" class="showpic" style="cursor:pointer;text-decoration:none;color:#ff8800" >点击查看领料单</a>', row.lldpath);
                         return str;
                     }
@@ -234,31 +234,7 @@
                             readonly="readonly" />-<input style="width: 80px;" name="edate" id="edate" class="Wdate"
                                 onfocus="WdatePicker({minDate:'#F{$dp.$D(\'sdate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />
                     </td>
-                    <td style="width: 65px; text-align: right;">出库单位：
-                    </td>
-                    <td>
-                        <select id="unitname" class="combo easyui-combobox" name="unitname" style="width: 120px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_MaintainMaterial.ashx/GetMaintainMaterial_UnitAreaComboboxAll?unitname='+encodeURIComponent(rec.value);$('#areaid').combobox('reload', url); }">
-                            <%if (roleid == 2)
-                                { %>
-                            <option><%=Session["deptname"] %></option>
 
-                            <%}
-                                else
-                                { %>
-                            <option value="">全部</option>
-                            <option>运行维护部</option>
-                               <option>网络发展部</option>
-                            <option>网络优化中心</option>
-                            <option>客户支撑中心</option>
-                            <option>网络维护中心</option>
-                            <option>安阳县</option>
-                            <option>滑县</option>
-                            <option>内黄县</option>
-                            <option>林州市</option>
-                            <option>汤阴县</option>
-                            <%} %>
-                        </select>
-                    </td>
                     <td style="width: 65px; text-align: right;">物料类型：
                     </td>
                     <td>
@@ -280,9 +256,35 @@
                     <td style="width: 65px; text-align: right;">物料型号：
                     </td>
                     <td align="left">
-                       <input name="typeid" id="typeid" class="combo" style="width: 300px;" />
+                        <input name="typeid" id="typeid" class="combo" style="width: 300px;" />
                     </td>
+                </tr>
+                <tr><td style="width: 80px; font-weight: 700;">数据查询：</td>
+                    <td style="width: 65px; text-align: right;">出库单位：
+                    </td>
+                    <td>
+                        <select id="unitname" class="combo easyui-combobox" name="unitname" style="width: 165px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_MaintainMaterial.ashx/GetMaintainMaterial_UnitAreaComboboxAll?unitname='+encodeURIComponent(rec.value);$('#areaid').combobox('reload', url); }">
+                            <%if (roleid == 2)
+                                { %>
+                            <option><%=Session["deptname"] %></option>
 
+                            <%}
+                                else
+                                { %>
+                            <option value="">全部</option>
+                            <option>运行维护部</option>
+                            <option>网络发展部</option>
+                            <option>网络优化中心</option>
+                            <option>客户支撑中心</option>
+                            <option>网络维护中心</option>
+                            <option>安阳县</option>
+                            <option>滑县</option>
+                            <option>内黄县</option>
+                            <option>林州市</option>
+                            <option>汤阴县</option>
+                            <%} %>
+                        </select>
+                    </td>
                     <td style="width: 65px; text-align: right;">领料单位：
                     </td>
                     <td>
@@ -295,7 +297,6 @@
                     url: '../ajax/Srv_MaintainMaterial.ashx/GetMaintainMaterial_AreaInfoComboboxAll'
                       " />
                     </td>
-
                 </tr>
                 <tr>
                     <td colspan="7" style="text-align: left; padding-left: 100px;">
