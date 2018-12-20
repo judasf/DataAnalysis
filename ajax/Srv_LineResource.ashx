@@ -409,6 +409,9 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         //按计费编码
         if (!string.IsNullOrEmpty(Request.Form["chargingcode"]))
             list.Add(" chargingcode like'%" + Request.Form["chargingcode"] + "%'");
+         //按客户名称
+        if (!string.IsNullOrEmpty(Request.Form["customername"]))
+            list.Add(" customername like'%" + Request.Form["customername"] + "%'");
         //按局向
         if (!string.IsNullOrEmpty(Request.Form["direction"]))
             list.Add(" direction like'%" + Request.Form["direction"] + "%'");

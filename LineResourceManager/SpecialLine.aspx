@@ -179,7 +179,7 @@
                 pageSize: 20,
                 singleSelect: true,
                 idField: 'id',
-                sortName: 'id',
+                sortName: 'receipttime',
                 sortOrder: 'desc',
                 columns: [
                   [
@@ -208,24 +208,45 @@
                                return str;
                            }
                        }, {
-                           width: '80',
-                           title: '派单日期',
-                           field: 'inputdate',
+                           width: '220',
+                           title: '回单路由',
+                           field: 'receiptroute',
                            halign: 'center',
                            align: 'center'
-                       }, {
-                           width: '80',
-                           title: '业务类型',
-                           field: 'bussinesstype',
-                           halign: 'center',
-                           align: 'center'
-                       }, {
-                           width: '160',
-                           title: '计费编码',
-                           field: 'chargingcode',
-                           halign: 'center',
-                           align: 'center'
-                       },
+                       }
+                      , {
+                          width: '120',
+                          title: '回单时间',
+                          field: 'receipttime',
+                          sortable: true,
+                          halign: 'center',
+                          align: 'center'
+                      }
+                      , {
+                          width: '80',
+                          title: '线路状态',
+                          field: 'speciallinestatus',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '派单日期',
+                          field: 'inputdate',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '业务类型',
+                          field: 'bussinesstype',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '160',
+                          title: '计费编码',
+                          field: 'chargingcode',
+                          halign: 'center',
+                          align: 'center'
+                      },
                       {
                           width: '120',
                           title: '客户名称',
@@ -281,26 +302,6 @@
                           field: 'username',
                           halign: 'center',
                           align: 'center'
-                      }, {
-                          width: '220',
-                          title: '回单路由',
-                          field: 'receiptroute',
-                          halign: 'center',
-                          align: 'center'
-                      }
-                      , {
-                          width: '120',
-                          title: '回单时间',
-                          field: 'receipttime',
-                          halign: 'center',
-                          align: 'center'
-                      }
-                      , {
-                          width: '80',
-                          title: '线路状态',
-                          field: 'speciallinestatus',
-                          halign: 'center',
-                          align: 'center'
                       }
                   ]
                 ],
@@ -354,6 +355,10 @@
                     <td style="width: 80px; text-align: right;">计费编码：</td>
                     <td>
                         <input style="width: 160px; height: 20px" type="text" class="combo" name="chargingcode" />
+                    </td>
+                    <td style="width: 80px; text-align: right;">客户名称：</td>
+                    <td>
+                        <input style="width: 160px; height: 20px" type="text" class="combo" name="customername" />
                     </td>
 
                 </tr>
