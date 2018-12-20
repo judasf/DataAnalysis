@@ -38,24 +38,35 @@
     }
 %>
 <script type="text/javascript">
-    //回单
-    var onFormSubmit = function ($dialog, $grid) {
-        var url = './ajax/Srv_LineResource.ashx/FinishAllByID';
-        if ($('form').form('validate')) {
-            parent.$.messager.confirm('询问', '确认完成资料录入？', function (r) {
-                if (r) {
+    var showPhotoList = function (id) {
+        //获取测试照片
+        $.post('../ajax/Srv_LineResource.ashx/GetSPLAttachmentById', { id: id }, function (fileRes) {
+            if (fileRes.total > 0) {
+                $.each(fileRes.rows, function (i, item) {
+                    $('#photoList').append('<span style="margin-right:10px;float:left;"><a class="ext-icon-attach" style="padding-left:20px;" href="' + item.filepath + '"   title="' + item.filename + '">' + item.filename + '</a></span>');
+                });
+            }
+        }, 'json');
 
-                    $.post(url, $.serializeObject($('form')), function (result) {
-                        if (result.success) {
-                            parent.$.messager.alert('提示', result.msg, 'info');
-                            $grid.datagrid('reload');
-                            $dialog.dialog('close');
-                        } else
-                            parent.$.messager.alert('提示', result.msg, 'error');
-                    }, 'json');
+        //测试照片展示插件
+        $('#photoList').magnificPopup({
+            delegate: 'a',
+            type: 'image',
+            tLoading: 'Loading image #%curr%...',
+            mainClass: 'mfp-img-mobile',
+            gallery: {
+                enabled: true,
+                navigateByImgClick: true,
+                preload: [0, 1] // Will preload 0 - before current, and 1 after the current image
+            },
+            image: {
+                tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+                titleSrc: function (item) {
+                    return item.el.attr('title') + '<small> 测试照片 </small>';
                 }
-            });
-        }
+            }
+        });
+
     };
     $(function () {
         if ($('#id').val().length > 0) {
@@ -85,6 +96,7 @@
                     $('#receiptuser').html(result.rows[0].receiptuser);
                     $('#receipttime').html(result.rows[0].receipttime);
                     $('#speciallinestatus').html(result.rows[0].speciallinestatus);
+                    showPhotoList(result.rows[0].id);
                 }
             }, 'json');
         }
@@ -192,6 +204,12 @@
             </td>
         </tr>
         <tr>
+            <td class="left_td">测试照片：</td>
+            <td class="tdinput" colspan="3">
+                <div id="photoList"></div>
+            </td>
+        </tr>
+        <tr>
             <td class="left_td">回单人：</td>
             <td class="tdinput">
                 <div id="receiptuser"></div>
@@ -201,7 +219,7 @@
                 <div id="receipttime"></div>
             </td>
         </tr>
-          <tr>
+        <tr>
             <td class="left_td">电路状态：
             </td>
             <td class="tdinput" colspan="3">

@@ -409,7 +409,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         //按计费编码
         if (!string.IsNullOrEmpty(Request.Form["chargingcode"]))
             list.Add(" chargingcode like'%" + Request.Form["chargingcode"] + "%'");
-         //按客户名称
+        //按客户名称
         if (!string.IsNullOrEmpty(Request.Form["customername"]))
             list.Add(" customername like'%" + Request.Form["customername"] + "%'");
         //按局向
@@ -513,19 +513,65 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
     {
         int id = Convert.ToInt32(Request.Form["id"]);
         string receiptroute = Convert.ToString(Request.Form["receiptroute"]);
-        string sql = "update LRM_SpecialLine set receiptroute=@receiptroute,receiptuser=@receiptuser,receipttime=getdate() where id=@id";
+        StringBuilder sql = new StringBuilder();
+        //测试照片
+        string filesStr = Convert.ToString(Request.Form["report"]);
+        //保存测试照片
+        if (string.IsNullOrEmpty(filesStr))
+        {
+            Response.Write("{\"success\":false,\"msg\":\"请上传测试照片！\"}");
+            return;
+        }
+        else
+        {
+            string[] filesPath = filesStr.Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string path in filesPath)
+            {
+                string fileName = path.Substring(path.LastIndexOf('/') + 1);
+                sql.Append("Insert into LRM_SpecialLine_Attachment values(@id,'" + fileName + "','" + path + "');");
+            }
+        }
+
+        sql.Append("update LRM_SpecialLine set receiptroute=@receiptroute,receiptuser=@receiptuser,receipttime=getdate() where id=@id;");
         //设定参数
         List<SqlParameter> _paras = new List<SqlParameter>();
         _paras.Add(new SqlParameter("@id", id));
         _paras.Add(new SqlParameter("@receiptroute", receiptroute));
         _paras.Add(new SqlParameter("@receiptuser", Session["uname"].ToString()));
-
-        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
-        if (result == 1)
-            Response.Write("{\"success\":true,\"msg\":\"回单成功！\"}");
-        else
-            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+        //使用事务提交操作
+        using (SqlConnection conn = SqlHelper.GetConnection())
+        {
+            conn.Open();
+            using (SqlTransaction trans = conn.BeginTransaction())
+            {
+                try
+                {
+                    SqlHelper.ExecuteNonQuery(trans, CommandType.Text, sql.ToString(), _paras.ToArray());
+                    trans.Commit();
+                    Response.Write("{\"success\":true,\"msg\":\"回单成功!\"}");
+                }
+                catch
+                {
+                    trans.Rollback();
+                    Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+                    throw;
+                }
+            }
+        }
     }
+        /// <summary>
+    /// 通过id获取专线测试照片
+    /// </summary>
+    public void GetSPLAttachmentById()
+    {
+        string slid = Convert.ToString(Request.Form["id"]);
+        SqlParameter paras = new SqlParameter("@slid", SqlDbType.VarChar);
+        paras.Value = slid;
+        string sql = "SELECT * FROM LRM_SpecialLine_Attachment  where slid=@slid";
+        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
+        Response.Write(JsonConvert.GetJsonFromDataTable(ds));
+    }
+
     /// <summary>
     /// 设置专线电路状态
     /// </summary>

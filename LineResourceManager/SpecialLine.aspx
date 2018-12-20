@@ -87,7 +87,7 @@
             var dialog = parent.$.modalDialog({
                 title: '施工回单',
                 width: 600,
-                height: 600,
+                height: 700,
                 iconCls: 'ext-icon-page',
                 href: 'LineResourceManager/Dialog/SpecialLineReceipt_OP.aspx?id=' + id,
                 buttons: [{
