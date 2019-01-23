@@ -301,6 +301,12 @@
                 </div>
             </td>
         </tr>
+        <tr>
+            <td class="left_td">回单备注：</td>
+            <td class="tdinput" colspan="3">
+                <textarea name="receiptmemo" id="receiptmemo" cols="" style="width: 400px;"  rows="2"></textarea>
+            </td>
+        </tr>
     </table>
 </form>
 

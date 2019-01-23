@@ -96,6 +96,7 @@
                     $('#receiptuser').html(result.rows[0].receiptuser);
                     $('#receipttime').html(result.rows[0].receipttime);
                     $('#speciallinestatus').html(result.rows[0].speciallinestatus);
+                    $('#receiptmemo').html(result.rows[0].receiptmemo);
                     showPhotoList(result.rows[0].id);
                 }
             }, 'json');
@@ -224,6 +225,13 @@
             </td>
             <td class="tdinput" colspan="3">
                 <span id="speciallinestatus"></span>
+            </td>
+        </tr>
+         <tr>
+            <td class="left_td">回单备注：
+            </td>
+            <td class="tdinput" colspan="3">
+                <span id="receiptmemo"></span>
             </td>
         </tr>
     </table>

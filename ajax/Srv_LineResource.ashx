@@ -513,6 +513,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
     {
         int id = Convert.ToInt32(Request.Form["id"]);
         string receiptroute = Convert.ToString(Request.Form["receiptroute"]);
+        string receiptmemo = Convert.ToString(Request.Form["receiptmemo"]);
         StringBuilder sql = new StringBuilder();
         //测试照片
         string filesStr = Convert.ToString(Request.Form["report"]);
@@ -532,12 +533,13 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             }
         }
 
-        sql.Append("update LRM_SpecialLine set receiptroute=@receiptroute,receiptuser=@receiptuser,receipttime=getdate() where id=@id;");
+        sql.Append("update LRM_SpecialLine set receiptroute=@receiptroute,receiptuser=@receiptuser,receiptmemo=@receiptmemo,receipttime=getdate() where id=@id;");
         //设定参数
         List<SqlParameter> _paras = new List<SqlParameter>();
         _paras.Add(new SqlParameter("@id", id));
         _paras.Add(new SqlParameter("@receiptroute", receiptroute));
         _paras.Add(new SqlParameter("@receiptuser", Session["uname"].ToString()));
+        _paras.Add(new SqlParameter("@receiptmemo", receiptmemo));
         //使用事务提交操作
         using (SqlConnection conn = SqlHelper.GetConnection())
         {
@@ -559,7 +561,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             }
         }
     }
-        /// <summary>
+    /// <summary>
     /// 通过id获取专线测试照片
     /// </summary>
     public void GetSPLAttachmentById()
@@ -617,7 +619,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
         sql.Append("select id,");
-        sql.Append("inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,username,constructionunit,receiptroute,receiptuser,receipttime,memo,speciallinestatus ");
+        sql.Append("inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,username,constructionunit,receiptroute,receiptuser,receipttime,memo,speciallinestatus,receiptmemo ");
         sql.Append(" from LRM_SpecialLine ");
         sql.Append(where);
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
@@ -640,6 +642,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         dt.Columns[15].ColumnName = "回单时间";
         dt.Columns[16].ColumnName = "备注";
         dt.Columns[17].ColumnName = "线路状态";
+        dt.Columns[17].ColumnName = "回单备注";
         ExcelHelper.ExportByWeb(dt, "", "专线客户光缆.xls", "专线客户光缆");
     }
     #endregion 专线客户光缆
