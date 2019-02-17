@@ -105,6 +105,52 @@
                 ]
             });
         };
+        ///编辑回单路由
+        var editReceiptRoute = function (id) {
+            var dialog = parent.$.modalDialog({
+                title: '编辑回单路由',
+                width: 600,
+                height: 600,
+                iconCls: 'ext-icon-page',
+                href: 'LineResourceManager/Dialog/EditReceiptRoute_OP.aspx?id=' + id,
+                buttons: [{
+                    text: '提交',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, slGrid);
+                    }
+                },
+                {
+                    text: '关闭',
+                    handler: function () {
+                        dialog.dialog('close');
+                    }
+                }
+                ]
+            });
+        };
+        ///工单派发
+        var dispatchOrder = function (id) {
+            var dialog = parent.$.modalDialog({
+                title: '工单派发',
+                width: 600,
+                height: 450,
+                iconCls: 'ext-icon-page',
+                href: 'LineResourceManager/Dialog/DispathSpecialLineOrder_OP.aspx?id=' + id,
+                buttons: [{
+                    text: '提交',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, slGrid);
+                    }
+                },
+                {
+                    text: '关闭',
+                    handler: function () {
+                        dialog.dialog('close');
+                    }
+                }
+                ]
+            });
+        };
         ///设置专线状态为在用/删除
         var setLineStatus = function (id) {
             var dialog = parent.$.modalDialog({
@@ -186,17 +232,30 @@
                        {
                            title: '操作',
                            field: 'action',
-                           width: '120',
+                           <%if (roleid == 19 || roleid == 0)
+        {
+        %>
+                           width: '200',
+                           <%}
+        else
+        {%>width: '120',
+                           <%}%>
                            halign: 'center',
                            formatter: function (value, row) {
                                var str = '';
                                if (roleid == 19 || roleid == 0) {//工单管理查看详情
                                    //str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
-                                   if (row.receipttime.length > 0)
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="setLineStatus(\'{0}\');">线路状态</a>&nbsp', row.id);
+                                   //再次派发工单到施工单位
+                                   str += $.formatString('<a href="javascript:void(0)" onclick="dispatchOrder(\'{0}\');">工单派发</a>&nbsp;&nbsp;', row.id);
+                                   if (row.receipttime.length > 0) {
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="setLineStatus(\'{0}\');">线路状态</a>&nbsp;&nbsp;', row.id);
+                                       //编辑回单路由
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="editReceiptRoute(\'{0}\');">编辑路由</a>&nbsp;&nbsp;', row.id);
+                                       
+                                   }
                                    else
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="receiptOrder(\'{0}\');">回单</a>&nbsp;', row.id);
-                                   str += $.formatString('<a href="javascript:void(0)" onclick="removeFun(\'{0}\');">删除</a>&nbsp', row.id);
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="receiptOrder(\'{0}\');">回单</a>&nbsp;&nbsp;', row.id);
+                                   str += $.formatString('<a href="javascript:void(0)" onclick="removeFun(\'{0}\');">删除</a>&nbsp;&nbsp;', row.id);
                                }
 
                                if (roleid == 3) { //施工单位（浩翔，中通服），施工操作
@@ -318,7 +377,7 @@
                         body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
                     }
                     ////提示框
-                    $(this).datagrid('tooltip', ['customername', 'address', 'route']);
+                    $(this).datagrid('tooltip', ['receiptroute','customername', 'address', 'route']);
                 },
                 onDblClickRow: function (index, row) {
                     viewOrderDetail(row.id);

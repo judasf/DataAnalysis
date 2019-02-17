@@ -594,6 +594,46 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
     /// <summary>
+    /// 编辑施工单位回单路由
+    /// </summary>
+    public void EditReceiptRouteByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string receiptroute = Convert.ToString(Request.Form["receiptroute"]);
+        string sql = "update LRM_SpecialLine set receiptroute=@receiptroute where id=@id";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        _paras.Add(new SqlParameter("@receiptroute", receiptroute));
+
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"修改成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
+
+    /// <summary>
+    /// 派发工单到施工单位
+    /// </summary>
+    public void DispathSpecialLineOrderByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string constructionunit = Convert.ToString(Request.Form["constructionunit"]);
+        string sql = "update LRM_SpecialLine set constructionunit=@constructionunit,inputtime=getdate(),receiptroute='',receiptuser='',receipttime=null,speciallinestatus='',receiptmemo=''  where id=@id;";
+        sql += " delete from LRM_SpecialLine_Attachment where  SLID=@id;";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        _paras.Add(new SqlParameter("@constructionunit", constructionunit));
+
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result >= 1)
+            Response.Write("{\"success\":true,\"msg\":\"派单成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
+    /// <summary>
     /// 删除专线客户光缆信息
     /// </summary>
     public void RemoveSpecialLineById()
