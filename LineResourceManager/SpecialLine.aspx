@@ -433,9 +433,10 @@
                     <td>
                         <select id="constructionunit" style="width: 160px;" class="combo easyui-combobox" name="constructionunit" data-options="panelHeight:'auto',editable:false">
                             <option value="">全部</option>
-                            <option>浩翔</option>
+                            <option>文峰浩翔</option>
                             <option>中通服</option>
                             <option>长线局</option>
+                            <option>北关浩翔</option>
                         </select>
                     </td>
                     <td style="width: 80px; text-align: right;">线路状态：

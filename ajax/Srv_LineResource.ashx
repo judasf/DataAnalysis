@@ -418,7 +418,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         //按施工单位
         if (!string.IsNullOrEmpty(Request.Form["constructionunit"]))
             list.Add(" constructionunit ='" + Request.Form["constructionunit"] + "'");
-        else if (roleid == "3")
+        if (roleid == "3")
             list.Add(" constructionunit='" + deptname + "' ");
         //按线路状态
         if (!string.IsNullOrEmpty(Request.Form["speciallinestatus"]))

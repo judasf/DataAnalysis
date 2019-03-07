@@ -178,9 +178,10 @@
             <td colspan="3">
                 <select name="constructionunit" id="constructionunit" class="easyui-combobox" style="width: 180px;" data-options="required:true,panelHeight:'auto',editable:false">
                     <option></option>
-                    <option>浩翔</option>
+                    <option>文峰浩翔</option>
                     <option>中通服</option>
                     <option>长线局</option>
+                    <option>北关浩翔</option>
                 </select>
             </td>
         </tr>

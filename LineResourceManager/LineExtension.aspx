@@ -489,7 +489,7 @@
                         <input style="width: 80px;" name="sdate" id="sdate" class="Wdate" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'edate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />-<input style="width: 80px;" name="edate" id="edate" class="Wdate"
                             onfocus="WdatePicker({minDate:'#F{$dp.$D(\'sdate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />
                     </td>
-                    <%if (roleid == 8)
+                    <%if (roleid == 8 ||roleid == 0)
                         {%>
                     <td style="width: 80px; text-align: right;">发起单位：
                     </td>
@@ -516,15 +516,16 @@
                     <td style="text-align: left;">
                         <input style="width: 160px" name="status" id="status" class="easyui-combobox" data-options="panelHeight:'auto',editable:false,valueField:'value',textField:'text',data:[{'value':'-3','text':'资料有误'},{'value':'-2','text':'施工退回'},{'value':'-1','text':'核查退回'},{'value':'1','text':'核查中'},{'value':'2','text':'施工中'},{'value':'3','text':'已完工'},{'value':'4','text':'已录入'}]" />
                     </td>
-                    <%if (roleid == 8)
+                    <%if (roleid == 8 ||roleid == 0)
                         {%>
                     <td style="width: 80px; text-align: right;">施工单位：
                     </td>
                     <td>
                         <select id="constructionunit" style="width: 100px;" class="combo easyui-combobox" name="constructionunit" data-options="panelHeight:'auto',editable:false">
                             <option value="">全部</option>
-                            <option>浩翔</option>
+                            <option>文峰浩翔</option>
                             <option>中通服</option>
+                            <option>北关浩翔</option>
                         </select>
                     </td>
                     <%} %>
