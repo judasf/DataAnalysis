@@ -388,8 +388,8 @@
             pager.pagination({
                 layout: ['list', 'sep', 'first', 'prev', 'sep', 'links', 'sep', 'next', 'last', 'sep', 'refresh', 'sep', 'manual']
             });
-            //if (roleid != 0)
-            //    $('#slGrid').datagrid('hideColumn', 'action');
+            if (roleid == 5)
+                $('#slGrid').datagrid('hideColumn', 'action');
         });
     </script>
 </head>

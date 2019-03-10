@@ -32,9 +32,9 @@ public partial class right : System.Web.UI.Page
     /// </summary>
     public bool isYW = false;
     /// <summary>
-    /// 5：公众领导(迁改时验收工作)	
+    /// 5：光缆线路查询	
     /// </summary>
-    public bool isGZLD = false;
+    public bool isXLCX = false;
     /// <summary>
     /// 6：公众报账员(迁改时审计报账录入)	
     /// </summary>
@@ -126,7 +126,7 @@ public partial class right : System.Web.UI.Page
                 isKG = Session["roleid"].ToString() == "2" ? true : false;
                 isWB = Session["roleid"].ToString() == "3" ? true : false;
                 isYW = Session["roleid"].ToString() == "4" ? true : false;
-                isGZLD = Session["roleid"].ToString() == "5" ? true : false;
+                isXLCX = Session["roleid"].ToString() == "5" ? true : false;
                 isGZBZ = Session["roleid"].ToString() == "6" ? true : false;
                 isQYWH = Session["roleid"].ToString() == "7" ? true : false;
                 isXLZG = Session["roleid"].ToString() == "8" ? true : false;

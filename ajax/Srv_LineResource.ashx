@@ -111,8 +111,8 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         //按施工单位
         if (!string.IsNullOrEmpty(Request.Form["constructionunit"]))
             list.Add(" constructionunit ='" + Request.Form["constructionunit"] + "'");
-        //管理员和客户支撑中心查看所有，其余只看本部门
-        if (roleid != "0" && roleid != "8" && roleid != "3")
+        //管理员、客户支撑中心、光缆线路查询查看所有，其余只看本部门
+        if (roleid != "0" && roleid != "8" && roleid != "3" && roleid!="5")
         {
             list.Add(" deptname='" + deptname + "' ");
         }

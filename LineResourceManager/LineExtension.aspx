@@ -472,8 +472,8 @@
             pager.pagination({
                 layout: ['list', 'sep', 'first', 'prev', 'sep', 'links', 'sep', 'next', 'last', 'sep', 'refresh', 'sep', 'manual']
             });
-            //if (roleid != 0)
-            //    $('#leGrid').datagrid('hideColumn', 'action');
+            if (roleid == 5)
+                $('#leGrid').datagrid('hideColumn', 'action');
         });
     </script>
 </head>
