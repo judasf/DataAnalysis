@@ -12,9 +12,9 @@
         if ($('form').form('validate')) {
             var url;
             if ($('#id').val().length == 0) {
-                url = '../ajax/Srv_khjr.ashx/SaveWlxh';
+                url = '../ajax/Srv_CustomAccess.ashx/SaveWlxh';
             } else {
-                url = '../ajax/Srv_khjr.ashx/UpdateWlxh';
+                url = '../ajax/Srv_CustomAccess.ashx/UpdateWlxh';
             }
             $.post(url, $.serializeObject($('form')), function (result) {
                 if (result.success) {
@@ -31,7 +31,7 @@
             parent.$.messager.progress({
                 text: '数据加载中....'
             });
-            $.post('../ajax/Srv_khjr.ashx/GetWlxhByID', {
+            $.post('../ajax/Srv_CustomAccess.ashx/GetWlxhByID', {
                 id: $('#id').val()
             }, function (result) {
                 if (result.rows[0]&&result.rows[0].id != undefined) {
