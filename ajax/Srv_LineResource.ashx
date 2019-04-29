@@ -112,7 +112,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         if (!string.IsNullOrEmpty(Request.Form["constructionunit"]))
             list.Add(" constructionunit ='" + Request.Form["constructionunit"] + "'");
         //管理员、客户支撑中心、光缆线路查询查看所有，其余只看本部门
-        if (roleid != "0" && roleid != "8" && roleid != "3" && roleid!="5")
+        if (roleid != "0" && roleid != "8" && roleid != "3" && roleid != "5")
         {
             list.Add(" deptname='" + deptname + "' ");
         }
@@ -188,6 +188,8 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         string isNext = Convert.ToString(Request.Form["isNext"]);
         string status = "";
         string constructioninfo = Convert.ToString(Request.Form["constructioninfo"]);
+        string isaddpon = Convert.ToString(Request.Form["isaddpon"]);
+        string fullroute = Convert.ToString(Request.Form["fullroute"]);
         string reportname = Convert.ToString(Request.Form["reportName"]);
         string reportpath = Convert.ToString(Request.Form["report"]);
 
@@ -205,12 +207,14 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
                 return;
             }
         }
-        string sql = "update LRM_LineExtension set status=@status,constructioninfo=@constructioninfo,reportname=@reportname,reportpath=@reportpath,finishuser=@finishuser,finishtime=getdate() where id=@id";
+        string sql = "update LRM_LineExtension set status=@status,constructioninfo=@constructioninfo,isaddpon=@isaddpon,fullroute=@fullroute,reportname=@reportname,reportpath=@reportpath,finishuser=@finishuser,finishtime=getdate() where id=@id";
         //设定参数
         List<SqlParameter> _paras = new List<SqlParameter>();
         _paras.Add(new SqlParameter("@id", id));
         _paras.Add(new SqlParameter("@status", status));
         _paras.Add(new SqlParameter("@constructioninfo", constructioninfo));
+        _paras.Add(new SqlParameter("@isaddpon", isaddpon));
+        _paras.Add(new SqlParameter("@fullroute", fullroute));
         _paras.Add(new SqlParameter("@reportname", reportname));
         _paras.Add(new SqlParameter("@reportpath", reportpath));
         _paras.Add(new SqlParameter("@finishuser", Session["uname"].ToString()));
@@ -233,7 +237,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         sql.Append("select id,");
         sql.Append("status= case when status=-3 then '资料有误' when status=-2 then '施工退回' when status=-1 then '核查退回' when status=1 then '核查中' ");
         sql.Append(" when status=2 then '施工中'  when status=3 then '已完工' when status=4 then '已录入' end,");
-        sql.Append("inputtime,deptname,account,address,boxno,terminalnumber,linkman,linkphone,username,checkuser,checkinfo,checktime,constructionunit,constructioninfo,reportname,finishtime,inputfiletime,memo");
+        sql.Append("inputtime,deptname,account,address,boxno,terminalnumber,linkman,linkphone,username,checkuser,checkinfo,checktime,constructionunit,constructioninfo,isaddpon,fullroute,reportname,finishtime,inputfiletime,memo");
         sql.Append(" from LRM_LineExtension ");
         sql.Append(where);
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
@@ -254,10 +258,12 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         dt.Columns[13].ColumnName = "核查时间";
         dt.Columns[14].ColumnName = "施工单位";
         dt.Columns[15].ColumnName = "施工信息";
-        dt.Columns[16].ColumnName = "施工资料";
-        dt.Columns[17].ColumnName = "完工时间";
-        dt.Columns[18].ColumnName = "资料录入时间";
-        dt.Columns[19].ColumnName = "备注";
+        dt.Columns[16].ColumnName = "是否新增PON口";
+        dt.Columns[17].ColumnName = "全程路由";
+        dt.Columns[18].ColumnName = "施工资料";
+        dt.Columns[19].ColumnName = "完工时间";
+        dt.Columns[20].ColumnName = "资料录入时间";
+        dt.Columns[21].ColumnName = "备注";
         ExcelHelper.ExportByWeb(dt, "", "光缆延伸台账.xls", "光缆延伸台账");
     }
     //<summary>
@@ -419,10 +425,10 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         if (!string.IsNullOrEmpty(Request.Form["constructionunit"]))
             list.Add(" constructionunit ='" + Request.Form["constructionunit"] + "'");
         if (roleid == "3")
-            list.Add(" constructionunit='" + deptname + "' ");
+            list.Add(" (constructionunit='" + deptname + "' or removalunit='" + deptname + "') ");
         //按线路状态
-        if (!string.IsNullOrEmpty(Request.Form["speciallinestatus"]))
-            list.Add(" speciallinestatus ='" + Request.Form["speciallinestatus"] + "'");
+        if (!string.IsNullOrEmpty(Request.Form["status"]))
+            list.Add(" status ='" + Request.Form["status"] + "'");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
         return queryStr;
@@ -447,7 +453,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         int id = Convert.ToInt32(Request.Form["id"]);
         SqlParameter paras = new SqlParameter("@id", SqlDbType.Int);
         paras.Value = id;
-        string sql = "SELECT * FROM LRM_SpecialLine  where ID=@id";
+        string sql = "SELECT *,linestatus= case when status=0 then '待回单' when status=1 then '在用' when status=2 then '待拆机' when status=3 then  '拆机' end   FROM LRM_SpecialLine  where ID=@id";
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds));
     }
@@ -469,7 +475,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         string constructionunit = Convert.ToString(Request.Form["constructionunit"]);
         string memo = Convert.ToString(Request.Form["memo"]);
         //3、保存信息
-        sql.Append("insert LRM_SpecialLine(inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,constructionunit,memo,username) values(getdate(),@bussinesstype,@chargingcode,@customername,@address,@customercontact,@customerphone,@customermanager,@direction,@route,@constructionunit,@memo,@username);");
+        sql.Append("insert LRM_SpecialLine(inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,constructionunit,memo,username,status) values(getdate(),@bussinesstype,@chargingcode,@customername,@address,@customercontact,@customerphone,@customermanager,@direction,@route,@constructionunit,@memo,@username,0);");
 
         //设定参数
         List<SqlParameter> _paras = new List<SqlParameter>();
@@ -533,7 +539,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             }
         }
 
-        sql.Append("update LRM_SpecialLine set receiptroute=@receiptroute,receiptuser=@receiptuser,receiptmemo=@receiptmemo,receipttime=getdate() where id=@id;");
+        sql.Append("update LRM_SpecialLine set receiptroute=@receiptroute,receiptuser=@receiptuser,receiptmemo=@receiptmemo,receipttime=getdate(),status=1 where id=@id;");
         //设定参数
         List<SqlParameter> _paras = new List<SqlParameter>();
         _paras.Add(new SqlParameter("@id", id));
@@ -573,26 +579,27 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds));
     }
+    /*
+        /// <summary>
+        /// 设置专线电路状态
+        /// </summary>
+        public void SetSpecialLineStatusByID()
+        {
+            int id = Convert.ToInt32(Request.Form["id"]);
+            string speciallinestatus = Convert.ToString(Request.Form["speciallinestatus"]);
+            string sql = "update LRM_SpecialLine set speciallinestatus=@speciallinestatus where id=@id";
+            //设定参数
+            List<SqlParameter> _paras = new List<SqlParameter>();
+            _paras.Add(new SqlParameter("@id", id));
+            _paras.Add(new SqlParameter("@speciallinestatus", speciallinestatus));
 
-    /// <summary>
-    /// 设置专线电路状态
-    /// </summary>
-    public void SetSpecialLineStatusByID()
-    {
-        int id = Convert.ToInt32(Request.Form["id"]);
-        string speciallinestatus = Convert.ToString(Request.Form["speciallinestatus"]);
-        string sql = "update LRM_SpecialLine set speciallinestatus=@speciallinestatus where id=@id";
-        //设定参数
-        List<SqlParameter> _paras = new List<SqlParameter>();
-        _paras.Add(new SqlParameter("@id", id));
-        _paras.Add(new SqlParameter("@speciallinestatus", speciallinestatus));
-
-        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
-        if (result == 1)
-            Response.Write("{\"success\":true,\"msg\":\"设置成功！\"}");
-        else
-            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
-    }
+            int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+            if (result == 1)
+                Response.Write("{\"success\":true,\"msg\":\"设置成功！\"}");
+            else
+                Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+        }
+        */
     /// <summary>
     /// 编辑施工单位回单路由
     /// </summary>
@@ -620,7 +627,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
     {
         int id = Convert.ToInt32(Request.Form["id"]);
         string constructionunit = Convert.ToString(Request.Form["constructionunit"]);
-        string sql = "update LRM_SpecialLine set constructionunit=@constructionunit,inputtime=getdate(),receiptroute='',receiptuser='',receipttime=null,speciallinestatus='',receiptmemo=''  where id=@id;";
+        string sql = "update LRM_SpecialLine set constructionunit=@constructionunit,inputtime=getdate(),receiptroute='',receiptuser='',receipttime=null,status=0,receiptmemo=''  where id=@id;";
         sql += " delete from LRM_SpecialLine_Attachment where  SLID=@id;";
         //设定参数
         List<SqlParameter> _paras = new List<SqlParameter>();
@@ -634,17 +641,50 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
     /// <summary>
-    /// 删除专线客户光缆信息
+    /// 派发电路拆机工单（长线局）
     /// </summary>
-    public void RemoveSpecialLineById()
+    public void RemoveOrderById()
     {
         int id = Convert.ToInt32(Request.Form["id"]);
-        string sql = "delete from  LRM_SpecialLine  where id=@id";
+        string sql = "update LRM_SpecialLine set removalunit='长线局',status=2 where id=@id;";
         //设定参数
         List<SqlParameter> _paras = new List<SqlParameter>();
         _paras.Add(new SqlParameter("@id", id));
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
         if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"派单成功！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
+         /// <summary>
+    /// 拆机工单回单（长线局）
+    /// </summary>
+    public void ReceiptRemoveOrderById()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string sql = "update LRM_SpecialLine set removaltime=getdate(),status=3 where id=@id;";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result == 1)
+            Response.Write("{\"success\":true,\"msg\":\"拆机竣工！\"}");
+        else
+            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+    }
+    /// <summary>
+    /// 删除专线客户光缆信息
+    /// </summary>
+    public void RemoveSpecialLineById()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        string sql = "delete from  LRM_SpecialLine  where id=@id;";
+        sql += " delete from LRM_SpecialLine_Attachment where  SLID=@id;";
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, _paras.ToArray());
+        if (result >= 1)
             Response.Write("{\"success\":true,\"msg\":\"删除成功！\"}");
         else
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
@@ -659,7 +699,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
         sql.Append("select id,");
-        sql.Append("inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,username,constructionunit,receiptroute,receiptuser,receipttime,memo,speciallinestatus,receiptmemo ");
+        sql.Append("inputtime,bussinesstype,chargingcode,customername,address,customercontact,customerphone,customermanager,direction,route,username,constructionunit,receiptroute,receiptuser,receipttime,memo,linestatus= case when status=0 then '待回单' when status=1 then '在用' when status=2 then '待拆机' when status=3 then  '拆机' end,receiptmemo,removaltime ");
         sql.Append(" from LRM_SpecialLine ");
         sql.Append(where);
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
@@ -682,7 +722,8 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         dt.Columns[15].ColumnName = "回单时间";
         dt.Columns[16].ColumnName = "备注";
         dt.Columns[17].ColumnName = "线路状态";
-        dt.Columns[17].ColumnName = "回单备注";
+        dt.Columns[18].ColumnName = "回单备注";
+        dt.Columns[19].ColumnName = "拆机时间";
         ExcelHelper.ExportByWeb(dt, "", "专线客户光缆.xls", "专线客户光缆");
     }
     #endregion 专线客户光缆

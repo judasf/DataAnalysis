@@ -28,7 +28,7 @@
         if ($('form').form('validate')) {
             parent.$.messager.confirm('询问', '确认提交施工信息？', function (r) {
                 if (r) {
-                    if ($('#isNext').combobox('getValues')=="1" && $('#report').val() == "") {
+                    if ($('#isNext').combobox('getValues') == "1" && $('#report').val() == "") {
                         parent.$.messager.alert('提示', '请上传资料后再提交！', 'error');
                         return;
                     }
@@ -44,11 +44,15 @@
             });
         }
     };
+    //全程路由
+    var routeEl = $('#trFullRoute', '#LFTable');
     $(function () {
-        //上报施工资料
-        var el = $('tr:eq(14)', '#LFTable');
+        //新增PON口显示
+        var ponEl = $('#trPON', '#LFTable');
         //退回发起单位
         var backEl = $('tr:eq(13)', '#LFTable');
+        //上传组件
+        var uploadEl = $('#trUpload', '#LFTable');
         if ($('#id').val().length > 0) {
             parent.$.messager.progress({
                 text: '数据加载中....'
@@ -77,19 +81,24 @@
         }
         //默认隐藏退回信息
         backEl.detach();
-        el.hide();
+        ponEl.detach();
+        routeEl.detach();
+        uploadEl.hide();
         $('#isNext').combobox({
             editable: false,
             onSelect: function (rec) {
                 if (rec.value == '1') {
-                    el.show();
                     backEl.insertAfter($('tr:eq(12)', '#LFTable'));
+                    ponEl.insertAfter($('tr:eq(13)', '#LFTable'));
                     $.parser.parse(backEl);
+                    $.parser.parse(ponEl);
+                    uploadEl.show();
                 }
                 else {
                     backEl.insertAfter($('tr:eq(12)', '#LFTable'));
                     $.parser.parse(backEl);
-                    el.hide();
+                    ponEl.detach();
+                    uploadEl.hide();
                 }
 
             }
@@ -190,19 +199,11 @@
     });
 </script>
 <style>
-    #LFTable td {
-        padding: 7px 2px;
-    }
+    #LFTable td { padding: 7px 2px; }
 
-    #LFTable .tdinput {
-        text-align: left;
-    }
+    #LFTable .tdinput { text-align: left; }
 
-    #LFTable .left_td {
-        text-align: right;
-        background: #fafafa;
-        width: 100px;
-    }
+    #LFTable .left_td { text-align: right; background: #fafafa; width: 100px; }
 </style>
 <form method="post">
     <table cellspacing="0" cellpadding="0" bordercolor="#CCCCCC" border="1" style="border-collapse: collapse;" class="table table-bordered table-condensed" style="margin-bottom: 0;" id="LFTable">
@@ -299,7 +300,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="4" style="text-align: center; line-height:16px; font-size: 14px; font-weight: 700;">建设施工信息</td>
+            <td colspan="4" style="text-align: center; line-height: 16px; font-size: 14px; font-weight: 700;">建设施工信息</td>
         </tr>
         <tr>
             <td class="left_td">施工单位：</td>
@@ -323,7 +324,30 @@
                 <textarea name="constructioninfo" id="constructioninfo" cols="" style="width: 400px;" class="easyui-validatebox" required rows="2"></textarea>
             </td>
         </tr>
-        <tr>
+        <tr id="trPON">
+            <td class="left_td">新增PON口：
+            </td>
+            <td colspan="3">
+                <select name="isaddpon" id="isaddpon" class="easyui-combobox" data-options="required:true,panelHeight:'auto',editable:false,width:80,onSelect:function(rec){ if (rec.value == '是') {
+                  routeEl.insertAfter($('tr:eq(14)', '#LFTable'));
+                    $.parser.parse( routeEl);
+                }
+                else {
+                    routeEl.detach();
+                }}">
+                    <option></option>
+                    <option value="是">是</option>
+                    <option value="否">否</option>
+                </select>
+            </td>
+        </tr>
+        <tr id="trFullRoute">
+            <td class="left_td">全程路由：</td>
+            <td class="tdinput" colspan="3">
+                <textarea name="fullroute" id="fullroute" cols="" style="width: 400px;" class="easyui-validatebox" required rows="2"></textarea>
+            </td>
+        </tr>
+        <tr id="trUpload">
             <td colspan="4" style="padding: 10px;">上传资料：<br />
                 <div id="ProjectAttList"></div>
                 <input type="hidden" name="report" id="report" />
@@ -342,6 +366,7 @@
                 </div>
             </td>
         </tr>
+
     </table>
 </form>
 

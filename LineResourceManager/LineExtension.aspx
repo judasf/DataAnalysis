@@ -416,10 +416,22 @@
                           hidden: true,
                           halign: 'center',
                           align: 'center'
-                      }
-                      , {
+                      }, {
+                          width: '80',
+                          title: '是否新增PON口',
+                          field: 'isaddpon',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '80',
+                          title: '全程路由',
+                          field: 'fullroute',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
                           width: '80',
                           title: '上报资料',
+                          hidden: true,
                           field: 'reportname',
                           halign: 'center',
                           align: 'center'
@@ -461,7 +473,7 @@
                         body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
                     }
                     ////提示框
-                    $(this).datagrid('tooltip', ['roomname', 'address', 'contractno']);
+                    $(this).datagrid('tooltip', ['roomname', 'address', 'contractno', 'fullroute']);
                 },
                 onDblClickRow: function (index, row) {
                     viewOrderDetail(row.id);

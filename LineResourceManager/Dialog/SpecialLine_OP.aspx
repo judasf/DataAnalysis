@@ -72,45 +72,6 @@
             }, 'json');
         }
     };
-
-
-    $(function () {
-
-        //if ($('#id').val().length > 0) {
-        //    parent.$.messager.progress({
-        //        text: '数据加载中....'
-        //    });
-        //    $.post('../ajax/Srv_LineResource.ashx/GetFaultOrderInfoByID', {
-        //        ID: $('#id').val()
-        //    }, function (result) {
-        //        if (result.rows[0].id != undefined) {
-        //            $('#slForm').form('load', {
-        //                'stationid': result.rows[0].stationid,
-        //                'roomname': result.rows[0].roomname,
-        //                'cityname': result.rows[0].cityname,
-        //                'repairplace': result.rows[0].repairplace,
-        //                'pointtype': result.rows[0].pointtype,
-        //                'jobplanno': result.rows[0].jobplanno,
-        //                'eqtype': result.rows[0].eqtype,
-        //                'asssetsno': result.rows[0].asssetsno,
-        //                'repairitem': result.rows[0].repairitem,
-        //                'repaircontent': result.rows[0].repaircontent,
-        //                'reimmoney': result.rows[0].reimmoney,
-        //                'reimtime': result.rows[0].reimtime,
-        //                'memo1': result.rows[0].memo1,
-        //                'memo2': result.rows[0].memo2,
-        //                'memo3': result.rows[0].memo3,
-        //                'memo4': result.rows[0].memo4
-        //            });
-        //            showFileList(result.rows[0].id, result.rows[0].attachfile, result.rows[0].attachfilepath);
-        //        }
-        //        parent.$.messager.progress('close');
-        //    }, 'json');
-        //}
-
-
-    });
-
 </script>
 <form method="post" id="slForm">
     <table cellspacing="0" cellpadding="0" bordercolor="#CCCCCC" border="1" style="border-collapse: collapse;">
@@ -182,6 +143,7 @@
                     <option>中通服</option>
                     <option>长线局</option>
                     <option>北关浩翔</option>
+                    <option>客户支撑中心</option>
                 </select>
             </td>
         </tr>
