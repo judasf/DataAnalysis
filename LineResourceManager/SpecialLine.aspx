@@ -276,7 +276,7 @@
                 pageSize: 20,
                 singleSelect: true,
                 idField: 'id',
-                sortName: 'id',
+                sortName: 'receipttime',
                 sortOrder: 'desc',
                 columns: [
                   [
