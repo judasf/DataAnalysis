@@ -239,7 +239,7 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             menuList.Append("{\"flag\":\"1\",\"msg\":\"succ\",\"menus\":");
             menuList.Append("[");
             //线路资源管理 begin
-            if (isAdmin || isSX || isXLZG || isWB || isZXGL||isXLCX)
+            if (isAdmin || isSX || isXLZG || isWB || isZXGL || isXLCX)
             {
                 //accordion 头
                 subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"线路资源管理\",\"icon\": \"icon-server\",\"menus\": [");
@@ -676,8 +676,15 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
                     subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"物料型号管理\",\"icon\": \"ext-icon-table\",");
                     subMenu.Append("\"url\": \"MaintainMaterial/TypeInfo.aspx\",\"iframename\": \"spframe\"}");
                 }
-                if (isFaultReapir || isEC || isECMana)
+                if (isEC || isECMana)
                 {
+                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"物料领用管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"MaintainMaterial/UnitDrawStockDetail.aspx\",\"iframename\": \"spframe\"}");
+                }
+                if (isFaultReapir)
+                {
+                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"库存管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"MaintainMaterial/UnitStockMana.aspx\",\"iframename\": \"spframe\"},");
                     subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"物料领用管理\",\"icon\": \"ext-icon-table\",");
                     subMenu.Append("\"url\": \"MaintainMaterial/UnitDrawStockDetail.aspx\",\"iframename\": \"spframe\"}");
                 }
