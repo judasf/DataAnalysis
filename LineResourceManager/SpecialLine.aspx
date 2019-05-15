@@ -507,6 +507,7 @@
                             <option>长线局</option>
                             <option>北关浩翔</option>
                             <option>客户支撑中心</option>
+                            <option>设计院</option>
                         </select>
                     </td>
                     <td style="width: 80px; text-align: right;">线路状态：
