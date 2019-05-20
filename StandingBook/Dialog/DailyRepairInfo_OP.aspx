@@ -225,8 +225,7 @@
                 title: '物料编号',
                 width: 60,
                 halign: 'center',
-                align: 'center',
-                sortable: true
+                align: 'center'
             }, {
                 field: 'currentstock',
                 title: '当前库存',

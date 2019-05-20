@@ -36,12 +36,12 @@ public class uploadify : IHttpHandler, IRequiresSessionState
         Session = context.Session;
         Server = context.Server;
         //判断登陆状态
-        if(Session["uname"] == null || Session["uname"].ToString() == "")
-        {
-            Response.Write("{\"success\":false,\"msg\":\"登陆超时，请重新登陆后再进行操作！\"}");
-            Response.End();
-            return;
-        }
+        //if(Session["uname"] == null || Session["uname"].ToString() == "")
+        //{
+        //    Response.Write("{\"success\":false,\"msg\":\"登陆超时，请重新登陆后再进行操作！\"}");
+        //    Response.End();
+        //    return;
+        //}
         //上传保存的根目录
         string rootFloder = Request.Form["floderName"];
         //保存文件夹
