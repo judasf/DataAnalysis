@@ -298,12 +298,13 @@
                                    //str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
                                    //再次派发工单到施工单位
                                    if (row.status < 2)
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="dispatchOrder(\'{0}\');">工单派发</a>&nbsp;&nbsp;', row.id);
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="dispatchOrder(\'{0}\');">派单</a>&nbsp;&nbsp;', row.id);
                                    if (row.status == 1) {
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="removalOrder(\'{0}\');">线路拆机</a>&nbsp;&nbsp;', row.id);
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="removalOrder(\'{0}\');">拆机</a>&nbsp;&nbsp;', row.id);
                                        //编辑回单路由
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="editReceiptRoute(\'{0}\');">编辑路由</a>&nbsp;&nbsp;', row.id);
-
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="editReceiptRoute(\'{0}\');">路由</a>&nbsp;&nbsp;', row.id);
+                                       //编辑测试照片
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="editReceiptRoute(\'{0}\');">照片</a>&nbsp;&nbsp;', row.id);
                                    }
                                    if (row.status == 0)//装机待回单
                                        str += $.formatString('<a href="javascript:void(0)" onclick="receiptOrder(\'{0}\');">回单</a>&nbsp;&nbsp;', row.id);
