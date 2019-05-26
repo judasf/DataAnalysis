@@ -619,7 +619,56 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         else
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
+    /// <summary>
+    /// 重新上传测试照片
+    /// </summary>
+    public void EditSpecialLinePhotoByID()
+    {
+        int id = Convert.ToInt32(Request.Form["id"]);
+        StringBuilder sql = new StringBuilder();
+        //测试照片
+        string filesStr = Convert.ToString(Request.Form["report"]);
+        //保存测试照片
+        if (string.IsNullOrEmpty(filesStr))
+        {
+            Response.Write("{\"success\":false,\"msg\":\"请上传测试照片！\"}");
+            return;
+        }
+        else
+        {
+            sql.Append("Delete From LRM_SpecialLine_Attachment where  SLID=@id;");
+            string[] filesPath = filesStr.Split(new String[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string path in filesPath)
+            {
+                string fileName = path.Substring(path.LastIndexOf('/') + 1);
+                sql.Append("Insert into LRM_SpecialLine_Attachment values(@id,'" + fileName + "','" + path + "');");
+            }
+        }
 
+        //设定参数
+        List<SqlParameter> _paras = new List<SqlParameter>();
+        _paras.Add(new SqlParameter("@id", id));
+        //使用事务提交操作
+        using (SqlConnection conn = SqlHelper.GetConnection())
+        {
+            conn.Open();
+            using (SqlTransaction trans = conn.BeginTransaction())
+            {
+                try
+                {
+                    SqlHelper.ExecuteNonQuery(trans, CommandType.Text, sql.ToString(), _paras.ToArray());
+                    trans.Commit();
+                    Response.Write("{\"success\":true,\"msg\":\"执行成功!\"}");
+                }
+                catch
+                {
+                    trans.Rollback();
+                    Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+                    throw;
+                }
+            }
+        }
+    }
     /// <summary>
     /// 派发工单到施工单位
     /// </summary>
@@ -656,7 +705,7 @@ public class Srv_LineResource : IHttpHandler, IRequiresSessionState
         else
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
-         /// <summary>
+    /// <summary>
     /// 拆机工单回单（长线局）
     /// </summary>
     public void ReceiptRemoveOrderById()

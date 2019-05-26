@@ -23,10 +23,40 @@
     }
 %>
 <script type="text/javascript">
+    var showPhotoList = function (id) {
+        //获取测试照片
+        $.post('../ajax/Srv_LineResource.ashx/GetSPLAttachmentById', { id: id }, function (fileRes) {
+            if (fileRes.total > 0) {
+                $.each(fileRes.rows, function (i, item) {
+                    $('#photoList').append('<span style="margin-right:10px;float:left;"><a class="ext-icon-attach" style="padding-left:20px;" href="' + item.filepath + '"   title="' + item.filename + '">' + item.filename + '</a></span>');
+                });
+            }
+        }, 'json');
+
+        //测试照片展示插件
+        $('#photoList').magnificPopup({
+            delegate: 'a',
+            type: 'image',
+            tLoading: 'Loading image #%curr%...',
+            mainClass: 'mfp-img-mobile',
+            gallery: {
+                enabled: true,
+                navigateByImgClick: true,
+                preload: [0, 1] // Will preload 0 - before current, and 1 after the current image
+            },
+            image: {
+                tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+                titleSrc: function (item) {
+                    return item.el.attr('title') + '<small> 测试照片 </small>';
+                }
+            }
+        });
+
+    };
     var onFormSubmit = function ($dialog, $grid) {
-        var url = './ajax/Srv_LineResource.ashx/ReceiptSpecialLineByID';
+        var url = './ajax/Srv_LineResource.ashx/EditSpecialLinePhotoByID';
         if ($('form').form('validate')) {
-            parent.$.messager.confirm('询问', '确认提交回单信息？', function (r) {
+            parent.$.messager.confirm('询问', '确认编辑测试照片？', function (r) {
                 if (r) {
                     if ($('#report').val() == "") {
                         parent.$.messager.alert('提示', '请上传测试照片后再提交信息！', 'error');
@@ -68,6 +98,7 @@
                     $('#memo').html(result.rows[0].memo);
                     $('#constructionunit').html(result.rows[0].constructionunit);
                     $('#receiptroute').html(result.rows[0].receiptroute);
+                    showPhotoList(result.rows[0].id);
                 }
             }, 'json');
         }
@@ -284,6 +315,12 @@
         </tr>
         <tr>
             <td class="left_td">测试照片：</td>
+            <td class="tdinput" colspan="3">
+                <div id="photoList"></div>
+            </td>
+        </tr>
+        <tr>
+            <td class="left_td">编辑照片：</td>
             <td colspan="3" style="padding: 10px;">
                 <div id="ProjectAttList"></div>
                 <input type="hidden" name="report" id="report" />

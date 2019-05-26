@@ -128,6 +128,29 @@
                 ]
             });
         };
+        ///编辑现场照片
+        var editPhoto = function (id) {
+            var dialog = parent.$.modalDialog({
+                title: '编辑现场照片',
+                width: 600,
+                height: 600,
+                iconCls: 'ext-icon-page',
+                href: 'LineResourceManager/Dialog/SpecialLinePhotoEdit_OP.aspx?id=' + id,
+                buttons: [{
+                    text: '提交',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, slGrid);
+                    }
+                },
+                {
+                    text: '关闭',
+                    handler: function () {
+                        dialog.dialog('close');
+                    }
+                }
+                ]
+            });
+        };
         ///工单派发
         var dispatchOrder = function (id) {
             var dialog = parent.$.modalDialog({
@@ -304,7 +327,7 @@
                                        //编辑回单路由
                                        str += $.formatString('<a href="javascript:void(0)" onclick="editReceiptRoute(\'{0}\');">路由</a>&nbsp;&nbsp;', row.id);
                                        //编辑测试照片
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="editReceiptRoute(\'{0}\');">照片</a>&nbsp;&nbsp;', row.id);
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="editPhoto(\'{0}\');">照片</a>&nbsp;&nbsp;', row.id);
                                    }
                                    if (row.status == 0)//装机待回单
                                        str += $.formatString('<a href="javascript:void(0)" onclick="receiptOrder(\'{0}\');">回单</a>&nbsp;&nbsp;', row.id);
@@ -314,6 +337,9 @@
                                if (roleid == 3) { //施工单位（浩翔，中通服），施工操作
                                    if (row.status == 0)//装机待回单
                                        str += $.formatString('<a href="javascript:void(0)" onclick="receiptOrder(\'{0}\');">回单</a>&nbsp;', row.id);
+                                   if (row.status == 1)//已回单，在用状态
+                                       //编辑测试照片
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="editPhoto(\'{0}\');">照片</a>&nbsp;&nbsp;', row.id);
                                    if (row.status == 2)//拆机待回单
                                        str += $.formatString('<a href="javascript:void(0)" onclick="receiptRemovalOrder(\'{0}\');">拆机</a>&nbsp;&nbsp;', row.id);
                                    str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
