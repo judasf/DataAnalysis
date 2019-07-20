@@ -326,7 +326,16 @@
                     <td align="left">
                         <input type="text" name="storeorderno" id="storeorderno"  style="width: 220px;height:20px;" class="combo"/>
                     </td>
-                    <td colspan="3">
+                     <td style="width: 85px; text-align: right;">是否有库存：
+                    </td>
+                    <td align="left">
+                        <select id="" class="combo easyui-combobox" name="currentstock" style="width: 100px;" data-options="panelHeight:'auto',editable: false">
+                            <option value="-1">全部</option>
+                            <option value="1" selected>有库存</option>
+                            <option value="0" >库存为0</option>
+                        </select>
+                    </td>
+                    <td colspan="2" align="left">
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:true"
                             onclick="searchGrid();">查询</a>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:true"

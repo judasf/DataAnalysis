@@ -528,6 +528,16 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         //按商城订单号
         if (!string.IsNullOrEmpty(Request.Form["storeorderno"]))
             list.Add(" storeorderno like '%" + Request.Form["storeorderno"] + "%'");
+         //按是否有库存
+        if (!string.IsNullOrEmpty(Request.Form["currentstock"]))
+        {
+            if (Request.Form["currentstock"] == "1")//有库存
+                list.Add(" a.amount>0 ");
+            if (Request.Form["currentstock"] == "0")//库存为0
+                list.Add(" a.amount=0 ");
+        }
+        else//默认显示有库存
+            list.Add(" a.amount>0 ");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
         return queryStr;
@@ -961,6 +971,17 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         //按商城订单号
         if (!string.IsNullOrEmpty(Request.Form["storeorderno"]))
             list.Add(" a.storeorderno like '%" + Request.Form["storeorderno"] + "%'");
+        //按是否有库存
+        if (!string.IsNullOrEmpty(Request.Form["currentstock"]))
+        {
+            if (Request.Form["currentstock"] == "1")//有库存
+                list.Add(" a.currentstock>0 ");
+            if (Request.Form["currentstock"] == "0")//库存为0
+                list.Add(" a.currentstock=0 ");
+        }
+        else//默认显示有库存
+            list.Add(" a.currentstock>0 ");
+        list.Add(" a.storeorderno like '%" + Request.Form["storeorderno"] + "%'");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
         return queryStr;
@@ -1192,7 +1213,7 @@ public void ExportUnitOutStockDetail()
         //按单位
         if (Session["roleid"].ToString() == "2")
         {
-            list.Add(" (c.unitname ='" + Session["deptname"].ToString() + "' or a.oldunitname='"+Session["deptname"].ToString()+"' ) ");
+            list.Add(" (c.unitname ='" + Session["deptname"].ToString() + "' or a.oldunitname='" + Session["deptname"].ToString() + "' ) ");
         }
         else if (!string.IsNullOrEmpty(Request.Form["unitname"]) && Request.Form["unitname"] != "全部")
         {

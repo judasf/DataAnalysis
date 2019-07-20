@@ -506,6 +506,16 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         //按商城订单号
         if (!string.IsNullOrEmpty(Request.Form["storeorderno"]))
             list.Add(" storeorderno like '%" + Request.Form["storeorderno"] + "%'");
+          //按是否有库存
+        if (!string.IsNullOrEmpty(Request.Form["currentstock"]))
+        {
+            if (Request.Form["currentstock"] == "1")//有库存
+                list.Add(" a.amount>0 ");
+            if (Request.Form["currentstock"] == "0")//库存为0
+                list.Add(" a.amount=0 ");
+        }
+        else//默认显示有库存
+            list.Add(" a.amount>0 ");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
         return queryStr;
@@ -923,6 +933,16 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         //按商城订单号
         if (!string.IsNullOrEmpty(Request.Form["storeorderno"]))
             list.Add(" a.storeorderno like '%" + Request.Form["storeorderno"] + "%'");
+         //按是否有库存
+        if (!string.IsNullOrEmpty(Request.Form["currentstock"]))
+        {
+            if (Request.Form["currentstock"] == "1")//有库存
+                list.Add(" a.currentstock>0 ");
+            if (Request.Form["currentstock"] == "0")//库存为0
+                list.Add(" a.currentstock=0 ");
+        }
+        else//默认显示有库存
+            list.Add(" a.currentstock>0 ");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
         return queryStr;
@@ -1195,6 +1215,9 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
          //按设备类型
         if (!string.IsNullOrEmpty(Request.Form["eqtype"]))
             list.Add(" eqtype ='" + Request.Form["eqtype"] + "'");
+        //按隐患编号
+        if (!string.IsNullOrEmpty(Request.Form["riskno"]))
+            list.Add(" riskno like'%" + Request.Form["riskno"] + "%'");
         //管理员和运维部查看所有，其余只看本部门
         if (roleid != "0" && roleid != "4")
         {
@@ -1475,6 +1498,9 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
           //按设备类型
         if (!string.IsNullOrEmpty(Request.Form["eqtype"]))
             list.Add(" eqtype ='" + Request.Form["eqtype"] + "'");
+         //按隐患编号
+        if (!string.IsNullOrEmpty(Request.Form["riskno"]))
+            list.Add(" b.riskno like'%" + Request.Form["riskno"] + "%'");
         //管理员和运维部查看所有，其余只看本部门
         if (roleid != "0" && roleid != "4")
         {
@@ -1491,8 +1517,8 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
     {
         int total = 0;
         string where = SetQueryConditionForRepair();
-        string tableName = " NSP_SB_DailyRepairInfo ";
-        string fieldStr = "*";
+        string tableName = " NSP_SB_DailyRepairInfo a left join NSP_SB_FaultOrderInfo b on a.FaultOrderNo=b.FaultOrderNo  ";
+        string fieldStr = "a.*,b.riskno";
         DataSet ds = SqlHelper.GetPagination(tableName, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
     }
@@ -1548,29 +1574,30 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         if (where != "")
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
-        sql.Append("select repairorderno,repairdate,stationid,RoomName,repairplace,CityName,pointtype,eqtype,repairitem,RepairMaterials,reimmoney,reimtime,faultorderno,jobplanno,reportno,memo1,memo2,memo3 ");
-        sql.Append(" from NSP_SB_DailyRepairInfo ");
+        sql.Append("select a.repairorderno,a.repairdate,b.riskno,a.faultorderno,a.stationid,a.RoomName,a.repairplace,a.CityName,a.pointtype,a.eqtype,a.repairitem,a.RepairMaterials,a.reimmoney,a.reimtime,a.jobplanno,a.reportno,a.memo1,a.memo2,a.memo3  ");
+        sql.Append(" from NSP_SB_DailyRepairInfo a left join NSP_SB_FaultOrderInfo b on a.FaultOrderNo=b.FaultOrderNo ");
         sql.Append(where);
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
         DataTable dt = ds.Tables[0];
         dt.Columns[0].ColumnName = "维修单号";
         dt.Columns[1].ColumnName = "维修日期";
-        dt.Columns[2].ColumnName = "局站编码";
-        dt.Columns[3].ColumnName = "机房名称";
-        dt.Columns[4].ColumnName = "维修地点";
-        dt.Columns[5].ColumnName = "单位";
-        dt.Columns[6].ColumnName = "网点类别";
-        dt.Columns[7].ColumnName = "设备类型";
-        dt.Columns[8].ColumnName = "维修事项";
-        dt.Columns[9].ColumnName = "维修用料";
-        dt.Columns[10].ColumnName = "报账金额";
-        dt.Columns[11].ColumnName = "报账时间";
-        dt.Columns[12].ColumnName = "故障单号";
-        dt.Columns[13].ColumnName = "作业计划编号";
-        dt.Columns[14].ColumnName = "签报编号";
-        dt.Columns[15].ColumnName = "备注1";
-        dt.Columns[16].ColumnName = "备注2";
-        dt.Columns[17].ColumnName = "备注3";
+        dt.Columns[2].ColumnName = "隐患编号";
+        dt.Columns[3].ColumnName = "故障单号";
+        dt.Columns[4].ColumnName = "局站编码";
+        dt.Columns[5].ColumnName = "机房名称";
+        dt.Columns[6].ColumnName = "维修地点";
+        dt.Columns[7].ColumnName = "单位";
+        dt.Columns[8].ColumnName = "网点类别";
+        dt.Columns[9].ColumnName = "设备类型";
+        dt.Columns[10].ColumnName = "维修事项";
+        dt.Columns[11].ColumnName = "维修用料";
+        dt.Columns[12].ColumnName = "报账金额";
+        dt.Columns[13].ColumnName = "报账时间";
+        dt.Columns[14].ColumnName = "作业计划编号";
+        dt.Columns[15].ColumnName = "签报编号";
+        dt.Columns[16].ColumnName = "备注1";
+        dt.Columns[17].ColumnName = "备注2";
+        dt.Columns[18].ColumnName = "备注3";
         ExcelHelper.ExportByWeb(dt, "", "专项整治维修台账.xls", "专项整治维修台账");
     }
 

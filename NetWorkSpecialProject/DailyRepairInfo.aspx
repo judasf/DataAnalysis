@@ -186,8 +186,8 @@
                 noheader: true,
                 pageSize: 20,
                 singleSelect: true,
-                idField: 'id',
-                sortName: 'id',
+                idField: 'a.id',
+                sortName: 'a.id',
                 sortOrder: 'desc',
                 columns: [
                   [{
@@ -212,6 +212,18 @@
                           width: '80',
                           title: '维修日期',
                           field: 'repairdate',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '100',
+                          title: '隐患编号',
+                          field: 'riskno',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
+                          width: '120',
+                          title: '故障单号',
+                          field: 'faultorderno',
                           halign: 'center',
                           align: 'center'
                       }, {
@@ -277,12 +289,6 @@
                           width: '70',
                           title: '报账时间',
                           field: 'reimtime',
-                          halign: 'center',
-                          align: 'center'
-                      }, {
-                          width: '120',
-                          title: '故障单号',
-                          field: 'faultorderno',
                           halign: 'center',
                           align: 'center'
                       }, {
@@ -404,6 +410,9 @@
                     <td style="text-align: left;">
                         <input style="width: 160px; height: 20px" type="text" class="combo" name="repairorderno" />
                     </td>
+                     <td style="width: 80px; text-align: right;">隐患编号：</td>
+                    <td style="text-align:left;">
+                        <input style="width: 160px; height: 20px" type="text" class="combo" name="riskno" />
                       <td style="width: 80px; text-align: right;">设备类型：
                     </td>
                     <td style="text-align: left;">
@@ -414,7 +423,9 @@
                             <option>发电机</option>
                             <option>其他</option>
                         </select>
-                    </td>
+                    </td> </tr>
+                <tr>
+                    <td></td>
                     <td colspan="4" style="text-align: left;">
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:true"
                             onclick="searchGrid();">查询</a>
