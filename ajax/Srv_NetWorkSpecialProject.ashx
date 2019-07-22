@@ -1476,35 +1476,35 @@ public class Srv_NetWorkSpecialProject : IHttpHandler, IRequiresSessionState
         List<string> list = new List<string>();
         //提交开始日期
         if (!string.IsNullOrEmpty(Request.Form["sdate"]))
-            list.Add(" repairdate >='" + Request.Form["sdate"] + "'");
+            list.Add(" a.repairdate >='" + Request.Form["sdate"] + "'");
         //提交截止日期
         if (!string.IsNullOrEmpty(Request.Form["edate"]))
-            list.Add(" repairdate <='" + Request.Form["edate"] + "'");
+            list.Add(" a.repairdate <='" + Request.Form["edate"] + "'");
         //按所属县市
         if (!string.IsNullOrEmpty(Request.Form["cityname"]))
-            list.Add(" cityname ='" + Request.Form["cityname"] + "'");
+            list.Add(" a.cityname ='" + Request.Form["cityname"] + "'");
         //按局站编码
         if (!string.IsNullOrEmpty(Request.Form["stationid"]))
-            list.Add(" stationid like'%" + Request.Form["stationid"] + "%'");
+            list.Add(" a.stationid like'%" + Request.Form["stationid"] + "%'");
         //按机房名称
         if (!string.IsNullOrEmpty(Request.Form["roomname"]))
-            list.Add(" roomname like'%" + Request.Form["roomname"] + "%'");
+            list.Add(" a.roomname like'%" + Request.Form["roomname"] + "%'");
         //按维修单号
         if (!string.IsNullOrEmpty(Request.Form["repairorderno"]))
-            list.Add(" repairorderno like'%" + Request.Form["repairorderno"] + "%'");
+            list.Add(" a.repairorderno like'%" + Request.Form["repairorderno"] + "%'");
         //按故障单号
         if (!string.IsNullOrEmpty(Request.Form["faultorderno"]))
-            list.Add(" faultorderno like'%" + Request.Form["faultorderno"] + "%'");
+            list.Add(" a.faultorderno like'%" + Request.Form["faultorderno"] + "%'");
           //按设备类型
         if (!string.IsNullOrEmpty(Request.Form["eqtype"]))
-            list.Add(" eqtype ='" + Request.Form["eqtype"] + "'");
+            list.Add(" a.eqtype ='" + Request.Form["eqtype"] + "'");
          //按隐患编号
         if (!string.IsNullOrEmpty(Request.Form["riskno"]))
             list.Add(" b.riskno like'%" + Request.Form["riskno"] + "%'");
         //管理员和运维部查看所有，其余只看本部门
         if (roleid != "0" && roleid != "4")
         {
-            list.Add(" cityname='" + deptname + "' ");
+            list.Add(" a.cityname='" + deptname + "' ");
         }
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
