@@ -165,7 +165,7 @@
                 }, {
                     width: '100',
                     title: '数量',
-                    field: 'amount',
+                    field: 'currentstock',
                     halign: 'center',
                     align: 'center'
                 }, {

@@ -995,7 +995,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         string where = SetQueryConditionForOutStock();
         if (!string.IsNullOrEmpty(Request.Form["where"]))
             where = Server.UrlDecode(Request.Form["where"].ToString());
-        string fieldStr = "a.id,a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,b.classname,b.TypeName,a.amount,b.Units,d.price,a.amount*d.price as allFee,a.memo,a.faultorderno,a.lldpath";
+        string fieldStr = "a.id,a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,b.classname,b.TypeName,a.currentstock,b.Units,d.price,a.currentstock*d.price as allFee,a.memo,a.faultorderno,a.lldpath";
         string table = "MaintainMaterial_StockOut AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID JOIN MaintainMaterial_AreaInfo AS c ON a.areaid=c.ID left join MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ";
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
