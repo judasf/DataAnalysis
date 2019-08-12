@@ -5,7 +5,7 @@
      * 物料型号操作对话框
      * 
      */
-      string id = "";
+    string id = "";
     if (Session["uname"] == null || Session["uname"].ToString() == "")
     {%>
 <script type="text/javascript">
@@ -46,7 +46,7 @@
             $.post('../ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoByID', {
                 id: $('#id').val()
             }, function (result) {
-                if (result.rows[0]&&result.rows[0].id != undefined) {
+                if (result.rows[0] && result.rows[0].id != undefined) {
                     $('form').form('load', {
                         'id': result.rows[0].id,
                         'classname': result.rows[0].classname,
@@ -65,38 +65,39 @@
 <form method="post">
     <table class="doc-table">
         <tr>
-            <td style="text-align: right;width:80px;">类型：
+            <td style="text-align: right; width: 80px;">类型：
             </td>
-            <td style="width: 250px;text-align:left;">
+            <td style="width: 250px; text-align: left;">
                 <input type="hidden" id="id" name="id" value="<%=id %>" />
-               <select id="classname" class="combo easyui-combobox" name="classname" style="width: 120px;" data-options="panelHeight:'auto',editable: false,required:true">
-                            <option value=""></option>
-                            <option>光缆</option>
-                            <option>电力电缆</option>
-                            <option>双绞线</option>
-                            <option>光跳纤</option>
-                            <option>光缆接头盒</option>
-                            <option>分光器</option>
-                            <option>电杆</option>
-                            <option>井盖</option>
-                            <option>铁件</option>
-                            <option>工器具</option>
-                            <option>其他</option>
-                        </select>
+                <select id="classname" class="combo easyui-combobox" name="classname" style="width: 120px;" data-options="panelHeight:'auto',editable: false,required:true">
+                    <option value=""></option>
+                    <option>光缆</option>
+                    <option>光缆交接箱</option>
+                    <option>电力电缆</option>
+                    <option>双绞线</option>
+                    <option>光跳纤</option>
+                    <option>光缆接头盒</option>
+                    <option>分光器</option>
+                    <option>电杆</option>
+                    <option>井盖</option>
+                    <option>铁件</option>
+                    <option>工器具</option>
+                    <option>其他</option>
+                </select>
             </td>
         </tr>
         <tr>
             <td style="text-align: right">型号：
             </td>
-            <td style="width: 250px;text-align:left;">
-                <input id="TypeName" type="text" name="typename" style="width:400px" class="inputBorder easyui-validatebox"   required/>
+            <td style="width: 250px; text-align: left;">
+                <input id="TypeName" type="text" name="typename" style="width: 400px" class="inputBorder easyui-validatebox" required />
             </td>
         </tr>
         <tr>
             <td style="text-align: right">单位：
             </td>
-            <td style="width: 250px;text-align:left;">
-                <input id="units" type="text" name="units"  class="inputBorder easyui-validatebox" required/>
+            <td style="width: 250px; text-align: left;">
+                <input id="units" type="text" name="units" class="inputBorder easyui-validatebox" required />
             </td>
         </tr>
     </table>
