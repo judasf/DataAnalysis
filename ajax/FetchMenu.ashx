@@ -332,295 +332,7 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             }
             menuArr.Add(subMenu.ToString());
             subMenu.Length = 0;
-            //客户接入物料管理 end
-            //市区迁改 begin
-            //if (!isWB && !isQYWH && !isUnitKG && !isUnitPQ && !isUnitPQLL && !isAN && !isNetCard)
-            //{
 
-            //    //accordion 头
-            //    subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"迁改事项管理\",\"icon\": \"icon-plugin\",\"menus\": [");
-            //    if (!isTOWN)
-            //    {
-            //        subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"市区迁改信息管理\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"xlqggd/xlqgxxgl.aspx\",\"iframename\": \"pbframe\"},");
-            //    }
-            //    if (isTOWN || isAdmin || isYW)
-            //    {
-            //        subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"县公司迁改管理\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"xlqggd/xlqgxxgl_town.aspx\",\"iframename\": \"spframe\"}");
-            //    }
-            //    if (isSX)
-            //    {
-            //        subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"迁改信息录入\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"xlqggd/xlqgxxlr.aspx\",\"iframename\": \"spframe\"}");
-            //    }
-            //    //accordion 尾
-            //    subMenu.Append("]}");
-            //}
-            //menuArr.Add(subMenu.ToString());
-            //subMenu.Length = 0;
-            //市区迁改 end
-            /**
-            //南水北调 begin
-            if (isAdmin || isYW || isNSBD)
-            {
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"南水北调事项管理\",\"icon\": \"icon-plugin\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"南水北调信息管理\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"nsbdgd/nsbdxxgl.aspx\",\"iframename\": \"pbframe\"}");
-                if (isYW)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"南水北调信息录入\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"nsbdgd/nsbdxxlr.aspx\",\"iframename\": \"spframe\"}");
-                }
-                subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"南水北调领料信息\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"nsbdgd/nsbdxxllgl.aspx\",\"iframename\": \"spframe\"}");
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-            //南水北调 end
-            **/
-            //被盗事项 begin
-            //if (!isGZBZ && !isUnitKG && !isUnitPQ && !isUnitPQLL && !isAN && !isNetCard)
-            //{
-
-            //    //accordion 头
-            //    subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"被盗事项管理\",\"icon\": \"icon-plugin\",\"menus\": [");
-            //    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"被盗信息统计\",\"icon\": \"ext-icon-table\",");
-            //    subMenu.Append("\"url\": \"xlbdgd/xlbdxxtj.aspx\",\"iframename\": \"pbframe\"}");
-            //    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"被盗信息管理\",\"icon\": \"ext-icon-table\",");
-            //    subMenu.Append("\"url\": \"xlbdgd/xlbdxxgl.aspx\",\"iframename\": \"spframe\"}");
-            //    if (isSX)
-            //    {
-            //        subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"被盗信息录入\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"xlbdgd/xlbdxxlr.aspx\",\"iframename\": \"spframe\"}");
-            //    }
-            //    if (isKG || isWB || isAdmin || isYW)
-            //    {
-            //        subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"被盗领料信息管理\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"xlbdgd/xlbdxxllgl.aspx\",\"iframename\": \"spframe\"}");
-            //    }
-            //    //accordion 尾
-            //    subMenu.Append("]}");
-            //}
-            //menuArr.Add(subMenu.ToString());
-            //subMenu.Length = 0;
-            //被盗事项 end
-            //整改事项 begin
-            /*
-            if (!isGZBZ && !isUnitKG && !isUnitPQ && !isUnitPQLL && !isAN && !isNetCard&& !isEC&& !isCAKG&& !isCALL&& !isCAWG)
-            {
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"整改事项管理\",\"icon\": \"icon-plugin\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"整改信息统计\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"xlzggd/xlzgxxtj.aspx\",\"iframename\": \"pbframe\"}");
-                if (!isTOWN || isAdmin || isYW)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"市公司整改信息\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"xlzggd/xlzgxxgl.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isTOWN || isAdmin || isYW)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"县公司整改信息\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"xlzggd/xlzgxxgl_town.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isSX && !isTOWN)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"整改信息录入\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"xlzggd/xlzgxxlr.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isSX && isTOWN)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"整改信息录入\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"xlzggd/xlzgxxlr_town.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isKG || isWB || isAdmin || isYW || isSX)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"整改领料信息管理\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"xlzggd/xlzgxxllgl.aspx\",\"iframename\": \"spframe\"}");
-                }
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-                */
-            //整改事项 end
-            //电缆延伸 begin
-            //if (!isGZBZ && !isUnitKG && !isUnitPQ && !isUnitPQLL && !isAN && !isNetCard)
-            //{
-
-            //    //accordion 头
-            //    subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"电缆延伸事项管理\",\"icon\": \"icon-plugin\",\"menus\": [");
-            //    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"电缆延伸信息统计\",\"icon\": \"ext-icon-table\",");
-            //    subMenu.Append("\"url\": \"dlysgd/xlzgxxtj.aspx\",\"iframename\": \"pbframe\"}");
-            //    if (!isTOWN || isAdmin || isYW)
-            //    {
-            //        subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"市公司电缆延伸\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"dlysgd/xlzgxxgl.aspx\",\"iframename\": \"spframe\"}");
-            //    }
-            //    if (isTOWN || isAdmin || isYW)
-            //    {
-            //        subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"县公司电缆延伸\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"dlysgd/xlzgxxgl_town.aspx\",\"iframename\": \"spframe\"}");
-            //    }
-            //    if (isSX && !isTOWN)
-            //    {
-            //        subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"电缆延伸信息录入\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"dlysgd/xlzgxxlr.aspx\",\"iframename\": \"spframe\"}");
-            //    }
-            //    if (isSX && isTOWN)
-            //    {
-            //        subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"电缆延伸信息录入\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"dlysgd/xlzgxxlr_town.aspx\",\"iframename\": \"spframe\"}");
-            //    }
-            //    if (isKG || isWB || isAdmin || isYW || isSX)
-            //    {
-            //        subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"电缆延伸领料管理\",\"icon\": \"ext-icon-table\",");
-            //        subMenu.Append("\"url\": \"dlysgd/xlzgxxllgl.aspx\",\"iframename\": \"spframe\"}");
-            //    }
-            //    //accordion 尾
-            //    subMenu.Append("]}");
-            //}
-            //menuArr.Add(subMenu.ToString());
-            //subMenu.Length = 0;
-            //电缆延伸 end
-            //日常维护 begin
-            /*
-            if (isAdmin || isSX || isYW || isKG || isGZLD)
-            {
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"日常维护事项管理\",\"icon\": \"icon-book\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"日常维护领料明细\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"rcwhllxx/yjylkctzgl.aspx\",\"iframename\": \"pbframe\"}");
-                if (isKG)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"日常维护领料录入\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"rcwhllxx/yjylkctzlr.aspx\",\"iframename\": \"spframe\"}");
-                }
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-                */
-            //日常维护 end
-            //客户接入 begin
-            /*
-            if (isAdmin || isSX || isYW || isKG || isGZLD || isUnitMana || isUnitKG || isUnitPQ || isUnitPQLL)
-            {
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"客户接入事项管理\",\"icon\": \"icon-book\",\"menus\": [");
-                if (isAdmin || isSX || isYW || isKG || isGZLD)
-                {
-                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"客户接入领料明细\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"khjrllxx/yjylkctzgl.aspx\",\"iframename\": \"pbframe\"}");
-                }
-                if (isKG)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"客户接入领料录入\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"khjrllxx/yjylkctzlr.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isAdmin || isYW || isGZLD || isUnitMana || isUnitKG || isUnitPQ || isUnitPQLL || (isKG && !isTOWN))
-                {
-
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"基层单元库存管理\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"BaseUnit/UnitStockMana.aspx\",\"iframename\": \"jcdykcgl\"}");
-                    if (!isUnitPQ)
-                    {
-                        subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"基层单元入库明细\",\"icon\": \"ext-icon-table\",");
-                        subMenu.Append("\"url\": \"BaseUnit/UnitInStockDetail.aspx\",\"iframename\": \"jcdyrkmx\"}");
-                    }
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"装维片区领料明细\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"BaseUnit/UnitOutStockDetail.aspx\",\"iframename\": \"zwpqllmx\"}");
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"装维片区用料明细\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"BaseUnit/AreaMaterialDetail.aspx\",\"iframename\": \"zwpqylmx\"}");
-                }
-                if (isAdmin)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"物料型号管理\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"BaseUnit/wlxh.aspx\",\"iframename\": \"wlxhgl\"}");
-                }
-                if (isUnitMana)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"装维片区管理\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"BaseUnit/UnitArea.aspx\",\"iframename\": \"zwpqgl\"}");
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"基层单元用户管理\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"BaseUnit/UnitUserInfo.aspx\",\"iframename\": \"jcdyyhgl\"}");
-                }
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-            */
-            //客户接入 end
-            //上网卡管理 begin
-            /*
-            if (isGZLD || isUnitMana || isNetCard)
-            {
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"上网卡管理\",\"icon\": \"icon-transmit_blue\",\"menus\": [");
-                subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"上网卡状态管理\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"NetWorkCard/CardInfo.aspx\",\"iframename\": \"swkztgl\"}");
-                subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"上网卡使用明细\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"NetWorkCard/CardUsingLog.aspx\",\"iframename\": \"swksymx\"}");
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-                */
-            //上网卡管理 end
-            ////员工考勤 begin
-            //if (isGZLD)
-            //{
-
-            //    //accordion 头
-            //    subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"员工考勤管理\",\"icon\": \"ext-icon-page_edit\",\"menus\": [");
-            //    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"考勤结果明细\",\"icon\": \"ext-icon-table\",");
-            //    subMenu.Append("\"url\": \"WorkAttendance/AttendanceResult.aspx\",\"iframename\": \"kqjgmx\"}");
-            //    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"签到记录明细\",\"icon\": \"ext-icon-table\",");
-            //    subMenu.Append("\"url\": \"WorkAttendance/AttendanceDetail.aspx\",\"iframename\": \"qdjlmx\"}");
-            //    //accordion 尾
-            //    subMenu.Append("]}");
-            //}
-            //menuArr.Add(subMenu.ToString());
-            //subMenu.Length = 0;
-            //员工考勤 end
-            //应急库 begin
-            /*
-            if (isAdmin || isSX || isYW || isKG || isGZLD)
-            {
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"应急库事项管理\",\"icon\": \"icon-book\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"应急库信息管理\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"yjkgd/yjkxxgl.aspx\",\"iframename\": \"pbframe\"}");
-                if (isKG && !isTOWN)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"应急库信息录入\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"yjkgd/yjkxxlr.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isKG || isAdmin || isYW)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"应急库领料信息管理\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"yjkgd/yjkxxllgl.aspx\",\"iframename\": \"spframe\"}");
-                }
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-                */
-            //应急库 end
             //接入网资源管理 begin
             if (isAdmin || isEC || isECMana || isYW || isCW)
             {
@@ -676,19 +388,61 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
                     subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"物料型号管理\",\"icon\": \"ext-icon-table\",");
                     subMenu.Append("\"url\": \"MaintainMaterial/TypeInfo.aspx\",\"iframename\": \"spframe\"}");
                 }
-                if (isFaultReapir || isEC || isECMana)
+                if (isEC || isECMana)
                 {
                     subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"物料领用管理\",\"icon\": \"ext-icon-table\",");
                     subMenu.Append("\"url\": \"MaintainMaterial/UnitDrawStockDetail.aspx\",\"iframename\": \"spframe\"}");
                 }
-                //subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"领料单位管理\",\"icon\": \"ext-icon-table\",");
-                //subMenu.Append("\"url\": \"MaintainMaterial/AreaInfo.aspx\",\"iframename\": \"spframe\"}");
-                //accordion 尾
+                if (isFaultReapir)
+                {
+                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"库存管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"MaintainMaterial/UnitStockMana.aspx\",\"iframename\": \"spframe\"},");
+                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"物料领用管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"MaintainMaterial/UnitDrawStockDetail.aspx\",\"iframename\": \"spframe\"}");
+                }
                 subMenu.Append("]}");
             }
             menuArr.Add(subMenu.ToString());
             subMenu.Length = 0;
             //运维物料管理 end
+            //利旧物料管理 begin
+            if (isAdmin || isKG || isYW || isFaultReapir || isEC || isECMana)
+            {
+
+                //accordion 头
+                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"利旧物料管理\",\"icon\": \"icon-database_refresh\",\"menus\": [");
+                if (isAdmin || isKG || isYW)
+                {
+                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"利旧库存管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"ReuseMaintainMaterial/ReuseStockMana.aspx\",\"iframename\": \"spframe\"}");
+
+                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"利旧物料领用管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"ReuseMaintainMaterial/ReuseDrawStockDetail.aspx\",\"iframename\": \"spframe\"}");
+
+                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"利旧物料入库明细\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"ReuseMaintainMaterial/ReuseInStockDetail.aspx\",\"iframename\": \"spframe\"}");
+                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"利旧物料调拨明细\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"ReuseMaintainMaterial/ReuseAllotStockDetail.aspx\",\"iframename\": \"spframe\"}");
+                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"利旧物料型号管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"ReuseMaintainMaterial/ReuseTypeInfo.aspx\",\"iframename\": \"spframe\"}");
+                }
+                if (isEC || isECMana)
+                {
+                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"利旧物料领用管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"ReuseMaintainMaterial/ReuseDrawStockDetail.aspx\",\"iframename\": \"spframe\"}");
+                }
+                if (isFaultReapir)
+                {
+                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"利旧库存管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"ReuseMaintainMaterial/ReuseStockMana.aspx\",\"iframename\": \"spframe\"},");
+                    subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"利旧物料领用管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"ReuseMaintainMaterial/ReuseDrawStockDetail.aspx\",\"iframename\": \"spframe\"}");
+                }
+                subMenu.Append("]}");
+            }
+            menuArr.Add(subMenu.ToString());
+            subMenu.Length = 0;
+            //利旧物料管理 end
             // 专项整治事项管理 begin
             if (isAdmin || isKG || isYW || isFaultReapir || isEC || isECMana)
             {
@@ -729,87 +483,6 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             menuArr.Add(subMenu.ToString());
             subMenu.Length = 0;
             //专项整治事项管理 end
-            //基站考核 begin
-            /*
-            if (!isSX && !isKG && !isUnitKG && !isUnitPQ && !isUnitPQLL && !isAN && !isNetCard&& !isEC&& !isCAKG&& !isCALL&& !isCAWG)
-            {
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"基站考核事项管理\",\"icon\": \"icon-chart_bar\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"基站维护考核表\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"jzkh/jzkhtjb.aspx\",\"iframename\": \"pbframe\"}");
-                if (isWW && Session["uname"].ToString() == "tianlihua")
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"基站断站指标考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"jzkh/jzdzzb_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isWW && Session["uname"].ToString() == "tianlihua")
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"小区故障指标考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"jzkh/xqjgzzb_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if ((isWW && Session["uname"].ToString() == "tianlihua") || isYWJZ || isGXJZKH)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"日常维护管理考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"jzkh/jzrcwh_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isWY)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"网优指标考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"jzkh/jzwykh_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isYWJZ)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"额外奖惩考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"jzkh/jzewjc_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-                */
-            //基站考核 end
-            //线路考核 begin
-            /*
-            if (!isSX && !isKG && !isUnitKG && !isUnitPQ && !isUnitPQLL && !isAN && !isNetCard && !isEC&& !isCAKG&& !isCALL&& !isCAWG)
-            {
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"线路考核事项管理\",\"icon\": \"icon-chart_bar\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"线路维护考核表\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"xlkh/xlkhtjb.aspx\",\"iframename\": \"pbframe\"}");
-                //if (isYW && Session["uname"].ToString() == "dongxuee")
-                //{
-                //    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"障碍服务指标考核\",\"icon\": \"ext-icon-table\",");
-                //    subMenu.Append("\"url\": \"xlkh/ywb_xlzayfw_marking.aspx\",\"iframename\": \"spframe\"}");
-                //}
-                if ((isXLKH && isTOWN) || (isGZLD && Session["uname"].ToString() == "wangheyang"))
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"障碍服务指标考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"xlkh/xlzayfw_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if ((isXLKH && isTOWN) || (isYW && Session["uname"].ToString() == "wankun") || (isGZLD && Session["uname"].ToString() == "wangheyang"))
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"日常维护内容考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"xlkh/xlrcwh_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isYW && Session["uname"].ToString() == "wankun")
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"额外奖罚考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"xlkh/xlewjc_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-                */
-            //线路考核 end
-            //装维考核 begin
-            /*
-            if (!isSX && !isKG && !isUnitKG && !isUnitPQ && !isUnitPQLL && !isAN && !isNetCard && !isEC&& !isCAKG&& !isCALL&& !isCAWG)
-            {
 
                 //accordion 头
                 subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"装维外包考核管理\",\"icon\": \"icon-chart_bar\",\"menus\": [");
@@ -862,25 +535,6 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             subMenu.Length = 0;
                 */
             //库存管理 end
-            //资源盘活 begin
-            if (isAdmin)
-            {
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"盘活资源管理\",\"icon\": \"icon-book\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"盘活资源管理\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"rcwhllxx/yjylkctzgl.aspx\",\"iframename\": \"pbframe\"}");
-                if (isAdmin)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"资源类别管理\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"ResourceReuse/RRTypeInfo.aspx\",\"iframename\": \"spframe\"}");
-                }
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-            //资源盘活 end
             //系统设置 begin
 
             if (isAdmin)
