@@ -2,19 +2,31 @@
 
 <% 
     /** 
-     * 客户接入库存型号操作对话框
+     * 领料单位操作对话框
      * 
      */
-    string id = string.IsNullOrEmpty(Request.QueryString["id"]) ? "" : Request.QueryString["id"].ToString();
+      string id = "";
+    if (Session["uname"] == null || Session["uname"].ToString() == "")
+    {%>
+<script type="text/javascript">
+    $(function () {
+        parent.$.messager.alert('提示', '登陆超时，请重新登陆再进行操作！', 'error', function () {
+            parent.location.replace('logout.aspx');
+        });
+    });
+
+</script>
+<%}
+    id = string.IsNullOrEmpty(Request.QueryString["id"]) ? "" : Request.QueryString["id"].ToString();
 %>
 <script type="text/javascript">
     var onClassFormSubmit = function ($dialog, $grid) {
         if ($('form').form('validate')) {
             var url;
             if ($('#id').val().length == 0) {
-                url = '../ajax/Srv_CustomAccess.ashx/SaveWlxh';
+                url = '../ajax/Srv_ReuseMaintainMaterial.ashx/SaveAreaInfo';
             } else {
-                url = '../ajax/Srv_CustomAccess.ashx/UpdateWlxh';
+                url = '../ajax/Srv_ReuseMaintainMaterial.ashx/UpdateAreaInfo';
             }
             $.post(url, $.serializeObject($('form')), function (result) {
                 if (result.success) {
@@ -31,14 +43,14 @@
             parent.$.messager.progress({
                 text: '数据加载中....'
             });
-            $.post('../ajax/Srv_CustomAccess.ashx/GetWlxhByID', {
+            $.post('../ajax/Srv_ReuseMaintainMaterial.ashx/GetAreaInfoByID', {
                 id: $('#id').val()
             }, function (result) {
-                if (result.rows[0]&&result.rows[0].id != undefined) {
+                if (result.rows[0] && result.rows[0].id != undefined) {
                     $('form').form('load', {
                         'id': result.rows[0].id,
-                        'typename': result.rows[0].typename,
-                        'units': result.rows[0].units
+                        'unitname': result.rows[0].unitname,
+                        'areaname': result.rows[0].areaname
                     });
                 }
                 else {
@@ -52,18 +64,11 @@
 <form method="post">
     <table class="table table-bordered  table-hover">
         <tr>
-            <td style="text-align: right">型号：
+            <td style="text-align: right">领料单位名称：
             </td>
-            <td style="width: 250px;text-align:left;">
+            <td style="width: 200px; text-align: left;">
+                <input id="areaname" type="text" name="areaname" style="width: 150px" class="inputBorder easyui-validatebox" required />
                 <input type="hidden" id="id" name="id" value="<%=id %>" />
-                <input id="TypeName" type="text" name="typename" style="width:200px" class="inputBorder easyui-validatebox"   required/>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: right">单位：
-            </td>
-            <td style="width: 250px;text-align:left;">
-                <input id="units" type="text" name="units" style="width:200px" class="inputBorder easyui-validatebox" required/>
             </td>
         </tr>
     </table>

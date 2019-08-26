@@ -3,7 +3,7 @@
 <% 
     /** 
      * 运维物料库存录入
-     *MaintainMaterial_Stock表操作对话框
+     *ReuseMaintainMaterial_Stock表操作对话框
      * 
      */
     if (Session["uname"] == null || Session["uname"].ToString() == "")
@@ -21,9 +21,9 @@
 <script type="text/javascript">
     var onFormSubmit = function ($dialog, $grid) {
         if ($('form').form('validate')) {
-            parent.$.messager.confirm('询问', '您确定要提交运维物料入库信息？提交后则不能修改！', function (r) {
+            parent.$.messager.confirm('询问', '确定提交利旧物料入库信息？提交后则不能修改！', function (r) {
                 if (r) {
-                    var url = 'ajax/Srv_MaintainMaterial.ashx/SaveUnitStockInfo';
+                    var url = 'ajax/Srv_ReuseMaintainMaterial.ashx/SaveReuseStockInfo';
                     //要post的json数据
                     var postDate = {};
                     //有数据的行编号
@@ -51,6 +51,8 @@
                     postDate['llrq'] = $('#llrq').val();
                     //插入领料单位
                     postDate['unitname'] = encodeURIComponent($('#unitname').val());
+                    //插入拆除地点
+                    postDate['demolishpalce'] = encodeURIComponent($('input[name="demolishpalce"]').val());
                     //插入备注
                     postDate['memo'] = encodeURIComponent($('input[name="memo"]').val());
                     parent.$.messager.progress({
@@ -81,7 +83,7 @@
         }
     };
     var setUnits = function (index, id) {
-        $.post('ajax/Srv_MaintainMaterial.ashx/GetTypeInfoByID', {
+        $.post('ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoByID', {
             id: id
         }, function (result) {
             if (result.rows[0] && result.rows[0].id != undefined) {
@@ -96,7 +98,7 @@
     var addStock = function () {
         var index = $('#index').val();
         index++;
-        var insertEle = $('<tr align="center"><td><input type="text" name="storeorderno" class="inputBorder easyui-validatebox" style="width: 160px" data-options="required:true" /></td><td><select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:\'auto\',editable: false,required:true,onSelect:function(rec){ var url = \'../ajax/Srv_MaintainMaterial.ashx/GetMaintainMaterial_TypeInfoComboboxForIn?classname=\'+encodeURIComponent(rec.value);$(\'#typeid' + index + '\').combobox(\'setValue\',\'\').combobox(\'reload\', url); }"> <option value=""></option><option>光缆</option><option>光缆交接箱</option><option>电力电缆</option><option>双绞线</option><option>光跳纤</option><option>光缆接头盒</option><option>分光器</option><option>电杆</option><option>井盖</option><option>铁件</option><option>工器具</option><option>其他</option></select></td><td><input type="text" name="typeid" id="typeid' + index + '" style="width: 280px;" class="combo easyui-combobox" data-options="valueField: \'id\',textField: \'text\',editable: true,panelHeight: \'200\',required:true,url: \'ajax/Srv_MaintainMaterial.ashx/GetTypeInfoCombobox\',onSelect:function(rec){setUnits(' + index + ',rec.id);},filter: function (q, row) {var opts = $(this).combobox(\'options\');return row[opts.textField].indexOf(q) > -1;},onHidePanel: function () {var valueField = $(this).combobox(\'options\').valueField;var val = $(this).combobox(\'getValue\');var allData = $(this).combobox(\'getData\');var result = true;for (var i = 0; i < allData.length; i++) {if (val == allData[i][valueField]) {result = false;}} if (result) {$(this).combobox(\'clear\');}}" /></td><td><input type="text" name="amount" class="inputBorder easyui-numberbox" style="width: 60px" data-options="min:0,required:true" /></td><td><input type="text" name="price" class="inputBorder easyui-numberbox" style="width: 60px" data-options="min:0,precision:2,required:true" /></td><td><label id="units' + index + '"></label></td><td><img src="../../Script/easyui/themes/icons/edit_remove.png" onclick="delStock(this);" style="cursor: pointer;" /></td></tr>').insertBefore($('#memoTr'));
+        var insertEle = $('<tr align="center"><td><input type="text" name="storeorderno" class="inputBorder easyui-validatebox" style="width: 160px" data-options="required:true" /></td><td><select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:\'auto\',editable: false,required:true,onSelect:function(rec){ var url = \'../ajax/Srv_ReuseMaintainMaterial.ashx/GetReuseMaintainMaterial_TypeInfoComboboxForIn?classname=\'+encodeURIComponent(rec.value);$(\'#typeid' + index + '\').combobox(\'setValue\',\'\').combobox(\'reload\', url); }"> <option value=""></option><option>光缆</option><option>光缆交接箱</option><option>电力电缆</option><option>双绞线</option><option>光跳纤</option><option>光缆接头盒</option><option>分光器</option><option>电杆</option><option>井盖</option><option>铁件</option><option>工器具</option><option>其他</option></select></td><td><input type="text" name="typeid" id="typeid' + index + '" style="width: 280px;" class="combo easyui-combobox" data-options="valueField: \'id\',textField: \'text\',editable: true,panelHeight: \'200\',required:true,url: \'ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoCombobox\',onSelect:function(rec){setUnits(' + index + ',rec.id);},filter: function (q, row) {var opts = $(this).combobox(\'options\');return row[opts.textField].indexOf(q) > -1;},onHidePanel: function () {var valueField = $(this).combobox(\'options\').valueField;var val = $(this).combobox(\'getValue\');var allData = $(this).combobox(\'getData\');var result = true;for (var i = 0; i < allData.length; i++) {if (val == allData[i][valueField]) {result = false;}} if (result) {$(this).combobox(\'clear\');}}" /></td><td><input type="text" name="amount" class="inputBorder easyui-numberbox" style="width: 60px" data-options="min:0,required:true" /></td><td><input type="text" name="price" class="inputBorder easyui-numberbox" style="width: 60px" data-options="min:0,precision:2,required:true" /></td><td><label id="units' + index + '"></label></td><td><img src="../../Script/easyui/themes/icons/edit_remove.png" onclick="delStock(this);" style="cursor: pointer;" /></td></tr>').insertBefore($('#memoTr'));
         $('#index').val(index);
         $.parser.parse(insertEle);
     };
@@ -124,7 +126,7 @@
             </td>
         </tr>
         <tr>
-            <th>商城出库单号：
+            <th>利旧物料编号：
             </th>
             <th>物料类型：
             </th>
@@ -144,11 +146,11 @@
                 <input type="text" name="storeorderno" class="inputBorder easyui-validatebox" style="width: 160px" data-options="required:true" />
             </td>
             <td>
-                 <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,required:true,onSelect:function(rec){ var url = '../ajax/Srv_MaintainMaterial.ashx/GetMaintainMaterial_TypeInfoComboboxForIn?classname='+encodeURIComponent(rec.value);$('#typeid1').combobox('setValue','').combobox('reload', url); }">
+                 <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,required:true,onSelect:function(rec){ var url = '../ajax/Srv_ReuseMaintainMaterial.ashx/GetReuseMaintainMaterial_TypeInfoComboboxForIn?classname='+encodeURIComponent(rec.value);$('#typeid1').combobox('setValue','').combobox('reload', url); }">
                             <option value=""></option>
                             <option>光缆</option>
-                            <option>电力电缆</option>
                      <option>光缆交接箱</option>
+                            <option>电力电缆</option>
                      <option>双绞线</option>
                             <option>光跳纤</option>
                             <option>光缆接头盒</option>
@@ -167,7 +169,7 @@
                     editable: true,
                     panelHeight: '200',
                     required:true,
-                    url: 'ajax/Srv_MaintainMaterial.ashx/GetTypeInfoCombobox',
+                    url: 'ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoCombobox',
                     onSelect:function(rec){setUnits('1',rec.id);},
                     filter: function (q, row) {
                     var opts = $(this).combobox('options');
@@ -202,7 +204,10 @@
             </td>
         </tr>
         <tr id="memoTr">
-            <td style="text-align: left" colspan="7">备注：<input type="text" name="memo" value=" " style="width: 600px;" class="inputBorder" /></td>
+            <td style="text-align: left" colspan="7">拆除地点：<input type="text" name="demolishplace" class="inputBorder easyui-validatebox" required  style="width: 600px;" /></td>
+        </tr>
+        <tr>
+            <td style="text-align: left" colspan="7">备注信息：<input type="text" name="memo" value=" " style="width: 600px;" class="inputBorder" /></td>
         </tr>
     </table>
 </form>

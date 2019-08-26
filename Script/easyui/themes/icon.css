@@ -58,6 +58,9 @@
 .icon-database{
 	background:url('icons/database.png') no-repeat center center;
 }
+.icon-database_refresh{
+	background:url('icons/database_refresh.png') no-repeat center center;
+}
 .icon-cog{
 	background:url('icons/cog.png') no-repeat center center;
 }

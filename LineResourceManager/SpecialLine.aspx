@@ -128,6 +128,29 @@
                 ]
             });
         };
+        ///编辑现场照片
+        var editPhoto = function (id) {
+            var dialog = parent.$.modalDialog({
+                title: '编辑现场照片',
+                width: 600,
+                height: 600,
+                iconCls: 'ext-icon-page',
+                href: 'LineResourceManager/Dialog/SpecialLinePhotoEdit_OP.aspx?id=' + id,
+                buttons: [{
+                    text: '提交',
+                    handler: function () {
+                        parent.onFormSubmit(dialog, slGrid);
+                    }
+                },
+                {
+                    text: '关闭',
+                    handler: function () {
+                        dialog.dialog('close');
+                    }
+                }
+                ]
+            });
+        };
         ///工单派发
         var dispatchOrder = function (id) {
             var dialog = parent.$.modalDialog({
@@ -151,6 +174,7 @@
                 ]
             });
         };
+        /*
         ///设置专线状态为在用/删除
         var setLineStatus = function (id) {
             var dialog = parent.$.modalDialog({
@@ -172,6 +196,56 @@
                     }
                 }
                 ]
+            });
+        };*/
+        //派发拆机工单（长线局）
+        var removalOrder = function (id) {
+            parent.$.messager.confirm('询问', '确认派发拆机单？', function (r) {
+                if (r) {
+                    $.post('../ajax/Srv_LineResource.ashx/RemoveOrderById', {
+                        id: id
+                    }, function (result) {
+                        if (result.success) {
+                            $.messager.show({
+                                title: '提示',
+                                msg: result.msg,
+                                showType: 'slide',
+                                timeout: '2000',
+                                style: {
+                                    top: document.body.scrollTop + document.documentElement.scrollTop
+                                }
+                            });
+                            slGrid.datagrid('reload');
+                        } else {
+                            parent.$.messager.alert('提示', result.msg, 'error');
+                        }
+                    }, 'json');
+                }
+            });
+        };
+        //拆机工单回单（长线局）
+        var receiptRemovalOrder = function (id) {
+            parent.$.messager.confirm('询问', '确认该电路拆机完成？', function (r) {
+                if (r) {
+                    $.post('../ajax/Srv_LineResource.ashx/ReceiptRemoveOrderById', {
+                        id: id
+                    }, function (result) {
+                        if (result.success) {
+                            $.messager.show({
+                                title: '提示',
+                                msg: result.msg,
+                                showType: 'slide',
+                                timeout: '2000',
+                                style: {
+                                    top: document.body.scrollTop + document.documentElement.scrollTop
+                                }
+                            });
+                            slGrid.datagrid('reload');
+                        } else {
+                            parent.$.messager.alert('提示', result.msg, 'error');
+                        }
+                    }, 'json');
+                }
             });
         };
         //删除
@@ -246,23 +320,29 @@
                                if (roleid == 19 || roleid == 0) {//工单管理查看详情
                                    //str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
                                    //再次派发工单到施工单位
-                                   str += $.formatString('<a href="javascript:void(0)" onclick="dispatchOrder(\'{0}\');">工单派发</a>&nbsp;&nbsp;', row.id);
-                                   if (row.receipttime.length > 0) {
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="setLineStatus(\'{0}\');">线路状态</a>&nbsp;&nbsp;', row.id);
+                                   if (row.status < 2)
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="dispatchOrder(\'{0}\');">派单</a>&nbsp;&nbsp;', row.id);
+                                   if (row.status == 1) {
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="removalOrder(\'{0}\');">拆机</a>&nbsp;&nbsp;', row.id);
                                        //编辑回单路由
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="editReceiptRoute(\'{0}\');">编辑路由</a>&nbsp;&nbsp;', row.id);
-                                       
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="editReceiptRoute(\'{0}\');">路由</a>&nbsp;&nbsp;', row.id);
+                                       //编辑测试照片
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="editPhoto(\'{0}\');">照片</a>&nbsp;&nbsp;', row.id);
                                    }
-                                   else
+                                   if (row.status == 0)//装机待回单
                                        str += $.formatString('<a href="javascript:void(0)" onclick="receiptOrder(\'{0}\');">回单</a>&nbsp;&nbsp;', row.id);
                                    str += $.formatString('<a href="javascript:void(0)" onclick="removeFun(\'{0}\');">删除</a>&nbsp;&nbsp;', row.id);
                                }
 
                                if (roleid == 3) { //施工单位（浩翔，中通服），施工操作
-                                   if (row.receipttime.length == 0)//待回单
+                                   if (row.status == 0)//装机待回单
                                        str += $.formatString('<a href="javascript:void(0)" onclick="receiptOrder(\'{0}\');">回单</a>&nbsp;', row.id);
-                                   else
-                                       str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
+                                   if (row.status == 1)//已回单，在用状态
+                                       //编辑测试照片
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="editPhoto(\'{0}\');">照片</a>&nbsp;&nbsp;', row.id);
+                                   if (row.status == 2)//拆机待回单
+                                       str += $.formatString('<a href="javascript:void(0)" onclick="receiptRemovalOrder(\'{0}\');">拆机</a>&nbsp;&nbsp;', row.id);
+                                   str += $.formatString('<a href="javascript:void(0)" onclick="viewOrderDetail(\'{0}\');">详情</a>&nbsp;', row.id);
                                }
                                return str;
                            }
@@ -284,9 +364,25 @@
                       , {
                           width: '80',
                           title: '线路状态',
-                          field: 'speciallinestatus',
+                          field: 'status',
                           halign: 'center',
-                          align: 'center'
+                          align: 'center',
+                          formatter: function (value, row) {
+                              switch (value) {
+                                  case '0':
+                                      return '待回单';
+                                      break;
+                                  case '1':
+                                      return '在用';
+                                      break;
+                                  case '2':
+                                      return '待拆机';
+                                      break;
+                                  case '3':
+                                      return '拆机';
+                                      break;
+                              }
+                          }
                       }, {
                           width: '80',
                           title: '派单日期',
@@ -377,7 +473,7 @@
                         body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
                     }
                     ////提示框
-                    $(this).datagrid('tooltip', ['receiptroute','customername', 'address', 'route']);
+                    $(this).datagrid('tooltip', ['receiptroute', 'customername', 'address', 'route']);
                 },
                 onDblClickRow: function (index, row) {
                     viewOrderDetail(row.id);
@@ -437,20 +533,23 @@
                             <option>中通服</option>
                             <option>长线局</option>
                             <option>北关浩翔</option>
+                            <option>客户支撑中心</option>
+                            <option>设计院</option>
                         </select>
                     </td>
                     <td style="width: 80px; text-align: right;">线路状态：
                     </td>
                     <td>
-                        <select id="speciallinestatus" style="width: 160px;" class="combo easyui-combobox" name="speciallinestatus" data-options="panelHeight:'auto',editable:false">
+                        <select id="status" style="width: 160px;" class="combo easyui-combobox" name="status" data-options="panelHeight:'auto',editable:false">
                             <option value="">全部</option>
-                            <option>在用</option>
-                            <option>拆机</option>
+                            <option value="0">待回单</option>
+                            <option value="1">在用</option>
+                            <option value="2">待拆机</option>
+                            <option value="3">拆机</option>
                         </select>
                     </td>
-                    <td colspan="2" style="text-align: left;">
-                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:true"
-                            onclick="searchGrid();">查询</a>
+                    <td colspan="2"><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:true"
+                        onclick="searchGrid();">查询</a>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:true"
                             onclick="resetGrid();">重置</a>
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
@@ -465,6 +564,7 @@
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
                             onclick="addOrder();">工单录入</a>
                         <%} %>
+                       
                     </td>
                 </tr>
             </table>

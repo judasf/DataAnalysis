@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>专项整治管理——物料型号管理</title>
+    <title>利旧物料管理——物料型号管理</title>
     <%--引入My97日期文件--%>
     <script src="../Script/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
     <%--引入Jquery文件--%>
@@ -60,7 +60,7 @@
                 width: 600,
                 height: 180,
                 iconCls: 'icon-add',
-                href: 'NetWorkSpecialProject/dialogop/TypeInfo_OP.aspx', //将对话框内容添加到父页面
+                href: 'ReuseMaintainMaterial/dialogop/ReuseTypeInfo_OP.aspx', //将对话框内容添加到父页面
                 buttons: [{
                     text: '添加',
                     handler: function () {
@@ -81,7 +81,7 @@
                 width: 600,
                 height: 180,
                 iconCls: 'icon-edit',
-                href: 'NetWorkSpecialProject/dialogop/TypeInfo_OP.aspx?id=' + id,
+                href: 'ReuseMaintainMaterial/dialogop/ReuseTypeInfo_OP.aspx?id=' + id,
                 buttons: [{
                     text: '保存',
                     handler: function () {
@@ -93,7 +93,7 @@
         var removeFun = function (id) {
             parent.$.messager.confirm('询问', '您确定要删除此型号？', function (r) {
                 if (r) {
-                    $.post('../ajax/Srv_NetWorkSpecialProject.ashx/RemoveTypeInfoByID', {
+                    $.post('../ajax/Srv_ReuseMaintainMaterial.ashx/RemoveTypeInfoByID', {
                         id: id
                     }, function (result) {
                         if (result.success) {
@@ -112,7 +112,7 @@
                 textField: 'text',
                 editable: true,
                 panelHeight: '200',
-                url: '../ajax/Srv_NetWorkSpecialProject.ashx/GetTypeInfoComboboxAll',
+                url: '../ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoComboboxAll',
                 filter: function (q, row) {
                     var opts = $(this).combobox('options');
                     return row[opts.textField].indexOf(q) > -1;
@@ -130,14 +130,11 @@
                     if (result) {
                         $(this).combobox('clear');
                     }
-                },
-                onLoadError: function () {
-                    parent.$.messager.alert('提示', '该物料类型下未配置型号！', 'error');
                 }
             });
             grid = $('#grid').datagrid({
                 title: '物料型号表',
-                url: '../ajax/Srv_NetWorkSpecialProject.ashx/GetMaintainMaterialTypeInfo',
+                url: '../ajax/Srv_ReuseMaintainMaterial.ashx/GetReuseMaintainMaterialTypeInfo',
                 striped: true,
                 rownumbers: true,
                 pagination: true,
@@ -224,7 +221,7 @@
                     <td style="width: 65px; text-align: right;">类型：
                     </td>
                     <td>
-                        <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_NetWorkSpecialProject.ashx/GetNSP_MaintainMaterial_TypeInfoComboboxAll?classname='+encodeURIComponent(rec.value);$('#typeid').combobox('reload', url); }">
+                        <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_ReuseMaintainMaterial.ashx/GetReuseMaintainMaterial_TypeInfoComboboxAll?classname='+encodeURIComponent(rec.value);$('#typeid').combobox('reload', url); }">
                             <option value="">全部</option>
                             <option>光缆</option>
                             <option>光缆交接箱</option>
@@ -260,7 +257,7 @@
 
     <div data-options="region:'center',fit:true,border:false">
         <p class="sitepath">
-            <b>当前位置：</b>专项整治管理 > <a href="javascript:void(0);">物料型号管理</a>
+            <b>当前位置：</b>利旧物料管理 > <a href="javascript:void(0);">物料型号管理</a>
         </p>
         <table id="grid" data-options="fit:false,border:false">
         </table>

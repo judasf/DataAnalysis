@@ -225,6 +225,12 @@
                           halign: 'center',
                           align: 'center'
                       }, {
+                          width: '100',
+                          title: '维修单号',
+                          field: 'repairorderno',
+                          halign: 'center',
+                          align: 'center'
+                      }, {
                           width: '60',
                           title: '网点类别',
                           field: 'pointtype',
@@ -383,15 +389,14 @@
                             <option>其他</option>
                         </select>
                     </td>
-                    <td colspan="4" style="text-align: left;">
-                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:true"
-                            onclick="searchGrid();">查询</a>
-                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:true"
-                            onclick="resetGrid();">重置</a>
-                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
-                            onclick="exportFaultOrder();">导出</a>
-                       <%--  <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
-                            onclick="exportToWord();">生成领料单</a>--%>
+                       <td style="width: 80px; text-align: right;">是否维修：
+                    </td>
+                    <td style="text-align: left;">
+                        <select id="isrepaire" class="easyui-combobox" name="isrepaire" style="width: 120px;" data-options="panelHeight:'auto',editable:false">
+                            <option value="">全部</option>
+                            <option>是</option>
+                            <option>否</option>
+                        </select>
                     </td>
                 </tr>
                  <tr>
@@ -402,6 +407,12 @@
                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
                             onclick="addOrder();">新增障碍工单</a>
                         <%} %>
+                          <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:true"
+                            onclick="searchGrid();">查询</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:true"
+                            onclick="resetGrid();">重置</a>
+                         <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:true"
+                            onclick="exportFaultOrder();">导出</a>
                          </td>
                     </tr>
             </table>

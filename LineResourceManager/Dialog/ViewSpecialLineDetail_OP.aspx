@@ -95,8 +95,9 @@
                     $('#receiptroute').html(result.rows[0].receiptroute);
                     $('#receiptuser').html(result.rows[0].receiptuser);
                     $('#receipttime').html(result.rows[0].receipttime);
-                    $('#speciallinestatus').html(result.rows[0].speciallinestatus);
+                    $('#linestatus').html(result.rows[0].linestatus);
                     $('#receiptmemo').html(result.rows[0].receiptmemo);
+                    $('#removaltime').html(result.rows[0].removaltime);
                     showPhotoList(result.rows[0].id);
                 }
             }, 'json');
@@ -213,18 +214,18 @@
         <tr>
             <td class="left_td">回单人：</td>
             <td class="tdinput">
-                <div id="receiptuser"></div>
+                <span id="receiptuser"></span>
             </td>
             <td class="left_td">完工时间：</td>
             <td class="tdinput">
-                <div id="receipttime"></div>
+                <span id="receipttime"></span>
             </td>
         </tr>
         <tr>
-            <td class="left_td">电路状态：
+            <td class="left_td">线路状态：
             </td>
             <td class="tdinput" colspan="3">
-                <span id="speciallinestatus"></span>
+                <span id="linestatus"></span>
             </td>
         </tr>
          <tr>
@@ -232,6 +233,13 @@
             </td>
             <td class="tdinput" colspan="3">
                 <span id="receiptmemo"></span>
+            </td>
+        </tr>
+         <tr>
+            <td class="left_td">拆机时间：
+            </td>
+            <td class="tdinput" colspan="3">
+                <span id="removaltime"></span>
             </td>
         </tr>
     </table>

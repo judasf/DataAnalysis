@@ -107,6 +107,8 @@
                     $('#checktime').html(result.rows[0].checktime);
                     $('#constructionunit').html(result.rows[0].constructionunit);
                     $('#constructioninfo').html(result.rows[0].constructioninfo);
+                    $('#isaddpon').html(result.rows[0].isaddpon);
+                    $('#fullroute').html(result.rows[0].fullroute);
                     $('#finishuser').html(result.rows[0].finishuser);
                     $('#finishtime').html(result.rows[0].finishtime);
                     $('#inputfiletime').html(result.rows[0].inputfiletime);
@@ -228,6 +230,20 @@
             </td>
             <td class="tdinput" colspan="3">
                 <span id="constructioninfo"></span>
+            </td>
+        </tr>
+         <tr>
+            <td class="left_td">新增PON口：
+            </td>
+            <td class="tdinput" colspan="3">
+                <span id="isaddpon"></span>
+            </td>
+        </tr>
+         <tr>
+            <td class="left_td">全程路由：
+            </td>
+            <td class="tdinput" colspan="3">
+                <span id="fullroute"></span>
             </td>
         </tr>
         <tr>

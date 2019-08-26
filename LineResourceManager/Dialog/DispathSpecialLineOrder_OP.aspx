@@ -75,19 +75,11 @@
     });
 </script>
 <style>
-    #LCTable td {
-        padding: 7px 2px;
-    }
+    #LCTable td { padding: 7px 2px; }
 
-    #LCTable .tdinput {
-        text-align: left;
-    }
+    #LCTable .tdinput { text-align: left; }
 
-    #LCTable .left_td {
-        text-align: right;
-        background: #fafafa;
-        width: 100px;
-    }
+    #LCTable .left_td { text-align: right; background: #fafafa; width: 100px; }
 </style>
 <form method="post">
     <table cellspacing="0" cellpadding="0" bordercolor="#CCCCCC" border="1" style="border-collapse: collapse;" class="table table-bordered table-condensed" style="margin-bottom: 0;" id="LCTable">
@@ -172,10 +164,10 @@
                 <span id="memo"></span>
             </td>
         </tr>
-         <tr>
+        <tr>
             <td colspan="4" style="text-align: center; line-height: 20px; font-size: 14px; font-weight: 700;">工单派发</td>
         </tr>
-         <tr>
+        <tr>
             <td class="left_td">指派施工单位：
             </td>
             <td colspan="3">
@@ -185,6 +177,8 @@
                     <option>中通服</option>
                     <option>长线局</option>
                     <option>北关浩翔</option>
+                    <option>客户支撑中心</option>
+                    <option>设计院</option>
                 </select>
             </td>
         </tr>

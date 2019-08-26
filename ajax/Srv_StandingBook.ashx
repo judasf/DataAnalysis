@@ -114,6 +114,14 @@ public class Srv_StandingBook : IHttpHandler, IRequiresSessionState
         //按设备类型
         if (!string.IsNullOrEmpty(Request.Form["eqtype"]))
             list.Add(" eqtype ='" + Request.Form["eqtype"] + "'");
+        //按是否维修
+        if (!string.IsNullOrEmpty(Request.Form["isrepaire"]))
+        {
+            if (Request.Form["isrepaire"] == "是")
+                list.Add(" repairorderno is not null");
+            else
+                list.Add(" repairorderno is null");
+        }
         //管理员和运维部查看所有，其余只看本部门
         if (roleid != "0" && roleid != "4")
         {
@@ -173,7 +181,7 @@ public class Srv_StandingBook : IHttpHandler, IRequiresSessionState
         if (where != "")
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
-        sql.Append("select FaultOrderNo,FaultDate,StationID,RoomName,FaultPlace,CityName,PointType,EqType,EqModel,FaultMsg,InScope,FaultUser,ConfirmUser,ConfirmOrderName,Memo,InputTime ");
+        sql.Append("select FaultOrderNo,FaultDate,StationID,RoomName,FaultPlace,CityName,PointType,EqType,EqModel,FaultMsg,InScope,FaultUser,ConfirmUser,ConfirmOrderName,Memo,InputTime,repairorderno ");
         sql.Append(" from SB_FaultOrderInfo ");
         sql.Append(where);
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
@@ -194,6 +202,7 @@ public class Srv_StandingBook : IHttpHandler, IRequiresSessionState
         dt.Columns[13].ColumnName = "确认单扫描件";
         dt.Columns[14].ColumnName = "备注";
         dt.Columns[15].ColumnName = "录单日期";
+        dt.Columns[16].ColumnName = "维修单号";
         ExcelHelper.ExportByWeb(dt, "", "故障工单台账.xls", "故障工单台账");
     }
     /*
@@ -338,7 +347,7 @@ public class Srv_StandingBook : IHttpHandler, IRequiresSessionState
             }
         }
         //3、保存信息
-        sql.Append("insert SB_FaultOrderInfo values(@faultorderno,@faultdate,@stationid,@roomname,@faultplace,@cityname,@pointtype,@eqtype,@eqmodel,@faultmsg,@inscope,@faultuser,@confirmuser,@confirmordername,@confirmorderpath,@memo,@inputuser,getdate());");
+        sql.Append("insert SB_FaultOrderInfo values(@faultorderno,@faultdate,@stationid,@roomname,@faultplace,@cityname,@pointtype,@eqtype,@eqmodel,@faultmsg,@inscope,@faultuser,@confirmuser,@confirmordername,@confirmorderpath,@memo,@inputuser,getdate(),null);");
 
         //设定参数
         List<SqlParameter> _paras = new List<SqlParameter>();
@@ -658,83 +667,6 @@ Response.Write("{\"success\":true,\"msg\":\"台账更新成功！\"}");
 else
 Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
 }
-
-    //<summary>
-    //新增日常维修台账
-    //</summary>
-    public void SaveDailyRepairInfo()
-    {
-        //1、获取参数
-        string repairorderno = Convert.ToString(Request.Form["repairorderno"]);
-        string repairdate = Convert.ToString(Request.Form["repairdate"]);
-        string stationid = Convert.ToString(Request.Form["stationid"]);
-        string roomname = Convert.ToString(Request.Form["roomname"]);
-        string repairplace = Convert.ToString(Request.Form["repairplace"]);
-        string cityname = Convert.ToString(Request.Form["cityname"]);
-        string pointtype = Convert.ToString(Request.Form["pointtype"]);
-        string eqtype = Convert.ToString(Request.Form["eqtype"]);
-        string repairitem = Convert.ToString(Request.Form["repairitem"]);
-        string repairmaterials = Convert.ToString(Request.Form["repairmaterials"]);
-        string reimmoney = Convert.ToString(Request.Form["reimmoney"]);
-        string reimtime = Convert.ToString(Request.Form["reimtime"]);
-        string faultorderno = Convert.ToString(Request.Form["faultorderno"]);
-        string jobplanno = Convert.ToString(Request.Form["jobplanno"]);
-        string reportno = Convert.ToString(Request.Form["reportno"]);
-        string memo1 = Convert.ToString(Request.Form["memo1"]);
-        string memo2 = Convert.ToString(Request.Form["memo2"]);
-        string memo3 = Convert.ToString(Request.Form["memo3"]);
-        //资料扫描件
-        string attachfilepath = Convert.ToString(Request.Form["report"]);
-        string attachfile = "";
-        //保存故障确认单扫描件
-        if (string.IsNullOrEmpty(attachfilepath))
-        {
-            Response.Write("{\"success\":false,\"msg\":\"请上传扫描件资料！\"}");
-            return;
-        }
-        else
-        {
-            attachfile = attachfilepath.Substring(attachfilepath.LastIndexOf('/') + 1);
-        }
-
-
-        //设定参数
-        List<SqlParameter> _paras = new List<SqlParameter>();
-        _paras.Add(new SqlParameter("@repairorderno", repairorderno));
-        _paras.Add(new SqlParameter("@repairdate", repairdate));
-        _paras.Add(new SqlParameter("@stationid", stationid));
-        _paras.Add(new SqlParameter("@roomname", roomname));
-        _paras.Add(new SqlParameter("@repairplace", repairplace));
-        _paras.Add(new SqlParameter("@cityname", cityname));
-        _paras.Add(new SqlParameter("@pointtype", pointtype));
-        _paras.Add(new SqlParameter("@eqtype", eqtype));
-        _paras.Add(new SqlParameter("@repairitem", repairitem));
-        _paras.Add(new SqlParameter("@repairmaterials", repairmaterials));
-        _paras.Add(new SqlParameter("@reimmoney", reimmoney));
-        _paras.Add(new SqlParameter("@reimtime", reimtime));
-        _paras.Add(new SqlParameter("@attachfile", attachfile));
-        _paras.Add(new SqlParameter("@attachfilepath", attachfilepath));
-        _paras.Add(new SqlParameter("@faultorderno", faultorderno));
-        _paras.Add(new SqlParameter("@jobplanno", jobplanno));
-        _paras.Add(new SqlParameter("@reportno", reportno));
-        _paras.Add(new SqlParameter("@memo1", memo1));
-        _paras.Add(new SqlParameter("@memo2", memo2));
-        _paras.Add(new SqlParameter("@memo3", memo3));
-        _paras.Add(new SqlParameter("@inputuser", Session["uname"].ToString()));
-
-
-        //2、保存
-        StringBuilder sql = new StringBuilder();
-        sql.Append("if exists(select * from SB_FaultOrderInfo where faultorderno=@faultorderno)");
-        sql.Append("insert SB_DailyRepairInfo(repairorderno,repairdate,stationid,roomname,repairplace,cityname,pointtype,eqtype,repairitem,repairmaterials,reimmoney,reimtime,attachfile,attachfilepath,faultorderno,jobplanno,reportno,memo1,memo2,memo3,inputUser) values(");
-        sql.Append("@repairorderno,@repairdate,@stationid,@roomname,@repairplace,@cityname,@pointtype,@eqtype,@repairitem,@repairmaterials,@reimmoney,@reimtime,@attachfile,@attachfilepath,@faultorderno,@jobplanno,@reportno,@memo1,@memo2,@memo3,inputuser);");
-
-        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), _paras.ToArray());
-        if (result == 1)
-            Response.Write("{\"success\":true,\"msg\":\"新增日常维修台账成功！\"}");
-        else
-            Response.Write("{\"success\":false,\"msg\":\"故障单编号不存在！！\"}");
-    }
         */
     //<summary>
     //新增日常维修台账,选择用料情况并出库
@@ -833,6 +765,7 @@ Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
         sql.Append(" begin ");
         sql.Append("insert SB_DailyRepairInfo(repairorderno,repairdate,stationid,roomname,repairplace,cityname,pointtype,eqtype,repairitem,reimmoney,reimtime,attachfile,attachfilepath,faultorderno,jobplanno,reportno,memo1,memo2,memo3,inputUser,isusematerial) values(");
         sql.Append("@repairorderno,@repairdate,@stationid,@roomname,@repairplace,@cityname,@pointtype,@eqtype,@repairitem,@reimmoney,@reimtime,@attachfile,@attachfilepath,@faultorderno,@jobplanno,@reportno,@memo1,@memo2,@memo3,@inputuser,@isusematerial) ");
+        //用料情况
         if (isusematerial == "是")
         {
             for (int i = 1; i <= rowsCount; i++)
@@ -844,6 +777,8 @@ Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
                 sql.Append("INSERT INTO SB_DailyRepairInfo_Material values(@stockdrawid" + i.ToString() + ",@typeid" + i.ToString() + ",@repairorderno,@amount" + i.ToString() + ");");
             }
         }
+        //更新故障工单表维修单号信息
+        sql.Append(" UPDATE SB_FaultOrderInfo set repairorderno=@repairorderno where faultorderno=@faultorderno;");
         sql.Append(" end ");
         sql.Append(" end ");
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), paras.ToArray());

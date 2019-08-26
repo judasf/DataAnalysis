@@ -24,9 +24,9 @@
         if ($('form').form('validate')) {
             var url;
             if ($('#id').val().length == 0) {
-                url = '../ajax/Srv_MaintainMaterial.ashx/SaveTypeInfo';
+                url = '../ajax/Srv_ReuseMaintainMaterial.ashx/SaveTypeInfo';
             } else {
-                url = '../ajax/Srv_MaintainMaterial.ashx/UpdateTypeInfo';
+                url = '../ajax/Srv_ReuseMaintainMaterial.ashx/UpdateTypeInfo';
             }
             $.post(url, $.serializeObject($('form')), function (result) {
                 if (result.success) {
@@ -43,7 +43,7 @@
             parent.$.messager.progress({
                 text: '数据加载中....'
             });
-            $.post('../ajax/Srv_MaintainMaterial.ashx/GetTypeInfoByID', {
+            $.post('../ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoByID', {
                 id: $('#id').val()
             }, function (result) {
                 if (result.rows[0] && result.rows[0].id != undefined) {

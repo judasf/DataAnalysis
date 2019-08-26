@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>运维物料管理——物料型号管理</title>
+    <title>利旧物料管理——领料单位管理</title>
     <%--引入My97日期文件--%>
     <script src="../Script/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
     <%--引入Jquery文件--%>
@@ -20,7 +20,6 @@
     <script src="../Script/extEasyUI.js" type="text/javascript"></script>
     <link type="text/css" href="../css/style.css" rel="Stylesheet" />
     <%  int roleid = -1;
-        string uname = "";
         if (Session["uname"] == null || Session["uname"].ToString() == "")
         {%>
     <script type="text/javascript">
@@ -34,12 +33,10 @@
     <%}
         else
         {
-            roleid = int.Parse(Session["roleid"].ToString());
-            uname = Session["uname"].ToString();
+            roleid = int.Parse(Session["roleid"].ToString()); 
     %>
     <script type="text/javascript">
         var roleid = '<%=roleid%>';
-        var uname = '<%=uname%>';
     </script>
     <%}
     %>
@@ -49,18 +46,13 @@
         var searchGrid = function () {
             grid.datagrid('load', $.serializeObject($('#searchForm')));
         };
-        //重置查询
-        var resetGrid = function () {
-            $('#searchForm').form('reset');
-            grid.datagrid('load', {});
-        };
         var addFun = function () {
             var dialog = parent.parent.$.modalDialog({
-                title: '添加物料型号',
-                width: 600,
-                height: 180,
+                title: '添加领料单位',
+                width: 350,
+                height: 150,
                 iconCls: 'icon-add',
-                href: 'MaintainMaterial/dialogop/TypeInfo_OP.aspx', //将对话框内容添加到父页面
+                href: 'ReuseMaintainMaterial/dialogop/ReuseAreaInfo_OP.aspx',
                 buttons: [{
                     text: '添加',
                     handler: function () {
@@ -77,23 +69,29 @@
         };
         var editFun = function (id) {
             var dialog = parent.$.modalDialog({
-                title: '编辑物料型号',
-                width: 600,
-                height: 180,
+                title: '编辑领料单位',
+                width: 350,
+                height: 150,
                 iconCls: 'icon-edit',
-                href: 'MaintainMaterial/dialogop/TypeInfo_OP.aspx?id=' + id,
+                href: 'ReuseMaintainMaterial/dialogop/ReuseAreaInfo_OP.aspx?id=' + id,
                 buttons: [{
                     text: '保存',
                     handler: function () {
                         parent.onClassFormSubmit(dialog, grid);
                     }
+                },
+                {
+                    text: '取消',
+                    handler: function () {
+                        dialog.dialog('close');
+                    }
                 }]
             });
         };
         var removeFun = function (id) {
-            parent.$.messager.confirm('询问', '您确定要删除此型号？', function (r) {
+            parent.$.messager.confirm('询问', '您确定要删除此记录？', function (r) {
                 if (r) {
-                    $.post('../ajax/Srv_MaintainMaterial.ashx/RemoveTypeInfoByID', {
+                    $.post('../ajax/Srv_ReuseMaintainMaterial.ashx/RemoveAreaInfoByID', {
                         id: id
                     }, function (result) {
                         if (result.success) {
@@ -106,35 +104,9 @@
             });
         };
         $(function () {
-            //初始化型号下拉框
-            $('#typeid').combobox({
-                valueField: 'id',
-                textField: 'text',
-                editable: true,
-                panelHeight: '200',
-                url: '../ajax/Srv_MaintainMaterial.ashx/GetTypeInfoComboboxAll',
-                filter: function (q, row) {
-                    var opts = $(this).combobox('options');
-                    return row[opts.textField].indexOf(q) > -1;
-                },
-                onHidePanel: function () {
-                    var valueField = $(this).combobox('options').valueField;
-                    var val = $(this).combobox('getValue');  //当前combobox的值
-                    var allData = $(this).combobox('getData');   //获取combobox所有数据
-                    var result = true;      //为true说明输入的值在下拉框数据中不存在
-                    for (var i = 0; i < allData.length; i++) {
-                        if (val == allData[i][valueField]) {
-                            result = false;
-                        }
-                    }
-                    if (result) {
-                        $(this).combobox('clear');
-                    }
-                }
-            });
             grid = $('#grid').datagrid({
-                title: '物料型号表',
-                url: '../ajax/Srv_MaintainMaterial.ashx/GetMaintainMaterialTypeInfo',
+                title: '领料单位表',
+                url: '../ajax/Srv_ReuseMaintainMaterial.ashx/GetReuseMaintainMaterialAreaInfo',
                 striped: true,
                 rownumbers: true,
                 pagination: true,
@@ -143,23 +115,11 @@
                 pageSize: 20,
                 idField: 'id',
                 sortName: 'id',
-                sortOrder: 'asc',
-                columns: [[{
-                    width: '100',
-                    title: '物料类型',
-                    field: 'classname',
-                    halign: 'center',
-                    align: 'center'
-                }, {
-                    width: '400',
-                    title: '物料型号',
-                    field: 'typename',
-                    halign: 'center',
-                    align: 'center'
-                }, {
-                    width: '80',
-                    title: '单位',
-                    field: 'units',
+                sortOrder: 'desc',
+                columns: [[ {
+                    width: '200',
+                    title: '领料单位',
+                    field: 'areaname',
                     halign: 'center',
                     align: 'center'
                 },
@@ -170,8 +130,9 @@
                     halign: 'center',
                     formatter: function (value, row) {
                         var str = '';
+
                         str += $.formatString('<img src="../script/easyui/themes/icons/pencil.png" title="编辑" onclick="editFun(\'{0}\');" style="cursor:pointer;" />&nbsp;&nbsp;', row.id);
-                        //str += $.formatString('<img src="../script/easyui/themes/icons/no.png" title="删除" onclick="removeFun(\'{0}\');" style="cursor:pointer;"/>', row.id);
+                        str += $.formatString('<img src="../script/easyui/themes/icons/no.png" title="删除" onclick="removeFun(\'{0}\');" style="cursor:pointer;"/>', row.id);
                         return str;
                     }
                 }]],
@@ -187,7 +148,6 @@
                         var body = $(this).data().datagrid.dc.body2;
                         body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
                     }
-                    $(this).datagrid('tooltip', ['typename']);
                 }
             });
             var pager = $('#grid').datagrid('getPager');
@@ -195,7 +155,7 @@
                 layout: ['list', 'sep', 'first', 'prev', 'sep', 'links', 'sep', 'next', 'last', 'sep', 'refresh', 'sep', 'manual']
             });
             //非管理员隐藏操作列
-            if (roleid != 0 && roleid != 4 && (roleid == 2 && uname != 'wanggang18'))
+            if (roleid != 0 && roleid != 4)
                 $('#grid').datagrid('hideColumn', 'action');
         });
     </script>
@@ -203,61 +163,60 @@
 <body class="easyui-layout">
 
     <div id="toolbar" style="display: none; padding: 5px 10px 0;">
-        <form id="searchForm" style="margin: 0;">
-            <table style="table-layout: auto;">
-                <tr>
-                    <%if (roleid == 0 || roleid == 4 || (roleid == 2 && uname == "wanggang18"))
-                        { %>
-                    <td>
-                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
-                            onclick="addFun();">添加物料型号</a>
-                    </td>
+         <form id="searchForm" style="margin: 0;">
+        <table style="table-layout: auto;">
+            <tr>
+                <%if (roleid == 0 || roleid==4)
+                  { %>
+                <td>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false"
+                        onclick="addFun();">添加领料单位</a>
+                </td>
 
-                    <td>
-                        <div class="datagrid-btn-separator">
-                        </div>
+                <td>
+                    <div class="datagrid-btn-separator">
+                    </div>
+                </td>
+                <%} %>
+                <%--<td style="width: 65px; text-align: right;">单位名称：
                     </td>
-                    <%} %>
-                    <td style="width: 65px; text-align: right;">类型：
-                    </td>
                     <td>
-                        <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_MaintainMaterial.ashx/GetMaintainMaterial_TypeInfoComboboxAll?classname='+encodeURIComponent(rec.value);$('#typeid').combobox('reload', url); }">
+                        <select id="unitname" class="combo easyui-combobox" name="unitname" style="width: 120px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_ReuseMaintainMaterial.ashx/GetReuseMaintainMaterial_UnitAreaComboboxAll?unitname='+encodeURIComponent(rec.value);$('#areaid').combobox('reload', url); }">
+                            <%if (roleid == 30 || roleid == 31 || roleid == 32)
+                                { %>
+                            <option><%=Session["deptname"] %></option>
+
+                            <%}
+                                else
+                                { %>
                             <option value="">全部</option>
-                            <option>光缆</option>
-                            <option>光缆交接箱</option>
-                            <option>电力电缆</option>
-                            <option>双绞线</option>
-                            <option>光跳纤</option>
-                            <option>光缆接头盒</option>
-                            <option>分光器</option>
-                            <option>电杆</option>
-                            <option>井盖</option>
-                            <option>铁件</option>
-                            <option>工器具</option>
-                            <option>其他</option>
+                            <option>北关营销中心</option>
+                            <option>红旗营销中心</option>
+                            <option>铁西营销中心</option>
+                            <option>文峰营销中心</option>
+                            <option>安阳县</option>
+                            <option>滑县</option>
+                            <option>内黄县</option>
+                            <option>林州市</option>
+                            <option>汤阴县</option>
+                            <%} %>
                         </select>
                     </td>
-                    <td style="width: 65px; text-align: right;">物料型号：
-                    </td>
-                    <td align="left">
-                        <input name="typeid" id="typeid" class="combo" style="width: 300px;" />
-                    </td>
-                    <td>
-                        <a href="javascript:void(0);" style="margin: 0 10px;" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:false"
+                <td>
+                    <a href="javascript:void(0);" style="margin:0 10px;" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:false"
                             onclick="searchGrid();">&nbsp;&nbsp;查询&nbsp;&nbsp;</a>
-                    </td>
-                    <td>
-                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:false"
-                            onclick="resetGrid();">清空查询</a>
-                    </td>
-                </tr>
-            </table>
-        </form>
+                </td>
+                <td>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:false"
+                        onclick="$('#searchBox').searchbox('setValue','');grid.datagrid('load',{});">清空查询</a>
+                </td>--%>
+            </tr>
+        </table>
+             </form>
     </div>
-
     <div data-options="region:'center',fit:true,border:false">
         <p class="sitepath">
-            <b>当前位置：</b>运维物料管理 > <a href="javascript:void(0);">物料型号管理</a>
+            <b>当前位置：</b>利旧物料管理 > <a href="javascript:void(0);">领料单位管理</a>
         </p>
         <table id="grid" data-options="fit:false,border:false">
         </table>

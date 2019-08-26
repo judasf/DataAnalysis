@@ -1,4 +1,4 @@
-﻿<%@ WebHandler Language="C#" Class="Srv_MaintainMaterial" %>
+﻿<%@ WebHandler Language="C#" Class="Srv_ReuseMaintainMaterial" %>
 
 using System;
 using System.Web;
@@ -10,9 +10,9 @@ using System.Data.SqlClient;
 using System.Collections;
 using System.Collections.Generic;
 /// <summary>
-/// 运维物料管理
+/// 利旧物料编号
 /// </summary>
-public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
+public class Srv_ReuseMaintainMaterial : IHttpHandler, IRequiresSessionState
 {
     HttpRequest Request;
     HttpResponse Response;
@@ -85,11 +85,11 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             Response.Write("{\"success\":false,\"msg\":\"Method not Found !\"}");
         }
     }
-    #region 运维物料——物料型号
+    #region 利旧物料——物料型号
     /// <summary>
-    /// 运维物料——物料型号
-    /// 获取MaintainMaterial_TypeInfo表数据page:1 rows:10 sort:id order:asc
-    public void GetMaintainMaterialTypeInfo()
+    /// 利旧物料——物料型号
+    /// 获取Reuse_MaintainMaterial_TypeInfo表数据page:1 rows:10 sort:id order:asc
+    public void GetReuseMaintainMaterialTypeInfo()
     {
         int total = 0;
         string where = "";
@@ -100,7 +100,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         if (where.Length > 0)
             where = where.Substring(0, where.Length - 3);
         string fieldStr = "*";
-        string table = "MaintainMaterial_TypeInfo";
+        string table = "Reuse_MaintainMaterial_TypeInfo";
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
     }
@@ -112,7 +112,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         int classID = Convert.ToInt32(Request.Form["id"]);
         SqlParameter paras = new SqlParameter("@id", SqlDbType.Int);
         paras.Value = classID;
-        string sql = "SELECT * FROM  MaintainMaterial_TypeInfo WHERE id=@id";
+        string sql = "SELECT * FROM  Reuse_MaintainMaterial_TypeInfo WHERE id=@id";
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds));
     }
@@ -125,8 +125,8 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         string typeName = Convert.ToString(Request.Form["typename"]);
         string units = Convert.ToString(Request.Form["units"]);
         SqlParameter[] paras = new SqlParameter[] { new SqlParameter("@classname", classname), new SqlParameter("@typename", typeName), new SqlParameter("@units", units) };
-        string sql = "if not exists( select id from MaintainMaterial_TypeInfo where classname=@classname and typename=@typename)";
-        sql += "INSERT INTO MaintainMaterial_TypeInfo VALUES(@classname,@typename,@units)";
+        string sql = "if not exists( select id from Reuse_MaintainMaterial_TypeInfo where classname=@classname and typename=@typename)";
+        sql += "INSERT INTO Reuse_MaintainMaterial_TypeInfo VALUES(@classname,@typename,@units)";
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         if (result == 1)
             Response.Write("{\"success\":true,\"msg\":\"执行成功\"}");
@@ -134,7 +134,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             Response.Write("{\"success\":false,\"msg\":\"该物料型号已存在！\"}");
     }
     /// <summary>
-    /// 通过id更新MaintainMaterial_TypeInfo表数据
+    /// 通过id更新Reuse_MaintainMaterial_TypeInfo表数据
     /// </summary>
     public void UpdateTypeInfo()
     {
@@ -152,8 +152,8 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         paras[1].Value = classname;
         paras[2].Value = typeName;
         paras[3].Value = units;
-        string sql = "if not exists( select id from MaintainMaterial_TypeInfo where  classname=@classname and typename=@typename)";
-        sql += "UPDATE MaintainMaterial_TypeInfo set classname=@classname,typename=@typename,units=@units where id=@id";
+        string sql = "if not exists( select id from Reuse_MaintainMaterial_TypeInfo where  classname=@classname and typename=@typename)";
+        sql += "UPDATE Reuse_MaintainMaterial_TypeInfo set classname=@classname,typename=@typename,units=@units where id=@id";
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         if (result == 1)
             Response.Write("{\"success\":true,\"msg\":\"执行成功\"}");
@@ -170,7 +170,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
 
         SqlParameter paras = new SqlParameter("@id", SqlDbType.Int);
         paras.Value = id;
-        string sql = "DELETE FROM MaintainMaterial_TypeInfo WHERE id=@id";
+        string sql = "DELETE FROM Reuse_MaintainMaterial_TypeInfo WHERE id=@id";
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         if (result == 1)
             Response.Write("{\"success\":true,\"msg\":\"执行成功\"}");
@@ -178,30 +178,9 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
     /// <summary>
-    /// 生成物料型号树json
+    /// 通过物料类型生成Reuse_MaintainMaterial_TypeInfo表的combobox使用的json字符串,带“全部”选项
     /// </summary>
-    //public void GetTypeInfoTree()
-    //{
-    //    StringBuilder json = new StringBuilder("[");
-    //    DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select * from MaintainMaterial_TypeInfo order by id");
-    //    DataRowCollection rows = ds.Tables[0].Rows;
-    //    if (rows.Count > 0)
-    //    {
-    //        foreach (DataRow row in rows)
-    //        {
-    //            //"{{"和"}}"在格式化字符串中被转义为"{","}"
-    //            //json.AppendFormat("{{\"id\":{0},\"text\":\"{1}\"}},", row[0], row[1]);
-    //            json.AppendFormat("{0}\"id\":{1},\"text\":\"{2}\",\"iconCls\":\"ext-icon-group\"{3},", "{", row[0], row[1], "}");
-    //        }
-    //    }
-    //    json.Remove(json.Length - 1, 1);
-    //    json.Append("]");
-    //    Response.Write(json.ToString());
-    //}
-    /// <summary>
-    /// 通过物料类型生成MaintainMaterial_TypeInfo表的combobox使用的json字符串,带“全部”选项
-    /// </summary>
-    public void GetMaintainMaterial_TypeInfoComboboxAll()
+    public void GetReuseMaintainMaterial_TypeInfoComboboxAll()
     {
         string queryStr = "";
         string where = "";
@@ -214,13 +193,13 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             queryStr = string.Join(" and ", list.ToArray());
             where = "where " + queryStr;
         }
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,typename from MaintainMaterial_TypeInfo " + where + " order by id");
+        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,typename from Reuse_MaintainMaterial_TypeInfo " + where + " order by id");
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0], 0));
     }
     /// <summary>
     /// 通过物料类型生成入库页面物料型号combobox
     /// </summary>
-    public void GetMaintainMaterial_TypeInfoComboboxForIn()
+    public void GetReuseMaintainMaterial_TypeInfoComboboxForIn()
     {
         string queryStr = "";
         string where = "";
@@ -233,7 +212,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             queryStr = string.Join(" and ", list.ToArray());
             where = "where " + queryStr;
         }
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,typename from MaintainMaterial_TypeInfo " + where + " order by id");
+        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,typename from Reuse_MaintainMaterial_TypeInfo " + where + " order by id");
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0], 2));
     }
     /// <summary>
@@ -241,7 +220,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
     /// </summary>
     public void GetTypeInfoCombobox()
     {
-        string sql = "select id,typename from MaintainMaterial_TypeInfo  order by id";
+        string sql = "select id,typename from Reuse_MaintainMaterial_TypeInfo  order by id";
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql);
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0]));
     }
@@ -250,7 +229,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
     /// </summary>
     public void GetTypeInfoComboboxAll()
     {
-        string sql = "select id,typename from MaintainMaterial_TypeInfo  order by id";
+        string sql = "select id,typename from Reuse_MaintainMaterial_TypeInfo  order by id";
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql);
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0], 0));
     }
@@ -271,7 +250,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             queryStr = string.Join(" and ", list.ToArray());
             where = "where " + queryStr;
         }
-        string sql = "select distinct a.id,typename from MaintainMaterial_TypeInfo  a  JOIN  MaintainMaterial_Stock b ON a.id=b.TypeID AND b.Amount>0 " + where;
+        string sql = "select distinct a.id,typename from Reuse_MaintainMaterial_TypeInfo  a  JOIN  Reuse_MaintainMaterial_Stock b ON a.id=b.TypeID AND b.Amount>0 " + where;
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql);
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0]));
     }
@@ -285,7 +264,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         string where = " unitname='" + Session["deptname"] + "' and typeid=" + typeid;
 
         int total = 0;
-        string table = "MaintainMaterial_TypeInfo  a  JOIN  MaintainMaterial_Stock b ON a.id=b.TypeID AND b.Amount>0";
+        string table = "Reuse_MaintainMaterial_TypeInfo  a  JOIN  Reuse_MaintainMaterial_Stock b ON a.id=b.TypeID AND b.Amount>0";
         string fieldStr = "typeid,b.Storeorderno,b.Amount,a.units";
 
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request["sort"].ToString(), Request["order"].ToString(), where, Convert.ToInt32(Request["rows"]), Convert.ToInt32(Request["page"]), out total);
@@ -308,7 +287,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             queryStr = string.Join(" and ", list.ToArray());
             where = "where " + queryStr;
         }
-        string sql = "select  ROW_NUMBER() OVER (ORDER BY  a.ClassName)   AS rowid,a.ClassName  from MaintainMaterial_TypeInfo  a  JOIN  MaintainMaterial_Stock b ON a.id=b.TypeID AND b.Amount>0 " + where;
+        string sql = "select  ROW_NUMBER() OVER (ORDER BY  a.ClassName)   AS rowid,a.ClassName  from Reuse_MaintainMaterial_TypeInfo  a  JOIN  Reuse_MaintainMaterial_Stock b ON a.id=b.TypeID AND b.Amount>0 " + where;
         sql += "  GROUP BY a.ClassName";
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql);
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0]));
@@ -329,7 +308,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             queryStr = string.Join(" and ", list.ToArray());
             where = "where " + queryStr;
         }
-        string sql = "select  ROW_NUMBER() OVER (ORDER BY  a.ClassName)   AS rowid,a.ClassName  from MaintainMaterial_TypeInfo  a  JOIN  dbo.MaintainMaterial_StockDraw b ON a.id=b.typeid AND b.currentstock>0  " + where;
+        string sql = "select  ROW_NUMBER() OVER (ORDER BY  a.ClassName)   AS rowid,a.ClassName  from Reuse_MaintainMaterial_TypeInfo  a  JOIN  dbo.Reuse_MaintainMaterial_StockDraw b ON a.id=b.typeid AND b.currentstock>0  " + where;
         sql += "  GROUP BY a.ClassName";
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql);
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0]));
@@ -351,7 +330,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             queryStr = string.Join(" and ", list.ToArray());
             where = "where " + queryStr;
         }
-        string sql = "select distinct a.id,typename from MaintainMaterial_TypeInfo  a  JOIN  MaintainMaterial_StockDraw b ON a.id=b.TypeID AND b.currentstock>0 " + where;
+        string sql = "select distinct a.id,typename from Reuse_MaintainMaterial_TypeInfo  a  JOIN  Reuse_MaintainMaterial_StockDraw b ON a.id=b.TypeID AND b.currentstock>0 " + where;
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql);
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0]));
     }
@@ -364,36 +343,36 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         string where = " llr='" + Session["uname"] + "' and typeid=" + typeid;
 
         int total = 0;
-        string table = "MaintainMaterial_TypeInfo  a  JOIN  MaintainMaterial_StockDraw b ON a.id=b.TypeID AND b.currentstock>0";
+        string table = "Reuse_MaintainMaterial_TypeInfo  a  JOIN  Reuse_MaintainMaterial_StockDraw b ON a.id=b.TypeID AND b.currentstock>0";
         string fieldStr = "b.id,typeid,b.Storeorderno,b.currentstock,a.units";
 
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request["sort"].ToString(), Request["order"].ToString(), where, Convert.ToInt32(Request["rows"]), Convert.ToInt32(Request["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
     }
     //********************维修台账页面信息 end**********************************//
-    #endregion 运维物料——物料型号
-    #region 运维物料——领料单位,领料人
+    #endregion 利旧物料——物料型号
+    #region 利旧物料——领料单位,领料人
     /// <summary>
-    /// 运维物料——领料单位
-    /// 获取MaintainMaterial_AreaInfo表数据page:1 rows:10 sort:id order:asc
+    /// 利旧物料——领料单位
+    /// 获取Reuse_MaintainMaterial_AreaInfo表数据page:1 rows:10 sort:id order:asc
     public void GetMaintainMaterialAreaInfo()
     {
         int total = 0;
         string where = "";
         string fieldStr = "*";
-        string table = "MaintainMaterial_AreaInfo";
+        string table = "Reuse_MaintainMaterial_AreaInfo";
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
     }
     /// <summary>
-    /// 通过ID获取MaintainMaterial_AreaInfo信息
+    /// 通过ID获取Reuse_MaintainMaterial_AreaInfo信息
     /// </summary>
     public void GetAreaInfoByID()
     {
         int classID = Convert.ToInt32(Request.Form["id"]);
         SqlParameter paras = new SqlParameter("@id", SqlDbType.Int);
         paras.Value = classID;
-        string sql = "SELECT * FROM  MaintainMaterial_AreaInfo WHERE id=@id";
+        string sql = "SELECT * FROM  Reuse_MaintainMaterial_AreaInfo WHERE id=@id";
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds));
     }
@@ -404,8 +383,8 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
     {
         string areaname = Convert.ToString(Request.Form["areaname"]);
         SqlParameter[] paras = new SqlParameter[] { new SqlParameter("@areaname", areaname) };
-        string sql = "if not exists( select id from MaintainMaterial_AreaInfo where areaname=@areaname)";
-        sql += "INSERT INTO MaintainMaterial_AreaInfo VALUES(@areaname)";
+        string sql = "if not exists( select id from Reuse_MaintainMaterial_AreaInfo where areaname=@areaname)";
+        sql += "INSERT INTO Reuse_MaintainMaterial_AreaInfo VALUES(@areaname)";
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         if (result == 1)
             Response.Write("{\"success\":true,\"msg\":\"执行成功\"}");
@@ -413,7 +392,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             Response.Write("{\"success\":false,\"msg\":\"该领料单位已存在！\"}");
     }
     /// <summary>
-    /// 通过id更新MaintainMaterial_AreaInfo表数据
+    /// 通过id更新Reuse_MaintainMaterial_AreaInfo表数据
     /// </summary>
     public void UpdateAreaInfo()
     {
@@ -425,8 +404,8 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         };
         paras[0].Value = id;
         paras[1].Value = areaname;
-        string sql = "if not exists( select id from MaintainMaterial_AreaInfo where areaname=@areaname)";
-        sql += "UPDATE MaintainMaterial_AreaInfo set areaname=@areaname where id=@id";
+        string sql = "if not exists( select id from Reuse_MaintainMaterial_AreaInfo where areaname=@areaname)";
+        sql += "UPDATE Reuse_MaintainMaterial_AreaInfo set areaname=@areaname where id=@id";
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         if (result == 1)
             Response.Write("{\"success\":true,\"msg\":\"执行成功\"}");
@@ -434,7 +413,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
     /// <summary>
-    /// 通过ID获取删除MaintainMaterial_AreaInfo信息
+    /// 通过ID获取删除Reuse_MaintainMaterial_AreaInfo信息
     /// </summary>
     public void RemoveAreaInfoByID()
     {
@@ -443,7 +422,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
 
         SqlParameter paras = new SqlParameter("@id", SqlDbType.Int);
         paras.Value = id;
-        string sql = "DELETE FROM MaintainMaterial_AreaInfo WHERE id=@id";
+        string sql = "DELETE FROM Reuse_MaintainMaterial_AreaInfo WHERE id=@id";
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
         if (result == 1)
             Response.Write("{\"success\":true,\"msg\":\"执行成功\"}");
@@ -451,25 +430,25 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
     /// <summary>
-    /// 生成MaintainMaterial_AreaInfo表的combobox使用的json字符串
+    /// 生成Reuse_MaintainMaterial_AreaInfo表的combobox使用的json字符串
     /// </summary>
-    public void GetMaintainMaterial_AreaInfoCombobox()
+    public void GetReuseMaintainMaterial_AreaInfoCombobox()
     {
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,areaname from MaintainMaterial_AreaInfo  order by id");
+        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,areaname from Reuse_MaintainMaterial_AreaInfo  order by id");
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0]));
     }
     /// <summary>
-    /// 生成MaintainMaterial_AreaInfo表的combobox使用的json字符串带“全部”
+    /// 生成Reuse_MaintainMaterial_AreaInfo表的combobox使用的json字符串带“全部”
     /// </summary>
-    public void GetMaintainMaterial_AreaInfoComboboxAll()
+    public void GetReuseMaintainMaterial_AreaInfoComboboxAll()
     {
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,areaname from MaintainMaterial_AreaInfo  order by id");
+        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,areaname from Reuse_MaintainMaterial_AreaInfo  order by id");
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0], 0));
     }
     /// <summary>
     /// 生成物料领取页面领料单位的combobox使用的json字符串
     /// </summary>
-    public void GetMaintainMaterial_lldwCombobox()
+    public void GetReuseMaintainMaterial_lldwCombobox()
     {
         string where = "";
         //if (roleid == "2")
@@ -498,8 +477,8 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql);
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0]));
     }
-    #endregion  运维物料——领料单位
-    #region 运维物料——库存管理
+    #endregion  利旧物料——领料单位
+    #region 利旧物料——库存管理
     /// <summary>
     /// 设置库存管理查询条件
     /// </summary>
@@ -528,31 +507,21 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         //按商城订单号
         if (!string.IsNullOrEmpty(Request.Form["storeorderno"]))
             list.Add(" storeorderno like '%" + Request.Form["storeorderno"] + "%'");
-         //按是否有库存
-        if (!string.IsNullOrEmpty(Request.Form["currentstock"]))
-        {
-            if (Request.Form["currentstock"] == "1")//有库存
-                list.Add(" a.amount>0 ");
-            if (Request.Form["currentstock"] == "0")//库存为0
-                list.Add(" a.amount=0 ");
-        }
-        else//默认显示有库存
-            list.Add(" a.amount>0 ");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
         return queryStr;
     }
     /// <summary>
-    /// 运维物料——库存管理
-    /// 获取MaintainMaterial_Stock表数据page:1 rows:10 sort:id order:asc
-    public void GetMaintainMaterialUnitStock()
+    /// 利旧物料——库存管理
+    /// 获取Reuse_MaintainMaterial_Stock表数据page:1 rows:10 sort:id order:asc
+    public void GetReuseMaintainMaterialStock()
     {
         int total = 0;
         string where = SetQueryConditionForStock();
         if (!string.IsNullOrEmpty(Request.Form["where"]))
             where = Server.UrlDecode(Request.Form["where"].ToString());
         string fieldStr = "a.id,a.unitname,a.storeorderno,b.classname,b.typename,a.amount,b.units,price";
-        string table = "MaintainMaterial_Stock AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.id ";
+        string table = "Reuse_MaintainMaterial_Stock AS a JOIN Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.id ";
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
     }
@@ -569,17 +538,18 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
     //    };
     //    paras[0].Value = typeid;
     //    paras[1].Value = unitname;
-    //    string sql = "SELECT  isnull(ks.Amount,0) AS amount,kw.Units FROM MaintainMaterial_Stock AS ks right  JOIN MaintainMaterial_TypeInfo AS kw ON ks.TypeID=kw.ID AND  ks.UnitName=@unitname WHERE  kw.id=@typeid";
+    //    string sql = "SELECT  isnull(ks.Amount,0) AS amount,kw.Units FROM Reuse_MaintainMaterial_Stock AS ks right  JOIN Reuse_MaintainMaterial_TypeInfo AS kw ON ks.TypeID=kw.ID AND  ks.UnitName=@unitname WHERE  kw.id=@typeid";
     //    DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
     //    Response.Write(JsonConvert.GetJsonFromDataTable(ds));
     //}
     /// <summary>
     /// 保存单位库存录入信息
     /// </summary>
-    public void SaveUnitStockInfo()
+    public void SaveReuseStockInfo()
     {
         string llrq = Convert.ToString(Request.Form["llrq"]);
         string unitname = Convert.ToString(Server.UrlDecode(Request.Form["unitname"]));
+        string demolishpalce = Convert.ToString(Server.HtmlEncode(Server.UrlDecode(Request.Form["demolishplace"])));
         string memo = Convert.ToString(Server.HtmlEncode(Server.UrlDecode(Request.Form["memo"])));
         //获取数据行数
         int rowsCount = 0;
@@ -594,6 +564,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         List<SqlParameter> paras = new List<SqlParameter>();
         paras.Add(new SqlParameter("@unitname", unitname));
         paras.Add(new SqlParameter("@llrq", llrq));
+        paras.Add(new SqlParameter("@demolishplace", demolishpalce));
         paras.Add(new SqlParameter("@memo", memo));
         //订单号集合
         ArrayList orderNoList = new ArrayList();
@@ -606,17 +577,17 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             //页面录入的订单号判断
             if (orderNoList.Contains(orderno))
             {
-                Response.Write("{\"success\":false,\"msg\":\"请不要输入重复的商城出库单号：" + orderno + "！\"}");
+                Response.Write("{\"success\":false,\"msg\":\"请不要输入重复的利旧物料编号：" + orderno + "！\"}");
                 return;
             }
             else
                 orderNoList.Add(orderno);
             //与数据库中的订单号判断
-            string sqlExists = "select count(1) from MaintainMaterial_Stock WHERE storeorderno=@storeorderno";
+            string sqlExists = "select count(1) from Reuse_MaintainMaterial_Stock WHERE storeorderno=@storeorderno";
             int num = (int)SqlHelper.ExecuteScalar(SqlHelper.GetConnection(), CommandType.Text, sqlExists, new SqlParameter("@storeorderno", orderno));
             if (num != 0)
             {
-                Response.Write("{\"success\":false,\"msg\":\"出库单号：" + orderno + "已存在，请检查输入！\"}");
+                Response.Write("{\"success\":false,\"msg\":\"利旧物料编号：" + orderno + "已存在，请检查输入！\"}");
                 return;
             }
 
@@ -624,14 +595,15 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         //生产插入语句
         for (int i = 1; i <= rowsCount; i++)
         {
-            paras.Add(new SqlParameter("@storeorderno" + i.ToString(), Server.UrlDecode(Request.Form["storeorderno" + i.ToString()])));
+                //利旧物料编号统一加上前缀 r_
+            paras.Add(new SqlParameter("@storeorderno" + i.ToString(),"r_"+Server.UrlDecode(Request.Form["storeorderno" + i.ToString()])));
             paras.Add(new SqlParameter("@classname" + i.ToString(), Server.UrlDecode(Request.Form["classname" + i.ToString()])));
             paras.Add(new SqlParameter("@typeid" + i.ToString(), Request.Form["typeid" + i.ToString()]));
             paras.Add(new SqlParameter("@amount" + i.ToString(), Request.Form["amount" + i.ToString()]));
             paras.Add(new SqlParameter("@price" + i.ToString(), Request.Form["price" + i.ToString()]));
             paras.Add(new SqlParameter("@money" + i.ToString(), double.Parse(Request.Form["price" + i.ToString()]) * Int32.Parse(Request.Form["amount" + i.ToString()])));
-            sql.Append(" INSERT INTO MaintainMaterial_Stock	VALUES(	@unitname,@storeorderno" + i.ToString() + ",@typeid" + i.ToString() + ",@amount" + i.ToString() + ",@price" + i.ToString() + "); ");
-            sql.Append("INSERT INTO MaintainMaterial_KclrLog values(@llrq,@storeorderno" + i.ToString() + ",@unitname,@classname" + i.ToString() + ",@typeid" + i.ToString() + ",@amount" + i.ToString() + ",@price" + i.ToString() + ",@money" + i.ToString() + ",getdate(),@memo);");
+            sql.Append(" INSERT INTO Reuse_MaintainMaterial_Stock	VALUES(	@unitname,@storeorderno" + i.ToString() + ",@typeid" + i.ToString() + ",@amount" + i.ToString() + ",@price" + i.ToString() + "); ");
+            sql.Append("INSERT INTO Reuse_MaintainMaterial_KclrLog values(@llrq,@storeorderno" + i.ToString() + ",@unitname,@classname" + i.ToString() + ",@typeid" + i.ToString() + ",@amount" + i.ToString() + ",@price" + i.ToString() + ",@money" + i.ToString() + ",getdate(),@demolishplace,@memo);");
         }
 
         //使用事务提交操作
@@ -675,7 +647,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
     /// <summary>
     /// 保存领料领取信息并减少库存
     /// </summary>
-    public void SaveUnitStockDrawInfo()
+    public void SaveReuseStockDrawInfo()
     {
         string llrq = Convert.ToString(Request.Form["llrq"]);
         string lldw = Convert.ToString(Server.UrlDecode(Request.Form["lldw"]));
@@ -710,7 +682,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             //页面录入的订单号判断
             if (orderNoList.Contains(orderno))
             {
-                Response.Write("{\"success\":false,\"msg\":\"请不要重复选择商城出库单号：" + orderno + "！\"}");
+                Response.Write("{\"success\":false,\"msg\":\"请不要重复选择利旧物料编号：" + orderno + "！\"}");
                 return;
             }
             else
@@ -731,8 +703,8 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
             paras.Add(new SqlParameter("@typeid" + i.ToString(), Request.Form["typeid" + i.ToString()]));
             paras.Add(new SqlParameter("@storeorderno" + i.ToString(), Server.UrlDecode(Request.Form["storeorderno" + i.ToString()])));
             paras.Add(new SqlParameter("@amount" + i.ToString(), Request.Form["amount" + i.ToString()]));
-            sql.Append(" UPDATE MaintainMaterial_Stock 	SET Amount =amount-@amount" + i.ToString() + "	where unitname = @unitname AND TypeID = @typeid" + i.ToString() + " and storeorderno=@storeorderno" + i.ToString() + "; ");
-            sql.Append("INSERT INTO MaintainMaterial_StockDraw values(@storeorderno" + i.ToString() + ",@llrq,@unitname,@lldw,@llr,@typeid" + i.ToString() + ",@amount" + i.ToString() + ",@inputuser,getdate(),@memo,@lldpath,@amount" + i.ToString() + ");");
+            sql.Append(" UPDATE Reuse_MaintainMaterial_Stock 	SET Amount =amount-@amount" + i.ToString() + "	where unitname = @unitname AND TypeID = @typeid" + i.ToString() + " and storeorderno=@storeorderno" + i.ToString() + "; ");
+            sql.Append("INSERT INTO Reuse_MaintainMaterial_StockDraw values(@storeorderno" + i.ToString() + ",@llrq,@unitname,@lldw,@llr,@typeid" + i.ToString() + ",@amount" + i.ToString() + ",@inputuser,getdate(),@memo,@lldpath,@amount" + i.ToString() + ");");
         }
         int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), paras.ToArray());
         if (result > 0)
@@ -740,108 +712,110 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         else
             Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
     }
-    /// <summary>
-    /// 保存领料单位领料信息并减少库存
-    /// </summary>
-    public void SaveUnitStockOutInfo()
+    /*
+/// <summary>
+/// 保存领料单位领料信息并减少库存
+/// </summary>
+public void SaveUnitStockOutInfo()
+{
+    string ckrq = Convert.ToString(Request.Form["ckrq"]);
+    string llr = Convert.ToString(Server.UrlDecode(Request.Form["llr"]));
+    string faultorderno = Convert.ToString(Request.Form["faultorderno"]);
+    string memo = Convert.ToString(Server.HtmlEncode(Server.UrlDecode(Request.Form["memo"])));
+    int areaid = Convert.ToInt32(Request.Form["areaid"]);
+    string lldpath = "";
+    //获取数据行数
+    int rowsCount = 0;
+    Int32.TryParse(Request.Form["rowsCount"], out rowsCount);
+    if (rowsCount == 0)
     {
-        string ckrq = Convert.ToString(Request.Form["ckrq"]);
-        string llr = Convert.ToString(Server.UrlDecode(Request.Form["llr"]));
-        string faultorderno = Convert.ToString(Request.Form["faultorderno"]);
-        string memo = Convert.ToString(Server.HtmlEncode(Server.UrlDecode(Request.Form["memo"])));
-        int areaid = Convert.ToInt32(Request.Form["areaid"]);
-        string lldpath = "";
-        //获取数据行数
-        int rowsCount = 0;
-        Int32.TryParse(Request.Form["rowsCount"], out rowsCount);
-        if (rowsCount == 0)
-        {
-            Response.Write("{\"success\":false,\"msg\":\"请录入领料信息\"}");
-            return;
-        }
-        //判断故障单号是否存在
-        if ((int)SqlHelper.ExecuteScalar(SqlHelper.GetConnection(), CommandType.Text, "SELECT count(1) FROM SB_FaultOrderInfo  where faultorderno=@faultorderno", new SqlParameter("@faultorderno", faultorderno)) == 0)
-        {
-            Response.Write("{\"success\":false,\"msg\":\"故障单号不存在!\"}");
-            return;
-        }
-        //判断是否上传领料单照片
-        if (String.IsNullOrEmpty(Request.Form["lldpath"]))
-        {
-            Response.Write("{\"success\":false,\"msg\":\"请上传领料单照片!\"}");
-            return;
-        }
-        else
-            lldpath = Convert.ToString(Request.Form["lldpath"]);
-
-        //订单号集合
-        ArrayList orderNoList = new ArrayList();
-        //当前订单号
-        string orderno;
-        //判断重复订单号
-        for (int i = 1; i <= rowsCount; i++)
-        {
-            orderno = Server.UrlDecode(Request.Form["storeorderno" + i.ToString()]).Trim();
-            //页面录入的订单号判断
-            if (orderNoList.Contains(orderno))
-            {
-                Response.Write("{\"success\":false,\"msg\":\"请不要重复选择商城出库单号：" + orderno + "！\"}");
-                return;
-            }
-            else
-                orderNoList.Add(orderno);
-        }
-        //根据数据行数生成sql语句和参数列表
-        StringBuilder sql = new StringBuilder();
-        List<SqlParameter> paras = new List<SqlParameter>();
-        paras.Add(new SqlParameter("@unitname", Session["deptname"]));
-        paras.Add(new SqlParameter("@ckrq", ckrq));
-        paras.Add(new SqlParameter("@areaid", areaid));
-        paras.Add(new SqlParameter("@llr", llr));
-        paras.Add(new SqlParameter("@faultorderno", faultorderno));
-        paras.Add(new SqlParameter("@memo", memo));
-        paras.Add(new SqlParameter("@lldpath", lldpath));
-        for (int i = 1; i <= rowsCount; i++)
-        {
-            paras.Add(new SqlParameter("@typeid" + i.ToString(), Request.Form["typeid" + i.ToString()]));
-            paras.Add(new SqlParameter("@storeorderno" + i.ToString(), Server.UrlDecode(Request.Form["storeorderno" + i.ToString()])));
-            paras.Add(new SqlParameter("@amount" + i.ToString(), Request.Form["amount" + i.ToString()]));
-            sql.Append(" UPDATE MaintainMaterial_Stock 	SET Amount =amount-@amount" + i.ToString() + "	where unitname = @unitname AND TypeID = @typeid" + i.ToString() + " and storeorderno=@storeorderno" + i.ToString() + "; ");
-            sql.Append("INSERT INTO MaintainMaterial_StockOut values(@storeorderno" + i.ToString() + ",@ckrq,@unitname,@areaid,@llr,@typeid" + i.ToString() + ",@amount" + i.ToString() + ",getdate(),@memo,@faultorderno,@lldpath);");
-        }
-        int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), paras.ToArray());
-        if (result > 0)
-            Response.Write("{\"success\":true,\"msg\":\"提交成功\"}");
-        else
-            Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+        Response.Write("{\"success\":false,\"msg\":\"请录入领料信息\"}");
+        return;
     }
+    //判断故障单号是否存在
+    if ((int)SqlHelper.ExecuteScalar(SqlHelper.GetConnection(), CommandType.Text, "SELECT count(1) FROM SB_FaultOrderInfo  where faultorderno=@faultorderno", new SqlParameter("@faultorderno", faultorderno)) == 0)
+    {
+        Response.Write("{\"success\":false,\"msg\":\"故障单号不存在!\"}");
+        return;
+    }
+    //判断是否上传领料单照片
+    if (String.IsNullOrEmpty(Request.Form["lldpath"]))
+    {
+        Response.Write("{\"success\":false,\"msg\":\"请上传领料单照片!\"}");
+        return;
+    }
+    else
+        lldpath = Convert.ToString(Request.Form["lldpath"]);
+
+    //订单号集合
+    ArrayList orderNoList = new ArrayList();
+    //当前订单号
+    string orderno;
+    //判断重复订单号
+    for (int i = 1; i <= rowsCount; i++)
+    {
+        orderno = Server.UrlDecode(Request.Form["storeorderno" + i.ToString()]).Trim();
+        //页面录入的订单号判断
+        if (orderNoList.Contains(orderno))
+        {
+            Response.Write("{\"success\":false,\"msg\":\"请不要重复选择利旧物料编号：" + orderno + "！\"}");
+            return;
+        }
+        else
+            orderNoList.Add(orderno);
+    }
+    //根据数据行数生成sql语句和参数列表
+    StringBuilder sql = new StringBuilder();
+    List<SqlParameter> paras = new List<SqlParameter>();
+    paras.Add(new SqlParameter("@unitname", Session["deptname"]));
+    paras.Add(new SqlParameter("@ckrq", ckrq));
+    paras.Add(new SqlParameter("@areaid", areaid));
+    paras.Add(new SqlParameter("@llr", llr));
+    paras.Add(new SqlParameter("@faultorderno", faultorderno));
+    paras.Add(new SqlParameter("@memo", memo));
+    paras.Add(new SqlParameter("@lldpath", lldpath));
+    for (int i = 1; i <= rowsCount; i++)
+    {
+        paras.Add(new SqlParameter("@typeid" + i.ToString(), Request.Form["typeid" + i.ToString()]));
+        paras.Add(new SqlParameter("@storeorderno" + i.ToString(), Server.UrlDecode(Request.Form["storeorderno" + i.ToString()])));
+        paras.Add(new SqlParameter("@amount" + i.ToString(), Request.Form["amount" + i.ToString()]));
+        sql.Append(" UPDATE Reuse_MaintainMaterial_Stock 	SET Amount =amount-@amount" + i.ToString() + "	where unitname = @unitname AND TypeID = @typeid" + i.ToString() + " and storeorderno=@storeorderno" + i.ToString() + "; ");
+        sql.Append("INSERT INTO Reuse_MaintainMaterial_StockOut values(@storeorderno" + i.ToString() + ",@ckrq,@unitname,@areaid,@llr,@typeid" + i.ToString() + ",@amount" + i.ToString() + ",getdate(),@memo,@faultorderno,@lldpath);");
+    }
+    int result = SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection(), CommandType.Text, sql.ToString(), paras.ToArray());
+    if (result > 0)
+        Response.Write("{\"success\":true,\"msg\":\"提交成功\"}");
+    else
+        Response.Write("{\"success\":false,\"msg\":\"执行出错\"}");
+}
+    */
     /// <summary>
-    /// 导出运维物料库存表
+    /// 导出利旧物料库存表
     /// /// </summary>
-    public void ExportUnitStock()
+    public void ExportReuseStock()
     {
         string where = SetQueryConditionForStock();
         if (where != "")
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
         sql.Append("select a.id,a.unitname,a.storeorderno,b.classname,b.typename,a.amount,b.units,price ");
-        sql.Append(" from MaintainMaterial_Stock AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.id ");
+        sql.Append(" from Reuse_MaintainMaterial_Stock AS a JOIN Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.id ");
         sql.Append(where);
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
         DataTable dt = ds.Tables[0];
         dt.Columns[0].ColumnName = "序号";
         dt.Columns[1].ColumnName = "单位名称";
-        dt.Columns[2].ColumnName = "商城出库单号";
+        dt.Columns[2].ColumnName = "利旧物料编号";
         dt.Columns[3].ColumnName = "物料类型";
         dt.Columns[4].ColumnName = "物料型号";
         dt.Columns[5].ColumnName = "库存数量";
         dt.Columns[6].ColumnName = "单位";
         dt.Columns[7].ColumnName = "单价";
-        MyXls.CreateXls(dt, "运维物料库存表.xls", "2,4");
+        MyXls.CreateXls(dt, "利旧物料库存表.xls", "2,4");
         Response.Flush();
         Response.End();
     }
-    #endregion 运维物料——库存管理
+    #endregion 利旧物料——库存管理
     #region 库存入库明细
     /// <summary>
     /// 设置入库明细查询条件
@@ -883,36 +857,36 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         return queryStr;
     }
     /// <summary>
-    /// 运维物料物料入库明细
+    /// 利旧物料物料入库明细
     /// </summary>
-    public void GetUnitInStockDetail()
+    public void GetReuseInStockDetail()
     {
         int total = 0;
         string where = SetQueryConditionForInStock();
         if (!string.IsNullOrEmpty(Request.Form["where"]))
             where = Server.UrlDecode(Request.Form["where"].ToString());
-        string fieldStr = "kkl.id,kkl.llrq,kkl.storeorderno,kkl.unitname,kw.classname,kkl.typeid,kw.TypeName,kkl.amount,kw.Units,price,money,kkl.inputtime,kkl.memo";
-        string table = "MaintainMaterial_KclrLog AS kkl JOIN  MaintainMaterial_TypeInfo AS kw ON kkl.typeid=kw.ID";
+        string fieldStr = "kkl.id,kkl.llrq,kkl.storeorderno,kkl.unitname,kw.classname,kkl.typeid,kw.TypeName,kkl.amount,kw.Units,price,money,kkl.inputtime,kkl.demolishplace,kkl.memo";
+        string table = "Reuse_MaintainMaterial_KclrLog AS kkl JOIN  Reuse_MaintainMaterial_TypeInfo AS kw ON kkl.typeid=kw.ID";
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
     }
     /// <summary>
     /// 导出入库明细
     /// </summary>
-    public void ExportUnitInStockDetail()
+    public void ExportReuseInStockDetail()
     {
         string where = SetQueryConditionForInStock();
         if (where != "")
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
-        sql.Append("select   kkl.id,kkl.llrq,kkl.storeorderno,kkl.unitname,kw.classname,kw.TypeName,kkl.amount,kw.Units,price,money,kkl.memo,kkl.inputtime  FROM MaintainMaterial_KclrLog AS kkl JOIN  MaintainMaterial_TypeInfo AS kw ON kkl.typeid=kw.ID ");
+        sql.Append("select   kkl.id,kkl.llrq,kkl.storeorderno,kkl.unitname,kw.classname,kw.TypeName,kkl.amount,kw.Units,price,money,kkl.memo,kkl.inputtime  FROM Reuse_MaintainMaterial_KclrLog AS kkl JOIN  Reuse_MaintainMaterial_TypeInfo AS kw ON kkl.typeid=kw.ID ");
         sql.Append(where);
         sql.Append(" order by kkl.id ");
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
         DataTable dt = ds.Tables[0];
         dt.Columns[0].ColumnName = "序号";
         dt.Columns[1].ColumnName = "入库日期";
-        dt.Columns[2].ColumnName = "商城出库单号";
+        dt.Columns[2].ColumnName = "利旧物料编号";
         dt.Columns[3].ColumnName = "入库单位";
         dt.Columns[4].ColumnName = "物料类型";
         dt.Columns[5].ColumnName = "物料型号 ";
@@ -922,7 +896,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         dt.Columns[9].ColumnName = "金额";
         dt.Columns[10].ColumnName = "备注";
         dt.Columns[11].ColumnName = "录入时间";
-        MyXls.CreateXls(dt, "运维物料入库明细.xls", "2,5,10,11");
+        MyXls.CreateXls(dt, "利旧物料入库明细.xls", "2,5,10,11");
         Response.Flush();
         Response.End();
     }
@@ -971,60 +945,51 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         //按商城订单号
         if (!string.IsNullOrEmpty(Request.Form["storeorderno"]))
             list.Add(" a.storeorderno like '%" + Request.Form["storeorderno"] + "%'");
-        //按是否有库存
-        if (!string.IsNullOrEmpty(Request.Form["currentstock"]))
-        {
-            if (Request.Form["currentstock"] == "1")//有库存
-                list.Add(" a.currentstock>0 ");
-            if (Request.Form["currentstock"] == "0")//库存为0
-                list.Add(" a.currentstock=0 ");
-        }
-        else//默认显示有库存
-            list.Add(" a.currentstock>0 ");
-        list.Add(" a.storeorderno like '%" + Request.Form["storeorderno"] + "%'");
         if (list.Count > 0)
             queryStr = string.Join(" and ", list.ToArray());
         return queryStr;
     }
-    /// <summary>
-    /// 领料单位领料明细
-    /// </summary>
-    public void GetUnitOutStockDetail()
-    {
-        int total = 0;
-        string where = SetQueryConditionForOutStock();
-        if (!string.IsNullOrEmpty(Request.Form["where"]))
-            where = Server.UrlDecode(Request.Form["where"].ToString());
-        string fieldStr = "a.id,a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,b.classname,b.TypeName,a.currentstock,b.Units,d.price,a.currentstock*d.price as allFee,a.memo,a.faultorderno,a.lldpath";
-        string table = "MaintainMaterial_StockOut AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID JOIN MaintainMaterial_AreaInfo AS c ON a.areaid=c.ID left join MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ";
-        DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
-        Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
-    }
+    /*
+/// <summary>
+/// 领料单位领料明细
+/// </summary>
+public void GetUnitOutStockDetail()
+{
+    int total = 0;
+    string where = SetQueryConditionForOutStock();
+    if (!string.IsNullOrEmpty(Request.Form["where"]))
+        where = Server.UrlDecode(Request.Form["where"].ToString());
+    string fieldStr = "a.id,a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,b.classname,b.TypeName,a.amount,b.Units,d.price,a.amount*d.price as allFee,a.memo,a.faultorderno,a.lldpath";
+    string table = "Reuse_MaintainMaterial_StockOut AS a JOIN Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID JOIN Reuse_MaintainMaterial_AreaInfo AS c ON a.areaid=c.ID left join Reuse_MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ";
+    DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
+    Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
+}
+    */
     /// <summary>
     /// 物料领用管理
     /// </summary>
-    public void GetUnitDrawStockDetail()
+    public void GetReuseDrawStockDetail()
     {
         int total = 0;
         string where = SetQueryConditionForOutStock();
         if (!string.IsNullOrEmpty(Request.Form["where"]))
             where = Server.UrlDecode(Request.Form["where"].ToString());
         string fieldStr = "a.id,a.llrq,a.unitname,a.lldw,a.llr,a.storeorderno,b.classname,b.TypeName,a.amount,a.currentstock,b.Units,d.price,a.amount*d.price as allFee,a.memo,a.lldpath,a.inputuser";
-        string table = "MaintainMaterial_StockDraw AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID  left join MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ";
+        string table = "Reuse_MaintainMaterial_StockDraw AS a JOIN Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID  left join Reuse_MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ";
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
     }
     /// <summary>
     /// 导出领料单位领料明细
     /// </summary>
-    public void ExportUnitDrawStockDetail()
+    public void ExportReuseDrawStockDetail()
     {
         string where = SetQueryConditionForOutStock();
         if (where != "")
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
         sql.Append("SELECT a.llrq,a.unitname,a.lldw,a.llr,a.storeorderno,b.classname,b.TypeName,a.amount,a.currentstock,b.Units,d.price,a.amount*d.price as allFee,a.memo");
-        sql.Append(" FROM MaintainMaterial_StockDraw AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID  left join MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ");
+        sql.Append(" FROM Reuse_MaintainMaterial_StockDraw AS a JOIN Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID  left join Reuse_MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ");
         sql.Append(where);
         sql.Append(" order by a.id ");
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
@@ -1033,7 +998,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         dt.Columns[1].ColumnName = "出库单位";
         dt.Columns[2].ColumnName = "领料单位";
         dt.Columns[3].ColumnName = "领料人";
-        dt.Columns[4].ColumnName = "商城出库单号";
+        dt.Columns[4].ColumnName = "利旧物料编号";
         dt.Columns[5].ColumnName = "物料类型";
         dt.Columns[6].ColumnName = "物料型号";
         dt.Columns[7].ColumnName = "领取数量";
@@ -1042,37 +1007,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         dt.Columns[10].ColumnName = "单价（元）";
         dt.Columns[11].ColumnName = "金额（元）";
         dt.Columns[12].ColumnName = "备注";
-        ExcelHelper.ExportByWeb(dt, "", "物料领用管理.xls", "物料领用管理");
-    }
-    /// <summary>
-    /// 导出领料单位领料明细
-    /// </summary>
-    public void ExportUnitOutStockDetail()
-    {
-        string where = SetQueryConditionForOutStock();
-        if (where != "")
-            where = " where " + where;
-        StringBuilder sql = new StringBuilder();
-        sql.Append("SELECT a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,b.classname,b.TypeName,a.amount,b.Units,d.price,a.amount*d.price as allFee,a.memo,a.faultorderno");
-        sql.Append(" from  MaintainMaterial_StockOut AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID JOIN MaintainMaterial_AreaInfo AS c ON a.areaid=c.ID left join MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ");
-        sql.Append(where);
-        sql.Append(" order by a.id ");
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
-        DataTable dt = ds.Tables[0];
-        dt.Columns[0].ColumnName = "领料日期";
-        dt.Columns[1].ColumnName = "出库单位";
-        dt.Columns[2].ColumnName = "领料单位";
-        dt.Columns[3].ColumnName = "领料人";
-        dt.Columns[4].ColumnName = "商城出库单号";
-        dt.Columns[5].ColumnName = "物料类型";
-        dt.Columns[6].ColumnName = "物料型号";
-        dt.Columns[7].ColumnName = "领取数量";
-        dt.Columns[8].ColumnName = "单位";
-        dt.Columns[9].ColumnName = "单价（元）";
-        dt.Columns[10].ColumnName = "金额（元）";
-        dt.Columns[11].ColumnName = "备注";
-        dt.Columns[12].ColumnName = "故障单号";
-        ExcelHelper.ExportByWeb(dt, "", "领料明细（旧）.xls", "领料明细");
+        ExcelHelper.ExportByWeb(dt, "", "利旧物料领用管理.xls", "利旧物料领用管理");
     }
     /*
 /// <summary>
@@ -1084,40 +1019,71 @@ public void ExportUnitOutStockDetail()
     if (where != "")
         where = " where " + where;
     StringBuilder sql = new StringBuilder();
-    sql.Append("SELECT a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,a.faultorderno,b.classname,b.TypeName,a.amount,b.Units,d.price,a.amount*d.price as allFee,a.memo");
-    sql.Append(" FROM MaintainMaterial_StockOut AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID JOIN MaintainMaterial_AreaInfo AS c ON a.areaid=c.ID left join MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ");
+    sql.Append("SELECT a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,b.classname,b.TypeName,a.amount,b.Units,d.price,a.amount*d.price as allFee,a.memo,a.faultorderno");
+    sql.Append(" from  Reuse_MaintainMaterial_StockOut AS a JOIN Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID JOIN Reuse_MaintainMaterial_AreaInfo AS c ON a.areaid=c.ID left join Reuse_MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ");
     sql.Append(where);
     sql.Append(" order by a.id ");
     DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
     DataTable dt = ds.Tables[0];
-    dt.Columns[0].ColumnName = "出库日期";
+    dt.Columns[0].ColumnName = "领料日期";
     dt.Columns[1].ColumnName = "出库单位";
     dt.Columns[2].ColumnName = "领料单位";
     dt.Columns[3].ColumnName = "领料人";
-    dt.Columns[4].ColumnName = "商城出库单号";
-    dt.Columns[5].ColumnName = "故障单号";
-    dt.Columns[6].ColumnName = "物料类型";
-    dt.Columns[7].ColumnName = "物料型号";
-    dt.Columns[8].ColumnName = "数量";
-    dt.Columns[9].ColumnName = "单位";
-    dt.Columns[10].ColumnName = "单价（元）";
-    dt.Columns[11].ColumnName = "金额（元）";
-    dt.Columns[12].ColumnName = "备注";
-    MyXls.CreateXls(dt, "领料单位领料明细.xls", "4,7");
-    Response.Flush();
-    Response.End();
+    dt.Columns[4].ColumnName = "利旧物料编号";
+    dt.Columns[5].ColumnName = "物料类型";
+    dt.Columns[6].ColumnName = "物料型号";
+    dt.Columns[7].ColumnName = "领取数量";
+    dt.Columns[8].ColumnName = "单位";
+    dt.Columns[9].ColumnName = "单价（元）";
+    dt.Columns[10].ColumnName = "金额（元）";
+    dt.Columns[11].ColumnName = "备注";
+    dt.Columns[12].ColumnName = "故障单号";
+    ExcelHelper.ExportByWeb(dt, "", "领料明细（旧）.xls", "领料明细");
 }
-    */
+
+/// <summary>
+/// 导出领料单位领料明细
+/// </summary>
+public void ExportUnitOutStockDetail()
+{
+string where = SetQueryConditionForOutStock();
+if (where != "")
+    where = " where " + where;
+StringBuilder sql = new StringBuilder();
+sql.Append("SELECT a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,a.faultorderno,b.classname,b.TypeName,a.amount,b.Units,d.price,a.amount*d.price as allFee,a.memo");
+sql.Append(" FROM Reuse_MaintainMaterial_StockOut AS a JOIN Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID JOIN Reuse_MaintainMaterial_AreaInfo AS c ON a.areaid=c.ID left join Reuse_MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ");
+sql.Append(where);
+sql.Append(" order by a.id ");
+DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
+DataTable dt = ds.Tables[0];
+dt.Columns[0].ColumnName = "出库日期";
+dt.Columns[1].ColumnName = "出库单位";
+dt.Columns[2].ColumnName = "领料单位";
+dt.Columns[3].ColumnName = "领料人";
+dt.Columns[4].ColumnName = "利旧物料编号";
+dt.Columns[5].ColumnName = "故障单号";
+dt.Columns[6].ColumnName = "物料类型";
+dt.Columns[7].ColumnName = "物料型号";
+dt.Columns[8].ColumnName = "数量";
+dt.Columns[9].ColumnName = "单位";
+dt.Columns[10].ColumnName = "单价（元）";
+dt.Columns[11].ColumnName = "金额（元）";
+dt.Columns[12].ColumnName = "备注";
+MyXls.CreateXls(dt, "领料单位领料明细.xls", "4,7");
+Response.Flush();
+Response.End();
+}
+*/
     #endregion 领料单位领料明细
     #region 物料调拨
     /// <summary>
     /// 通过ID获取被调拨物料的库存信息
     /// </summary>
-    public void GetMaintainMaterialStockById()
+    public void GetReuseMaintainMaterialStockById()
     {
         int id = 0;
         int.TryParse(Request.Form["id"], out id);
-        string sql = "select  a.id,a.unitname,a.storeorderno,b.classname,b.typename,a.amount,b.units  from  MaintainMaterial_Stock AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.id where a.id=@id";
+        string sql = "select  a.id,a.unitname,a.storeorderno,b.classname,b.typename,a.amount,b.units  from  Reuse_MaintainMaterial_Stock AS a JOIN Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.id where a.id=@id";
         SqlParameter paras = new SqlParameter("@id", SqlDbType.Int);
         paras.Value = id;
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql, paras);
@@ -1129,13 +1095,13 @@ public void ExportUnitOutStockDetail()
     public void GetAllotUnitInfoCombobox()
     {
         string unitname = Server.UrlDecode(Convert.ToString(Request.QueryString["id"]));
-        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,unitname from MaintainMaterial_UnitInfo WHERE UnitName<>@unitname ", new SqlParameter("@unitname", unitname));
+        DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, "select id,unitname from Reuse_MaintainMaterial_UnitInfo WHERE UnitName<>@unitname ", new SqlParameter("@unitname", unitname));
         Response.Write(JsonConvert.CreateComboboxJson(ds.Tables[0]));
     }
     /// <summary>
     /// 保存领料单位物料调拨信息
     /// </summary>
-    public void SaveUnitAllotStockInfo()
+    public void SaveReuseAllotStockInfo()
     {
         int id = Convert.ToInt32(Request.Form["id"]);
         int allotunitid = Convert.ToInt32(Request.Form["allotunitid"]);
@@ -1154,7 +1120,8 @@ public void ExportUnitOutStockDetail()
 
         //生成库存表中调拨单编号
         Random myrdn = new Random();//产生随机数
-        string allotOrderNo = "Allot-" + DateTime.Now.ToString("yyyyMMddhhmmss") + myrdn.Next(1000);
+            //利旧物料调拨单号增加前缀r_
+        string allotOrderNo = "r_Allot-" + DateTime.Now.ToString("yyyyMMddhhmmss") + myrdn.Next(1000);
         //根据数据行数生成sql语句和参数列表
         StringBuilder sql = new StringBuilder();
         List<SqlParameter> paras = new List<SqlParameter>();
@@ -1167,11 +1134,11 @@ public void ExportUnitOutStockDetail()
         paras.Add(new SqlParameter("@allotuser", Session["uname"].ToString()));
         paras.Add(new SqlParameter("@reportpath", reportpath));
 
-        sql.Append("IF EXISTS(SELECT * FROM  dbo.MaintainMaterial_Stock WHERE id=@id AND Amount>=@allotnum) ");
+        sql.Append("IF EXISTS(SELECT * FROM  dbo.Reuse_MaintainMaterial_Stock WHERE id=@id AND Amount>=@allotnum) ");
         sql.Append(" begin ");
-        sql.Append("INSERT INTO dbo.MaintainMaterial_Allotlog SELECT @allotrq,@allotunitid,@allotorderno,Storeorderno,UnitName,TypeID,@allotnum,Price,@allotnum*Price,GETDATE(),@memo,@allotuser,@reportpath FROM dbo.MaintainMaterial_Stock WHERE id=@id;");
-        sql.Append(" UPDATE dbo.MaintainMaterial_Stock SET Amount=Amount-@allotnum WHERE id=@id; ");
-        sql.Append(" INSERT INTO dbo.MaintainMaterial_Stock SELECT b.UnitName, @allotorderno, TypeID, @allotnum, Price FROM dbo.MaintainMaterial_Stock as a join MaintainMaterial_UnitInfo b  on a.id = @id and b.id=@allotunitid; ");
+        sql.Append("INSERT INTO dbo.Reuse_MaintainMaterial_Allotlog SELECT @allotrq,@allotunitid,@allotorderno,Storeorderno,UnitName,TypeID,@allotnum,Price,@allotnum*Price,GETDATE(),@memo,@allotuser,@reportpath FROM dbo.Reuse_MaintainMaterial_Stock WHERE id=@id;");
+        sql.Append(" UPDATE dbo.Reuse_MaintainMaterial_Stock SET Amount=Amount-@allotnum WHERE id=@id; ");
+        sql.Append(" INSERT INTO dbo.Reuse_MaintainMaterial_Stock SELECT b.UnitName, @allotorderno, TypeID, @allotnum, Price FROM dbo.Reuse_MaintainMaterial_Stock as a join Reuse_MaintainMaterial_UnitInfo b  on a.id = @id and b.id=@allotunitid; ");
         sql.Append(" end ");
         //使用事务提交操作
         using (SqlConnection conn = SqlHelper.GetConnection())
@@ -1242,27 +1209,27 @@ public void ExportUnitOutStockDetail()
     /// <summary>
     /// 物料调拨明细
     /// </summary>
-    public void GetUnitAllotStockDetail()
+    public void GetReuseAllotStockDetail()
     {
         int total = 0;
         string where = SetQueryConditionForAllot();
         if (!string.IsNullOrEmpty(Request.Form["where"]))
             where = Server.UrlDecode(Request.Form["where"].ToString());
         string fieldStr = "a.id,a.allotrq,c.unitname as allotunitname,a.AllotOrderNo,a.storeorderno,a.oldunitname,b.classname,b.TypeName,a.allotnum,b.Units,price,money,a.inputtime,a.memo,a.allotuser,a.reportpath";
-        string table = "MaintainMaterial_Allotlog AS a JOIN  MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID join MaintainMaterial_UnitInfo c on  a.allotUnitID=c.id ";
+        string table = "Reuse_MaintainMaterial_Allotlog AS a JOIN  Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID join Reuse_MaintainMaterial_UnitInfo c on  a.allotUnitID=c.id ";
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
     }
     /// <summary>
     /// 导出物料调拨明细
     /// </summary>
-    public void ExportUnitAllotStockDetail()
+    public void ExportReuseAllotStockDetail()
     {
         string where = SetQueryConditionForAllot();
         if (where != "")
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
-        sql.Append("select a.id,a.allotrq,c.unitname as allotunitname,a.AllotOrderNo,a.storeorderno,a.oldunitname,b.classname,b.TypeName,a.allotnum,b.Units,price,money,a.memo,a.inputtime,a.allotuser  FROM MaintainMaterial_Allotlog AS a JOIN  MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID join MaintainMaterial_UnitInfo c on  a.allotUnitID=c.id ");
+        sql.Append("select a.id,a.allotrq,c.unitname as allotunitname,a.AllotOrderNo,a.storeorderno,a.oldunitname,b.classname,b.TypeName,a.allotnum,b.Units,price,money,a.memo,a.inputtime,a.allotuser  FROM Reuse_MaintainMaterial_Allotlog AS a JOIN  Reuse_MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID join Reuse_MaintainMaterial_UnitInfo c on  a.allotUnitID=c.id ");
         sql.Append(where);
         sql.Append(" order by a.id ");
         DataSet ds = SqlHelper.ExecuteDataset(SqlHelper.GetConnection(), CommandType.Text, sql.ToString());
@@ -1271,7 +1238,7 @@ public void ExportUnitOutStockDetail()
         dt.Columns[1].ColumnName = "调拨日期";
         dt.Columns[2].ColumnName = "单位名称";
         dt.Columns[3].ColumnName = "调拨单号";
-        dt.Columns[4].ColumnName = "原商城订单号";
+        dt.Columns[4].ColumnName = "利旧物料编号";
         dt.Columns[5].ColumnName = "调拨单位";
         dt.Columns[6].ColumnName = "物料类型";
         dt.Columns[7].ColumnName = "物料型号";
@@ -1282,7 +1249,7 @@ public void ExportUnitOutStockDetail()
         dt.Columns[12].ColumnName = "备注";
         dt.Columns[13].ColumnName = "调拨时间";
         dt.Columns[14].ColumnName = "调拨人";
-        MyXls.CreateXls(dt, "运维物料调拨明细表.xls", "4,7,12,13");
+        MyXls.CreateXls(dt, "利旧物料调拨明细表.xls", "4,7,12,13");
         Response.Flush();
         Response.End();
     }

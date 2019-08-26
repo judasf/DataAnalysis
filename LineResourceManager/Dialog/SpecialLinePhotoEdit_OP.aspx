@@ -2,7 +2,7 @@
 
 <% 
     /** 
-     *建设施工回单
+     *专线客户光缆回单--照片编辑
      * 
      */
     string id = "";
@@ -23,13 +23,43 @@
     }
 %>
 <script type="text/javascript">
+    var showPhotoList = function (id) {
+        //获取测试照片
+        $.post('../ajax/Srv_LineResource.ashx/GetSPLAttachmentById', { id: id }, function (fileRes) {
+            if (fileRes.total > 0) {
+                $.each(fileRes.rows, function (i, item) {
+                    $('#photoList').append('<span style="margin-right:10px;float:left;"><a class="ext-icon-attach" style="padding-left:20px;" href="' + item.filepath + '"   title="' + item.filename + '">' + item.filename + '</a></span>');
+                });
+            }
+        }, 'json');
+
+        //测试照片展示插件
+        $('#photoList').magnificPopup({
+            delegate: 'a',
+            type: 'image',
+            tLoading: 'Loading image #%curr%...',
+            mainClass: 'mfp-img-mobile',
+            gallery: {
+                enabled: true,
+                navigateByImgClick: true,
+                preload: [0, 1] // Will preload 0 - before current, and 1 after the current image
+            },
+            image: {
+                tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+                titleSrc: function (item) {
+                    return item.el.attr('title') + '<small> 测试照片 </small>';
+                }
+            }
+        });
+
+    };
     var onFormSubmit = function ($dialog, $grid) {
-        var url = './ajax/Srv_LineResource.ashx/FinishLineResourceByID';
+        var url = './ajax/Srv_LineResource.ashx/EditSpecialLinePhotoByID';
         if ($('form').form('validate')) {
-            parent.$.messager.confirm('询问', '确认提交施工信息？', function (r) {
+            parent.$.messager.confirm('询问', '确认编辑测试照片？', function (r) {
                 if (r) {
-                    if ($('#isNext').combobox('getValues') == "1" && $('#report').val() == "") {
-                        parent.$.messager.alert('提示', '请上传资料后再提交！', 'error');
+                    if ($('#report').val() == "") {
+                        parent.$.messager.alert('提示', '请上传测试照片后再提交信息！', 'error');
                         return;
                     }
                     $.post(url, $.serializeObject($('form')), function (result) {
@@ -44,65 +74,34 @@
             });
         }
     };
-    //全程路由
-    var routeEl = $('#trFullRoute', '#LFTable');
     $(function () {
-        //新增PON口显示
-        var ponEl = $('#trPON', '#LFTable');
-        //退回发起单位
-        var backEl = $('tr:eq(13)', '#LFTable');
-        //上传组件
-        var uploadEl = $('#trUpload', '#LFTable');
         if ($('#id').val().length > 0) {
             parent.$.messager.progress({
                 text: '数据加载中....'
             });
-            $.post('../ajax/Srv_LineResource.ashx/GetLineExtensionByID', {
+            $.post('../ajax/Srv_LineResource.ashx/GetSpecialLineByID', {
                 ID: $('#id').val()
             }, function (result) {
                 parent.$.messager.progress('close');
                 if (result.rows[0].id != undefined) {
                     $('#inputtime').html(result.rows[0].inputtime);
-                    $('#deptname').html(result.rows[0].deptname);
-                    $('#account').html(result.rows[0].account);
+                    $('#bussinesstype').html(result.rows[0].bussinesstype);
+                    $('#chargingcode').html(result.rows[0].chargingcode);
+                    $('#customername').html(result.rows[0].customername);
                     $('#address').html(result.rows[0].address);
-                    $('#boxno').html(result.rows[0].boxno);
-                    $('#terminalnumber').html(result.rows[0].terminalnumber);
-                    $('#linkman').html(result.rows[0].linkman);
-                    $('#linkphone').html(result.rows[0].linkphone);
+                    $('#customercontact').html(result.rows[0].customercontact);
+                    $('#customerphone').html(result.rows[0].customerphone);
+                    $('#customermanager').html(result.rows[0].customermanager);
+                    $('#direction').html(result.rows[0].direction);
+                    $('#route').html(result.rows[0].route);
                     $('#username').html(result.rows[0].username);
                     $('#memo').html(result.rows[0].memo);
-                    $('#checkuser').html(result.rows[0].checkuser);
-                    $('#checkinfo').html(result.rows[0].checkinfo);
-                    $('#checktime').html(result.rows[0].checktime);
                     $('#constructionunit').html(result.rows[0].constructionunit);
+                    $('#receiptroute').html(result.rows[0].receiptroute);
+                    showPhotoList(result.rows[0].id);
                 }
             }, 'json');
         }
-        //默认隐藏退回信息
-        backEl.detach();
-        ponEl.detach();
-        routeEl.detach();
-        uploadEl.hide();
-        $('#isNext').combobox({
-            editable: false,
-            onSelect: function (rec) {
-                if (rec.value == '1') {
-                    backEl.insertAfter($('tr:eq(12)', '#LFTable'));
-                    ponEl.insertAfter($('tr:eq(13)', '#LFTable'));
-                    $.parser.parse(backEl);
-                    $.parser.parse(ponEl);
-                    uploadEl.show();
-                }
-                else {
-                    backEl.insertAfter($('tr:eq(12)', '#LFTable'));
-                    $.parser.parse(backEl);
-                    ponEl.detach();
-                    uploadEl.hide();
-                }
-
-            }
-        });
         //初始化上传插件
         $("#file_upload").uploadify({
             //开启调试
@@ -118,16 +117,16 @@
             'swf': "Script/uploadify/uploadify.swf?var=" + (new Date()).getTime(),
             //文件选择后的容器ID
             'queueID': 'uploadfileQueue',
-            'uploader': 'Script/uploadify/uploadify.ashx',
+            'uploader': 'Script/uploadify/uploadify_PJAtt.ashx',
             'width': '75',
             'height': '24',
             'multi': true,
             'fileTypeDesc': '支持的格式：',
-            'fileTypeExts': '*.xls;*.xlsx;*.rar;*.zip',
-            'fileSizeLimit': '20MB',
+            'fileTypeExts': '*.doc;*.docx;*.jpg;*.jpeg;*.gif;*.bmp;*.png;*.rar;*.zip',
+            'fileSizeLimit': '10MB',
             'removeTimeout': 1,
-            'queueSizeLimit': 1,
-            'uploadLimit': 1,
+            'queueSizeLimit': 3,
+            'uploadLimit': 3,
             'overrideEvents': ['onDialogClose', 'onSelectError', 'onUploadError'],
             'onDialogClose': function (queueData) {
                 $('#reportNum').val(queueData.queueLength);
@@ -196,70 +195,91 @@
                 }
             }
         });
+
     });
 </script>
 <style>
-    #LFTable td { padding: 7px 2px; }
+    #LCTable td {
+        padding: 7px 2px;
+    }
 
-    #LFTable .tdinput { text-align: left; }
+    #LCTable .tdinput {
+        text-align: left;
+    }
 
-    #LFTable .left_td { text-align: right; background: #fafafa; width: 100px; }
+    #LCTable .left_td {
+        text-align: right;
+        background: #fafafa;
+        width: 100px;
+    }
 </style>
 <form method="post">
-    <table cellspacing="0" cellpadding="0" bordercolor="#CCCCCC" border="1" style="border-collapse: collapse;" class="table table-bordered table-condensed" style="margin-bottom: 0;" id="LFTable">
+    <table cellspacing="0" cellpadding="0" bordercolor="#CCCCCC" border="1" style="border-collapse: collapse;" class="table table-bordered table-condensed" style="margin-bottom: 0;" id="LCTable">
         <tr>
-            <td colspan="4" style="text-align: center; line-height: 30px; font-size: 16px; font-weight: 700;">光缆延伸需求单</td>
+            <td colspan="4" style="text-align: center; line-height: 30px; font-size: 16px; font-weight: 700;">专线客户光缆</td>
 
         </tr>
         <tr>
-            <td class="left_td">日期：
+            <td class="left_td">派单日期：
             </td>
             <td class="tdinput" style="width: 180px;">
                 <input type="hidden" value="<%=id %>" name="id" id="id" />
                 <span id="inputtime"></span>
             </td>
-            <td class="left_td">单位：
+            <td class="left_td">业务类型：
             </td>
             <td class="tdinput" style="width: 180px;">
-                <span id="deptname"></span>
+                <span id="bussinesstype"></span>
             </td>
         </tr>
         <tr>
-            <td class="left_td">宽带账号：
+            <td class="left_td">计费编码：
             </td>
-            <td class="tdinput" colspan="3">
-                <span id="account"></span>
+            <td class="tdinput">
+                <span id="chargingcode"></span>
+            </td>
+            <td class="left_td">客户名称：
+            </td>
+            <td class="tdinput">
+                <span id="customername"></span>
             </td>
         </tr>
         <tr>
-            <td class="left_td">标准地址：
+            <td class="left_td">安装地址：
             </td>
             <td class="tdinput" colspan="3">
                 <span id="address"></span>
             </td>
         </tr>
         <tr>
-            <td class="left_td">分纤箱号：
+            <td class="left_td">客户联系人：
             </td>
             <td class="tdinput">
-                <span id="boxno"></span>
+                <span id="customercontact"></span>
             </td>
-            <td class="left_td">终端数量：
+            <td class="left_td">客户电话：
             </td>
             <td class="tdinput">
-                <span id="terminalnumber"></span>
+                <span id="customerphone"></span>
             </td>
         </tr>
         <tr>
-            <td class="left_td">装维经理：
+            <td class="left_td">联通客户经理：
             </td>
             <td class="tdinput">
-                <span id="linkman"></span>
+                <span id="customermanager"></span>
             </td>
-            <td class="left_td">联系电话：
+            <td class="left_td">局向：
             </td>
             <td class="tdinput">
-                <span id="linkphone"></span>
+                <span id="direction"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="left_td">指定路由：
+            </td>
+            <td class="tdinput" colspan="3">
+                <span id="route"></span>
             </td>
         </tr>
         <tr>
@@ -277,78 +297,31 @@
             </td>
         </tr>
         <tr>
-            <td colspan="4" style="text-align: center; line-height: 16px; font-size: 14px; font-weight: 700;">资源核查信息</td>
+            <td colspan="4" style="text-align: center; line-height: 20px; font-size: 14px; font-weight: 700;">回单信息</td>
         </tr>
         <tr>
 
-            <td class="left_td">核查人：
+            <td class="left_td">施工单位：
             </td>
-            <td class="tdinput">
-                <span id="checkuser"></span>
-            </td>
-
-            <td class="left_td">核查时间：
-            </td>
-            <td class="tdinput">
-                <span id="checktime"></span>
-            </td>
-        </tr>
-        <tr>
-            <td class="left_td">核查信息：</td>
             <td class="tdinput" colspan="3">
-                <div id="checkinfo"></div>
+                <span id="constructionunit"></span>
             </td>
         </tr>
         <tr>
-            <td colspan="4" style="text-align: center; line-height: 16px; font-size: 14px; font-weight: 700;">建设施工信息</td>
-        </tr>
-        <tr>
-            <td class="left_td">施工单位：</td>
-            <td class="tdinput">
-                <div id="constructionunit"></div>
-            </td>
-
-            <td class="left_td">施工完成情况：
-            </td>
-            <td>
-                <select name="isNext" id="isNext" class="easyui-combobox" data-options="required:true,panelHeight:'auto',editable:false">
-                    <option></option>
-                    <option value="0">退回发起单位</option>
-                    <option value="1">建设施工完成</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="left_td">施工信息：</td>
+            <td class="left_td">回单路由：</td>
             <td class="tdinput" colspan="3">
-                <textarea name="constructioninfo" id="constructioninfo" cols="" style="width: 400px;" class="easyui-validatebox" required rows="2"></textarea>
+                  <div id="receiptroute"></div>
             </td>
         </tr>
-        <tr id="trPON">
-            <td class="left_td">新增PON口：
-            </td>
-            <td colspan="3">
-                <select name="isaddpon" id="isaddpon" class="easyui-combobox" data-options="required:true,panelHeight:'auto',editable:false,width:80,onSelect:function(rec){ if (rec.value == '是') {
-                  routeEl.insertAfter($('tr:eq(14)', '#LFTable'));
-                    $.parser.parse( routeEl);
-                }
-                else {
-                    routeEl.detach();
-                }}">
-                    <option></option>
-                    <option value="是">是</option>
-                    <option value="否">否</option>
-                </select>
-            </td>
-        </tr>
-        <tr id="trFullRoute">
-            <td class="left_td">全程路由：</td>
+        <tr>
+            <td class="left_td">测试照片：</td>
             <td class="tdinput" colspan="3">
-                <textarea name="fullroute" id="fullroute" cols="" style="width: 400px;" class="easyui-validatebox" required rows="2"></textarea>
+                <div id="photoList"></div>
             </td>
         </tr>
-        <tr id="trUpload">
-            <td colspan="4" style="padding: 10px;">上传资料：<br />
+        <tr>
+            <td class="left_td">编辑照片：</td>
+            <td colspan="3" style="padding: 10px;">
                 <div id="ProjectAttList"></div>
                 <input type="hidden" name="report" id="report" />
                 <input type="hidden" name="reportName" id="reportName" />
@@ -366,7 +339,6 @@
                 </div>
             </td>
         </tr>
-
     </table>
 </form>
 

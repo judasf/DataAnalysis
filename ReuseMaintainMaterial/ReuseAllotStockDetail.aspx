@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>专项整治管理——领料明细</title>
+    <title>利旧物料管理——物料调拨明细</title>
     <%--引入My97日期文件--%>
     <script src="../Script/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
     <%--引入Jquery文件--%>
@@ -18,7 +18,7 @@
     <script src="../Script/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
     <script src="../Script/extJquery.js" type="text/javascript"></script>
     <script src="../Script/extEasyUI.js" type="text/javascript"></script>
-       <%--引入图片展示插件--%>
+      <%--引入图片展示插件--%>
     <link href="../Script/ImgPopup/ImgPopup.css" rel="stylesheet" />
     <script src="../Script/ImgPopup/ImgPopup.min.js"></script>
     <link type="text/css" href="../css/style.css" rel="Stylesheet" />
@@ -53,16 +53,17 @@
         var resetGrid = function () {
             if (roleid != 2)
                 $('#unitname').combobox('setValue', '');
+            $('#oldunitname').combobox('setValue', '');
+            $('#sdate').val('');
+            $('#edate').val('');
             $('#classname').combobox('setValue', '');
             $('#typeid').combobox('setValue', '');
             grid.datagrid('load', {});
         };
         //导出入库明细excel
-        var exportOutStockDetail = function () {
-            jsPostForm('../ajax/Srv_NetWorkSpecialProject.ashx/ExportUnitOutStockDetail', $.serializeObject($('#searchForm')));
+        var exportInStockDetail = function () {
+            jsPostForm('../ajax/Srv_ReuseMaintainMaterial.ashx/ExportReuseAllotStockDetail', $.serializeObject($('#searchForm')));
         };
-        
-      
         $(function () {
             //初始化型号下拉框
             $('#typeid').combobox({
@@ -70,7 +71,7 @@
                 textField: 'text',
                 editable: true,
                 panelHeight: '200',
-                url: '../ajax/Srv_NetWorkSpecialProject.ashx/GetTypeInfoComboboxAll',
+                url: '../ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoComboboxAll',
                 filter: function (q, row) {
                     var opts = $(this).combobox('options');
                     return row[opts.textField].indexOf(q) > -1;
@@ -88,14 +89,11 @@
                     if (result) {
                         $(this).combobox('clear');
                     }
-                },
-                onLoadError: function () {
-                    parent.$.messager.alert('提示', '该物料类型下未配置型号！', 'error');
                 }
             });
             grid = $('#grid').datagrid({
-                title: '领料明细',
-                url: '../ajax/Srv_NetWorkSpecialProject.ashx/GetUnitOutStockDetail',
+                title: '物料调拨明细',
+                url: '../ajax/Srv_ReuseMaintainMaterial.ashx/GetReuseAllotStockDetail',
                 striped: true,
                 rownumbers: true,
                 pagination: true,
@@ -107,54 +105,48 @@
                 sortOrder: 'desc',
                 columns: [[{
                     width: '80',
-                    title: '出库日期',
-                    field: 'ckrq',
-                    halign: 'center',
-                    align: 'center'
-                }, {
-                    width: '120',
-                    title: '出库单位',
-                    field: 'unitname',
-                    halign: 'center',
-                    align: 'center'
-                }, {
-                    width: '100',
-                    title: '领料单位',
-                    field: 'areaname',
+                    title: '调拨日期',
+                    field: 'allotrq',
                     halign: 'center',
                     align: 'center'
                 }, {
                     width: '80',
-                    title: '领料人',
-                    field: 'llr',
+                    title: '单位名称',
+                    field: 'allotunitname',
                     halign: 'center',
                     align: 'center'
                 }, {
                     width: '200',
-                    title: '商城出库单号',
+                    title: '调拨单号',
+                    field: 'allotorderno',
+                    halign: 'center',
+                    align: 'center'
+                }, {
+                    width: '220',
+                    title: '原商城订单号',
                     field: 'storeorderno',
                     halign: 'center',
                     align: 'center'
                 }, {
-                    width: '120',
-                    title: '故障单号',
-                    field: 'faultorderno',
+                    width: '80',
+                    title: '调拨单位',
+                    field: 'oldunitname',
                     halign: 'center',
                     align: 'center'
                 }, {
-                    width: '120',
-                    title: '领料单',
-                    field: 'lldpath',
+                    width: '60',
+                    title: '调拨单',
+                    field: 'reportpath',
                     halign: 'center',
                     align: 'center',
-                    formatter: function (index,row) {
-                        var str='';
-                        if(row.lldpath)
-                            str += $.formatString('<a href="javascript:void(0);" data-mfp-src="../{0}"  title="点击查看领料单" class="showpic" style="cursor:pointer;text-decoration:none;color:#ff8800" >点击查看领料单</a>', row.lldpath);
+                    formatter: function (index, row) {
+                        var str = '';
+                        if (row.reportpath)
+                            str += $.formatString('<a href="javascript:void(0);" data-mfp-src="../{0}"  title="点击查看调拨单" class="showpic" style="cursor:pointer;text-decoration:none;color:#ff8800" >详情</a>', row.reportpath);
                         return str;
                     }
                 }, {
-                    width: '100',
+                    width: '80',
                     title: '物料类型',
                     field: 'classname',
                     halign: 'center',
@@ -167,8 +159,8 @@
                     align: 'center'
                 }, {
                     width: '100',
-                    title: '数量',
-                    field: 'amount',
+                    title: '调拨数量',
+                    field: 'allotnum',
                     halign: 'center',
                     align: 'center'
                 }, {
@@ -178,21 +170,27 @@
                     halign: 'center',
                     align: 'center'
                 }, {
-                    width: '60',
+                    width: '40',
                     title: '单价',
                     field: 'price',
                     halign: 'center',
                     align: 'center'
                 }, {
                     width: '80',
-                    title: '金额（元）',
-                    field: 'allfee',
+                    title: '金额',
+                    field: 'money',
                     halign: 'center',
                     align: 'center'
                 }, {
                     width: '200',
                     title: '备注',
                     field: 'memo',
+                    halign: 'center',
+                    align: 'center'
+                }, {
+                    width: '80',
+                    title: '调拨人',
+                    field: 'allotuser',
                     halign: 'center',
                     align: 'center'
                 }]],
@@ -209,8 +207,8 @@
                         body.find('table tbody').append('<tr><td width="' + body.width() + '" style="height: 25px; text-align: center;">没有数据</td></tr>');
                     }
                     //提示框
-                    $(this).datagrid('tooltip', ['memo']);
-                    //故障确认单展示插件
+                    $(this).datagrid('tooltip', ['typename', 'memo']);
+                    //物料调拨单展示插件
                     $('.showpic').magnificPopup({
                         type: 'image'
                     });
@@ -229,43 +227,18 @@
         <form id="searchForm" style="margin: 0;">
             <table>
                 <tr>
-                    <td style="width: 80px; font-weight: 700;">数据查询：</td>
-                    <td style="width: 65px; text-align: right;">出库日期：
+                    <td style="width: 65px; font-weight: 700;">数据查询：</td>
+                    <td style="width: 65px; text-align: right;">调拨日期：
                     </td>
                     <td>
-                        <input style="width: 80px;" name="sdate" id="sdate" class="Wdate" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'edate\')}',maxDate:'%y-%M-%d'})"
-                            readonly="readonly" />-<input style="width: 80px;" name="edate" id="edate" class="Wdate"
-                                onfocus="WdatePicker({minDate:'#F{$dp.$D(\'sdate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />
+                        <input style="width: 80px;" name="sdate" id="sdate" class="Wdate" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'edate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />-<input style="width: 80px;" name="edate" id="edate" class="Wdate"
+                            onfocus="WdatePicker({minDate:'#F{$dp.$D(\'sdate\')}',maxDate:'%y-%M-%d'})" readonly="readonly" />
                     </td>
-                    <td style="width: 65px; text-align: right;">出库单位：
-                    </td>
-                    <td>
-                        <select id="unitname" class="combo easyui-combobox" name="unitname" style="width: 120px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_NetWorkSpecialProject.ashx/GetNSP_MaintainMaterial_TypeInfoComboboxAll?unitname='+encodeURIComponent(rec.value);$('#areaid').combobox('reload', url); }">
-                            <%if (roleid == 2)
-                                { %>
-                            <option><%=Session["deptname"] %></option>
-
-                            <%}
-                                else
-                                { %>
-                            <option value="">全部</option>
-                            <option>运行维护部</option>
-                               <option>网络发展部</option>
-                            <option>网络优化中心</option>
-                            <option>客户支撑中心</option>
-                            <option>网络维护中心</option>
-                            <option>安阳县</option>
-                            <option>滑县</option>
-                            <option>内黄县</option>
-                            <option>林州市</option>
-                            <option>汤阴县</option>
-                            <%} %>
-                        </select>
-                    </td>
+                 
                     <td style="width: 65px; text-align: right;">物料类型：
                     </td>
                     <td>
-                        <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_NetWorkSpecialProject.ashx/GetNetWorkSpecialProject_TypeInfoComboboxAll?classname='+encodeURIComponent(rec.value);$('#typeid').combobox('reload', url); }">
+                        <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,onSelect:function(rec){ var url = '../ajax/Srv_ReuseMaintainMaterial.ashx/GetReuseMaintainMaterial_TypeInfoComboboxAll?classname='+encodeURIComponent(rec.value);$('#typeid').combobox('reload', url); }">
                             <option value="">全部</option>
                             <option>光缆</option>
                             <option>光缆交接箱</option>
@@ -284,31 +257,72 @@
                     <td style="width: 65px; text-align: right;">物料型号：
                     </td>
                     <td align="left">
-                       <input name="typeid" id="typeid" class="combo" style="width: 300px;" />
+                         <input name="typeid" id="typeid" class="combo" style="width: 300px;" />
                     </td>
-
-                    <td style="width: 65px; text-align: right;">领料单位：
-                    </td>
-                    <td>
-                        <input id="areaId" type="text" name="areaId" style="width: 140px;" class="combo easyui-combobox" data-options="
-                    valueField: 'id',
-                    textField: 'text',
-                    editable: false,
-                    required:true,
-                    panelHeight: 'auto',
-                    url: '../ajax/Srv_NetWorkSpecialProject.ashx/GetNetWorkSpecialProject_AreaInfoComboboxAll'
-                      " />
-                    </td>
-
+                    
                 </tr>
                 <tr>
-                    <td colspan="7" style="text-align: left; padding-left: 100px;">
-                        <a href="javascript:void(0);" style="margin: 0 10px;" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:false"
+                      <td style="width:65px; text-align: right;">
+                    </td>
+                       <td style="width: 65px; text-align: right;">单位名称：
+                    </td>
+                    <td>
+                        <select id="unitname" class="combo easyui-combobox" name="unitname" style="width: 170px;" data-options="panelHeight:'auto',editable: false">
+                            <%if (roleid == 2)
+                                { %>
+                            <option><%=Session["deptname"] %></option>
+
+                            <%}
+                                else
+                                { %>
+                            <option value="">全部</option>
+                            <option>运行维护部</option>
+                            <option>网络发展部</option>
+                            <option>网络优化中心</option>
+                            <option>客户支撑中心</option>
+                            <option>网络维护中心</option>
+                            <option>安阳县</option>
+                            <option>滑县</option>
+                            <option>内黄县</option>
+                            <option>林州市</option>
+                            <option>汤阴县</option>
+                            <option>市维护中心</option>
+                            <%} %>
+                        </select>
+                    </td>
+                    <td style="width: 75px; text-align: right;">调拨单位：
+                    </td>
+                    <td>
+                        <select id="oldunitname" class="combo easyui-combobox" name="oldunitname" style="width: 100px;" data-options="panelHeight:'auto',editable: false">
+                            <option value="">全部</option>
+                            <option>运行维护部</option>
+                            <option>网络发展部</option>
+                            <option>网络优化中心</option>
+                            <option>客户支撑中心</option>
+                            <option>网络维护中心</option>
+                            <option>安阳县</option>
+                            <option>滑县</option>
+                            <option>内黄县</option>
+                            <option>林州市</option>
+                            <option>汤阴县</option>
+                            <option>市维护中心</option>
+                        </select>
+                    </td>
+                    <td style="width: 85px; text-align: right;">利旧物料编号：
+                    </td>
+                    <td align="left">
+                        <input type="text" name="storeorderno" id="storeorderno" style="width: 300px; height: 20px;" class="combo" />
+                    </td>
+                    </tr><tr>
+                         <td style="width:80px; text-align: right;">
+                    </td>
+                    <td colspan="6" style="text-align: left">
+                        <a href="javascript:void(0);" style="margin-right: 10px;" class="easyui-linkbutton" data-options="iconCls:'icon-magifier',plain:false"
                             onclick="searchGrid();">&nbsp;&nbsp;查询&nbsp;&nbsp;</a>
                         <a href="javascript:void(0);" style="margin-right: 10px;" class="easyui-linkbutton" data-options="iconCls:'icon-magifier_zoom_out',plain:false"
                             onclick="resetGrid();">&nbsp;&nbsp;重置&nbsp;&nbsp;</a>
-                        <a href="javascript:void(0);" style="margin-right: 10px;" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:false"
-                            onclick="exportOutStockDetail();">&nbsp;&nbsp;导出&nbsp;&nbsp;</a>
+                         <a href="javascript:void(0);" style="margin-right: 10px;" class="easyui-linkbutton" data-options="iconCls:'icon-table_go',plain:false"
+                            onclick="exportInStockDetail();">&nbsp;&nbsp;导出&nbsp;&nbsp;</a>
                     </td>
                 </tr>
             </table>
@@ -316,7 +330,7 @@
     </div>
     <div data-options="region:'center',fit:true,border:false">
         <p class="sitepath">
-            <b>当前位置：</b>专项整治管理 > <a href="javascript:void(0);">领料明细</a>
+            <b>当前位置：</b>利旧物料管理 > <a href="javascript:void(0);">物料调拨明细</a>
         </p>
         <table id="grid" data-options="fit:false,border:false">
         </table>

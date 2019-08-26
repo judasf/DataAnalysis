@@ -2,7 +2,8 @@
 
 <% 
     /** 
-     * 专项整治物料领料信息录入
+     * 运维物料物料领取
+     *ReuseMaintainMaterial_StockDraw表操作对话框
      *
      */
     if (Session["uname"] == null || Session["uname"].ToString() == "")
@@ -37,7 +38,7 @@
         if ($('form').form('validate')) {
             parent.$.messager.confirm('询问', '您确定要提交领料信息？提交后则不能修改！', function (r) {
                 if (r) {
-                    var url = 'ajax/Srv_NetWorkSpecialProject.ashx/SaveUnitStockOutInfo';
+                    var url = 'ajax/Srv_ReuseMaintainMaterial.ashx/SaveReuseStockDrawInfo';
                     //判断领料单上传
                     if ($('#report').val() == "") {
                         parent.$.messager.alert('提示', '请上传领料单照片！', 'error');
@@ -47,19 +48,19 @@
                     var postDate = {};
                     //有数据的行编号
                     var rowsNum = 0;
-                    // 选择的商城出库单号数组，用来检测是否重复选择同一商城出库单号
+                    // 选择的利旧物料编号数组，用来检测是否重复选择同一利旧物料编号
                     var orderNoArr = [];
                     var repeatorderNoArr = [];
                     //遍历每一行表格
                     $.each($('tr', '#stockList'), function (index) {
                         //剔除标题行
                         if (index > 0) {
-                            //获取每行商城出库单号的值
+                            //获取每行利旧物料编号的值
                             var orderno = $('input[name="storeorderno"]', this).val();
-                           
-                            //剔除商城出库单号为空的行数据
+
+                            //剔除利旧物料编号为空的行数据
                             if (orderno != undefined && orderno.trim().length > 0) {
-                                //插入商城出库单号数组
+                                //插入利旧物料编号数组
                                 orderNoArr.push(orderno);
                                 rowsNum++;
                                 //遍历每一行要提交的数据
@@ -72,24 +73,22 @@
                     })
                     //插入总数据行数
                     postDate['rowsCount'] = rowsNum;
-                    //插入出库日期
-                    postDate['ckrq'] = $('#ckrq').val();
+                    //插入领料日期
+                    postDate['llrq'] = $('#llrq').val();
                     //插入领料单位
-                    postDate['areaId'] = $('input[name="areaId"]').val();
+                    postDate['lldw'] = encodeURIComponent($('#lldw').combobox('getText'));
                     //插入领料人
-                    postDate['llr'] = encodeURIComponent($('#llr').val());
-                    //插入故障单号
-                    postDate['faultorderno'] = $('#faultorderno').val();
+                    postDate['llr'] = encodeURIComponent($('#llr').combobox('getText'));
                     //插入备注
                     postDate['memo'] = encodeURIComponent($('input[name="memo"]').val());
                     //插入领料单照片路径
                     postDate['lldpath'] = $('#report').val();
-                    //判断是否重复选择同一商城出库单号
+                    //判断是否重复选择同一利旧物料编号
                     repeatorderNoArr = getRepeatNum(orderNoArr);
                     var canSubmit = true;
                     $.each(repeatorderNoArr, function (i, n) {
                         if (n > 1) {
-                            parent.$.messager.alert('提示', '请不要重复选择商城出库单号！', 'error');
+                            parent.$.messager.alert('提示', '请不要重复选择利旧物料编号！', 'error');
                             canSubmit = false;
                             return false;
                         }
@@ -123,10 +122,10 @@
             });
         }
     };
-    //设置当前选择型号物料的商城出库单号、库存和对应的单位
+    //设置当前选择型号物料的利旧物料编号、库存和对应的单位
     var setOrderStock = function (index, id) {
         $('#storeorderno' + index).combogrid({
-            url: 'ajax/Srv_NetWorkSpecialProject.ashx/GetOrderCombogridForStockOut',
+            url: 'ajax/Srv_ReuseMaintainMaterial.ashx/GetOrderCombogridForStockOut',
             panelWidth: 280,
             panelHeight: 140,
             idField: 'storeorderno', //form提交时的值
@@ -142,7 +141,7 @@
             pageList: [3, 6],
             columns: [[{
                 field: 'storeorderno',
-                title: '商城出库单号',
+                title: '利旧物料编号',
                 width: 180,
                 halign: 'center',
                 align: 'center',
@@ -170,7 +169,7 @@
     var addList = function () {
         var index = $('#index').val();
         index++;
-        var insertEle = $('<tr align="center"><td><select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:\'auto\',editable: false,required:true,onSelect:function(rec){ var url = \'../ajax/Srv_NetWorkSpecialProject.ashx/GetTypeInfoComboboxForStockOut?classname=\'+encodeURIComponent(rec.value);$(\'#typeid' + index + '\').combobox(\'setValue\',\'\').combobox(\'reload\', url); }"> <option value=""></option><option>光缆</option><option>光缆交接箱</option><option>电力电缆</option><option>双绞线</option><option>光跳纤</option><option>光缆接头盒</option><option>分光器</option><option>电杆</option><option>井盖</option><option>铁件</option><option>工器具</option><option>其他</option></select></td><td><input type="text" id="typeid' + index + '" name="typeid" style="width: 280px;" class="combo easyui-combobox" data-options="valueField: \'id\',textField: \'text\',editable: false,panelHeight: \'200\',required:true,onSelect:function(rec){setOrderStock(' + index + ',rec.id);}" /></td> <td><input type="text" id="storeorderno' + index + '" name="storeorderno" style="width: 160px;" /></td><td><input type="text" id="amount' + index + '" name="amount" class="inputBorder easyui-numberbox" style="width: 50px" data-options="min:0,required:true" onblur="checkStock(' + index + ',this);"/></td><td><label id="stock' + index + '"></label></td><td><label id="units' + index + '"></label></td><td><img src="../../Script/easyui/themes/icons/edit_remove.png" onclick="delList(this);" style="cursor: pointer;" /></td></tr>').insertBefore($('#memoTr'));
+        var insertEle = $('<tr align="center"><td> <input type="text" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="url:\'../ajax/Srv_ReuseMaintainMaterial.ashx/GetClassInfoComboboxForStockOut\',valueField: \'id\',textField: \'text\',panelHeight:\'auto\',editable: false,required:true,onSelect:function(rec){ var url = \'../ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoComboboxForStockOut?classname=\'+encodeURIComponent(rec.text);$(\'#typeid' + index + '\').combobox(\'setValue\',\'\').combobox(\'reload\', url); }"/> </td><td><input type="text" id="typeid' + index + '" name="typeid" style="width: 280px;" class="combo easyui-combobox" data-options="valueField: \'id\',textField: \'text\',editable: false,panelHeight: \'200\',required:true,onSelect:function(rec){setOrderStock(' + index + ',rec.id);}" /></td> <td><input type="text" id="storeorderno' + index + '" name="storeorderno" style="width: 160px;" /></td><td><input type="text" id="amount' + index + '" name="amount" class="inputBorder easyui-numberbox" style="width: 50px" data-options="min:0,required:true" onblur="checkStock(' + index + ',this);"/></td><td><label id="stock' + index + '"></label></td><td><label id="units' + index + '"></label></td><td><img src="../../Script/easyui/themes/icons/edit_remove.png" onclick="delList(this);" style="cursor: pointer;" /></td></tr>').insertBefore($('#memoTr'));
         $('#index').val(index);
         $.parser.parse(insertEle);
     };
@@ -198,24 +197,6 @@
         }
     }
     $(function () {
-        //判断故障单号是否存在
-        $('#faultorderno').blur(function () {
-            var faultorderno = $(this).val();
-            if (faultorderno)//故障单号不为空
-            {
-                parent.$.messager.progress({
-                    text: '数据加载中....'
-                });
-                $.post('../ajax/Srv_NetWorkSpecialProject.ashx/CheckFaultOrderNo', {
-                    faultorderno: faultorderno
-                }, function (result) {
-                    parent.$.messager.progress('close');
-                    if (!result.success)
-                        parent.$.messager.alert('提示', '输入的故障单号不存在', 'error', function () { $('#faultorderno').val('').focus(); });
-                }, 'json');
-            }
-
-        });
         //初始化领料单照片上传
         $("#file_upload").uploadify({
             //开启调试
@@ -225,7 +206,7 @@
             //上传成功后是否在列表中删除
             'removeCompleted': false,
             //在文件上传时需要一同提交的数据
-            'formData': { 'floderName': 'NetWorkSpecialProject' },
+            'formData': { 'floderName': 'ReuseMaintainMaterial' },
             'buttonText': '浏览',
             //flash
             'swf': "Script/uploadify/uploadify.swf?var=" + (new Date()).getTime(),
@@ -319,28 +300,32 @@
         </caption>
         <tr>
             <td style="text-align: left" colspan="7">领料日期：
-                 <input style="width: 80px;" name="ckrq" id="ckrq" class="easyui-validatebox Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true})" required />
+                 <input style="width: 80px;" name="llrq" id="llrq" class="easyui-validatebox Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true})" required />
                 <span style="margin-left: 10px;">领料单位：</span>
-                <input id="areaId" type="text" name="areaId" style="width: 140px;" class="combo easyui-combobox" data-options="
+                <input id="lldw" type="text" name="lldw" style="width: 140px;" class="combo easyui-combobox" data-options="
                     valueField: 'id',
                     textField: 'text',
                     editable: false,
                     required:true,
                     panelHeight: 'auto',
-                    url: 'ajax/Srv_NetWorkSpecialProject.ashx/GetNetWorkSpecialProject_AreaInfoCombobox'
+                    url: 'ajax/Srv_ReuseMaintainMaterial.ashx/GetReuseMaintainMaterial_lldwCombobox',
+                    onSelect:function(rec){ var url = '../ajax/Srv_ReuseMaintainMaterial.ashx/GetllrComboboxForStockDraw?lldw='+encodeURIComponent(rec.text);$('#llr').combobox('setValue','').combobox('reload', url); }
                       " />
                 <span style="margin-left: 10px;">领 料 人：</span>
-                <input type="text" id="llr" name="llr" style="width: 120px;" class="inputBorder easyui-validatebox" required />
-                <span style="margin-left: 10px;"> 故障单号：</span>
-                <input type="text" id="faultorderno" name="faultorderno" style="width: 120px;" class="inputBorder easyui-validatebox" required />
+                <input type="text" id="llr" name="llr" style="width: 120px;" class="combo inputBorder easyui-combobox" data-options="
+                    valueField: 'id',
+                    textField: 'text',
+                    editable: false,
+                    panelHeight: 'auto',
+                    required:true" />
             </td>
         </tr>
         <tr>
-            <th>物料类型：
+            <th>物料类型
             </th>
-            <th>物料型号：
+            <th>物料型号
             </th>
-            <th>商城出库单号：
+            <th>利旧物料编号
             </th>
             <th>领取数量
             </th>
@@ -353,10 +338,9 @@
         </tr>
         <tr align="center">
             <td>
-                <select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,required:true,onSelect:function(rec){ var url = '../ajax/Srv_NetWorkSpecialProject.ashx/GetTypeInfoComboboxForStockOut?classname='+encodeURIComponent(rec.value);$('#typeid1').combobox('setValue','').combobox('reload', url); }">
+                <%--<select id="classname" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="panelHeight:'auto',editable: false,required:true,onSelect:function(rec){ var url = '../ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoComboboxForStockOut?classname='+encodeURIComponent(rec.value);$('#typeid1').combobox('setValue','').combobox('reload', url); }">
                     <option value=""></option>
                     <option>光缆</option>
-                    <option>光缆交接箱</option>
                     <option>电力电缆</option>
                     <option>双绞线</option>
                     <option>光跳纤</option>
@@ -367,7 +351,18 @@
                     <option>铁件</option>
                     <option>工器具</option>
                     <option>其他</option>
-                </select>
+                </select>--%>
+                <input type="text" class="combo easyui-combobox" name="classname" style="width: 100px;" data-options="
+                    url:'../ajax/Srv_ReuseMaintainMaterial.ashx/GetClassInfoComboboxForStockOut',
+                    valueField: 'id',
+                    textField: 'text',
+                    panelHeight:'auto',
+                    editable: false,
+                    required:true,
+                    onSelect:function(rec){
+                     var url = '../ajax/Srv_ReuseMaintainMaterial.ashx/GetTypeInfoComboboxForStockOut?classname='+encodeURIComponent(rec.text);
+                    $('#typeid1').combobox('setValue','').combobox('reload', url); 
+                    }" />
             </td>
             <td>
                 <input type="text" id="typeid1" name="typeid" style="width: 280px;" class="combo easyui-combobox" data-options="
@@ -398,8 +393,9 @@
         <tr id="memoTr">
             <td style="text-align: left" colspan="7">备注：<input type="text" name="memo" value=" " style="width: 400px;" class="inputBorder" /></td>
         </tr>
-         <tr>
-            <td class="left_td">领料单照片：</td><td class="tdinput" colspan="6">
+        <tr>
+            <td class="left_td">领料单照片：</td>
+            <td class="tdinput" colspan="6">
                 <input type="hidden" name="report" id="report" />
                 <input type="hidden" name="reportName" id="reportName" />
                 <input type="hidden" name="reportNum" id="reportNum" value="0" />
