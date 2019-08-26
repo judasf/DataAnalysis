@@ -239,7 +239,7 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             menuList.Append("{\"flag\":\"1\",\"msg\":\"succ\",\"menus\":");
             menuList.Append("[");
             //线路资源管理 begin
-            if (isAdmin || isSX || isXLZG || isWB || isZXGL||isXLCX)
+            if (isAdmin || isSX || isXLZG || isWB || isZXGL || isXLCX)
             {
                 //accordion 头
                 subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"线路资源管理\",\"icon\": \"icon-server\",\"menus\": [");
@@ -862,6 +862,25 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             subMenu.Length = 0;
                 */
             //库存管理 end
+            //资源盘活 begin
+            if (isAdmin)
+            {
+
+                //accordion 头
+                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"盘活资源管理\",\"icon\": \"icon-book\",\"menus\": [");
+                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"盘活资源管理\",\"icon\": \"ext-icon-table\",");
+                subMenu.Append("\"url\": \"rcwhllxx/yjylkctzgl.aspx\",\"iframename\": \"pbframe\"}");
+                if (isAdmin)
+                {
+                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"资源类别管理\",\"icon\": \"ext-icon-table\",");
+                    subMenu.Append("\"url\": \"ResourceReuse/RRTypeInfo.aspx\",\"iframename\": \"spframe\"}");
+                }
+                //accordion 尾
+                subMenu.Append("]}");
+            }
+            menuArr.Add(subMenu.ToString());
+            subMenu.Length = 0;
+            //资源盘活 end
             //系统设置 begin
 
             if (isAdmin)
