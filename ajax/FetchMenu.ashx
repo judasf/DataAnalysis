@@ -141,6 +141,10 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
     /// 19:专线客户光缆管理
     /// </summary>
     bool isZXGL = false;
+    /// <summary>
+    /// 40:资源盘活管理
+    /// </summary>
+    bool isZYPH = false;
     public void ProcessRequest(HttpContext context)
     {
         //不让浏览器缓存
@@ -208,7 +212,8 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             isFaultReapir = Session["roleid"].ToString() == "18" ? true : false;
             //专线客户光缆管理
             isZXGL = Session["roleid"].ToString() == "19" ? true : false;
-
+            //资源盘活
+            isZYPH = Session["roleid"].ToString() == "40" ? true : false;
 
             isCW = Session["deptname"].ToString() == "财务部" ? true : false;
         }
@@ -483,58 +488,23 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             menuArr.Add(subMenu.ToString());
             subMenu.Length = 0;
             //专项整治事项管理 end
-
-                //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"装维外包考核管理\",\"icon\": \"icon-chart_bar\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"装维外包考核表\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"zwkh/zwkhtjb.aspx\",\"iframename\": \"pbframe\"}");
-                if (isYW && Session["uname"].ToString() == "dongxuee")
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"障碍服务指标考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"zwkh/zwzayfw_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if ((isXLKH && isTOWN) || (isGZLD && Session["uname"].ToString() == "wangheyang"))
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"基础管理考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"zwkh/zwjcgl_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                if (isYW && Session["uname"].ToString() == "dongxuee")
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"额外奖罚考核\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"zwkh/zwewjc_marking.aspx\",\"iframename\": \"spframe\"}");
-                }
-                //accordion 尾
-                subMenu.Append("]}");
-            }
-            menuArr.Add(subMenu.ToString());
-            subMenu.Length = 0;
-                */
-            //装维考核 end
-            //库存管理 begin
-            /*
-            if (isAdmin || isKG || isYW || isGZLD)
+            //资源盘活事项 begin
+            if (isAdmin || isZYPH)
             {
 
                 //accordion 头
-                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"库存管理\",\"icon\": \"icon-database\",\"menus\": [");
-                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"库存统计表\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"kcgl/yjylkckctjb.aspx\",\"iframename\": \"pbframe\"}");
-                if (isKG || isNSBD)
-                {
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"库存录入\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"kcgl/yjylkckclr.aspx\",\"iframename\": \"spframe\"}");
-                    subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"库存型号管理\",\"icon\": \"ext-icon-table\",");
-                    subMenu.Append("\"url\": \"kcgl/yjylkclbgl.aspx\",\"iframename\": \"spframe\"}");
-                }
-                subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"库存录入明细\",\"icon\": \"ext-icon-table\",");
-                subMenu.Append("\"url\": \"kcgl/yjylkckclrmx.aspx\",\"iframename\": \"spframe\"}");
-                //accordion 尾
+                subMenu.Append("{\"menuid\": \"3\",\"menuname\": \"资源盘活事项\",\"icon\": \"icon-database_refresh\",\"menus\": [");
+                subMenu.Append("{\"menuid\": \"11\",\"menuname\": \"资源入库管理\",\"icon\": \"ext-icon-table\",");
+                subMenu.Append("\"url\": \"ResourceReuse/RRStockMana.aspx\",\"iframename\": \"spframe\"}");
+                subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"资源领用明细\",\"icon\": \"ext-icon-table\",");
+                subMenu.Append("\"url\": \"ResourceReuse/RRStockDraw.aspx\",\"iframename\": \"spframe\"}");
+                subMenu.Append(",{\"menuid\": \"11\",\"menuname\": \"资源类别管理\",\"icon\": \"ext-icon-table\",");
+                subMenu.Append("\"url\": \"ResourceReuse/RRTypeInfo.aspx\",\"iframename\": \"spframe\"}");
                 subMenu.Append("]}");
             }
             menuArr.Add(subMenu.ToString());
             subMenu.Length = 0;
-                */
-            //库存管理 end
+            //资源盘活事项 end
             //系统设置 begin
 
             if (isAdmin)
