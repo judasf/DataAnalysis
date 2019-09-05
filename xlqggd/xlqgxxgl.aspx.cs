@@ -24,7 +24,7 @@ public partial class xlqgxxgl : System.Web.UI.Page
                 BindBddw();
                 NewsBind();
                 //判断是否运维部超管
-                isAdminYW = (Session["roleid"].ToString() == "0" && Session["deptname"].ToString() == "运行维护部") ? true : false;
+                isAdminYW = (Session["roleid"].ToString() == "0" && Session["deptname"].ToString() == "网络部") ? true : false;
                 //删除
                 if (Request.QueryString["action"] == "del")
                 {

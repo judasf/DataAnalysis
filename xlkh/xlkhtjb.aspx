@@ -74,7 +74,7 @@
                                     <%#Eval("s2")%></a>--%>
                             </td>
                             <td>
-                                <a href='xlrcwh_marking_view.aspx?dept=<%#Server.UrlEncode(Eval("deptname").ToString()) %>&scoredate=<%=sd.InnerText %>&markingdept=<%#Server.UrlEncode("运行维护部")%>'>
+                                <a href='xlrcwh_marking_view.aspx?dept=<%#Server.UrlEncode(Eval("deptname").ToString()) %>&scoredate=<%=sd.InnerText %>&markingdept=<%#Server.UrlEncode("网络部")%>'>
                                     <%#Eval("s3")%></a>
                             </td>
                             <td>

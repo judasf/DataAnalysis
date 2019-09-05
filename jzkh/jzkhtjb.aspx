@@ -80,7 +80,7 @@
                                 <%#Eval("s2")%></a>
                         </td>
                         <td>
-                            <a href='jzrcwh_marking_view.aspx?dept=<%#Server.UrlEncode(Eval("deptname").ToString()) %>&scoredate=<%=sd.InnerText %>&markingdept=<%#Server.UrlEncode(Eval("deptname").ToString() == "市区" ? "网络维护中心" : Eval("deptname").ToString())%>'>
+                            <a href='jzrcwh_marking_view.aspx?dept=<%#Server.UrlEncode(Eval("deptname").ToString()) %>&scoredate=<%=sd.InnerText %>&markingdept=<%#Server.UrlEncode(Eval("deptname").ToString() == "市区" ? "网络管理中心" : Eval("deptname").ToString())%>'>
                                 <%#Eval("s3")%></a>
                         </td>
                         <td>
@@ -88,7 +88,7 @@
                                 <%#Eval("s4")%></a>
                         </td>
                         <td>
-                              <a href='jzrcwh_marking_view.aspx?dept=<%#Server.UrlEncode(Eval("deptname").ToString()) %>&scoredate=<%=sd.InnerText %>&markingdept=<%=Server.UrlEncode("运行维护部") %>'>
+                              <a href='jzrcwh_marking_view.aspx?dept=<%#Server.UrlEncode(Eval("deptname").ToString()) %>&scoredate=<%=sd.InnerText %>&markingdept=<%=Server.UrlEncode("网络部") %>'>
                                 <%#Eval("s5")%></a>
                         </td>
                         <td>

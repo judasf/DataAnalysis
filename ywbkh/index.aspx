@@ -4,7 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>运行维护部员工考核</title>
+    <title>网络部员工考核</title>
     <link type="text/css" href="css/style.css" rel="Stylesheet" />
 </head>
 <body>
@@ -14,7 +14,7 @@
         <tbody>
             <tr>
                 <td class="head" align="center" height="25">
-                    <b style="font-size: 18px;">运行维护部员工考核</b>
+                    <b style="font-size: 18px;">网络部员工考核</b>
                 </td>
             </tr>
             <tr>
@@ -44,7 +44,7 @@
                                             <asp:Button ID="btnExportExcel" class="btn" runat="server" Text="导出Excel" OnClick="btnExportExcel_Click" /></span>
                                     </p>
                                     <h4 style="width: 900px; text-align: center;">
-                                        <span runat="server" id="sd"></span>运行维护部部门员工考核办法</h4>
+                                        <span runat="server" id="sd"></span>网络部部门员工考核办法</h4>
                                     <table bordercolor="#6a71a3" cellspacing="1" cellpadding="3" border="1" style="border-collapse: collapse">
                                         <tr style="line-height: 20px;" class="bold" align="center" bgcolor="#ced4e8">
                                             <td width="80" rowspan="4">

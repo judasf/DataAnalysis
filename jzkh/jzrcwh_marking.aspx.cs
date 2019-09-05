@@ -12,8 +12,8 @@ public partial class jzkh_jzrcwh_marking : System.Web.UI.Page
     private string fieldPre = "";
     protected void Page_Load(object sender, EventArgs e)
     {
-        //新增修改:运维部zhaoziqiang打市公司对各县考核；网络维护中心tianlihua打市公司对市公司,各县对各县打分
-        fieldPre = Session["deptname"] != null && Session["deptname"].ToString() == "运行维护部" ? "sgs_" : "wwhxgs_";
+        //新增修改:运维部zhaoziqiang打市公司对各县考核；网络管理中心tianlihua打市公司对市公司,各县对各县打分
+        fieldPre = Session["deptname"] != null && Session["deptname"].ToString() == "网络部" ? "sgs_" : "wwhxgs_";
         if (!IsPostBack)
         {
             if (Session["uname"] == null || Session["uname"].ToString() == ""||Session["deptname"] == null )
@@ -33,16 +33,16 @@ public partial class jzkh_jzrcwh_marking : System.Web.UI.Page
     private void BindDept()
     {
         //各县打自己
-        if ( Session["deptname"].ToString() != "网络维护中心" && Session["deptname"].ToString() != "运行维护部")
+        if ( Session["deptname"].ToString() != "网络管理中心" && Session["deptname"].ToString() != "网络部")
             deptname.Items.Add(Session["deptname"].ToString());
         else
         {
             //网维打市区
             string sql = "select deptname from jzkh_deptinfo";
-            if (Session["deptname"] != null && Session["deptname"].ToString() == "网络维护中心")
+            if (Session["deptname"] != null && Session["deptname"].ToString() == "网络管理中心")
                 sql = "select deptname from jzkh_deptinfo where id=1";
             //运维部打市公司对各县考核
-            else if (Session["deptname"] != null && Session["deptname"].ToString() == "运行维护部")
+            else if (Session["deptname"] != null && Session["deptname"].ToString() == "网络部")
                 sql = "select deptname from jzkh_deptinfo";
             DataSet ds = DirectDataAccessor.QueryForDataSet(sql);
             deptname.Items.Add(new ListItem("选择被考核分公司", "0"));
@@ -127,9 +127,9 @@ public partial class jzkh_jzrcwh_marking : System.Web.UI.Page
         ////县公司打分
         //if (Session["pre"] != null && Session["pre"].ToString().Trim() != "")
             sqlTotal += " and  markingdept='" + Session["deptname"].ToString() + "'";
-        ////网络维护中心、运行维护部打分
+        ////网络管理中心、网络部打分
         //if (Session["pre"] != null && Session["pre"].ToString().Trim() == "")
-        //    sqlTotal += " and  (markingdept='网络维护中心' or markingdept='运行维护部')";
+        //    sqlTotal += " and  (markingdept='网络管理中心' or markingdept='网络部')";
 
         sqlTotal+="  and itemid in( select b.id from jzkh_class as a join  jzkh_item as b ";
         sqlTotal += " on b.classid=a.id and a.parentid=3)";

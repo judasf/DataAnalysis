@@ -44,7 +44,7 @@ public partial class xlkh_xlrcwh_marking_view : System.Web.UI.Page
         sql.Append(",c.score,c.memo,c.markingtime ");
         sql.Append("from ((xlkh_class as a join xlkh_item as b ");
         sql.Append("on b.classid=a.id and ");
-        if (markingdept.InnerText == "运行维护部")
+        if (markingdept.InnerText == "网络部")
             sql.Append("a.parentid=3");
         else
         {

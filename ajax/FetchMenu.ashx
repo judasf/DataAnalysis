@@ -60,7 +60,7 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
     /// </summary>
     bool isXLZG = false;
     /// <summary>
-    /// 9:基站考核人员（网络优化中心和各县）
+    /// 9:基站考核人员（网络优化/客户响应中心和各县）
     /// </summary>
     bool isJZKH = false;
     /// <summary>
@@ -72,7 +72,7 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
     /// </summary>
     bool isWY = false;
     /// <summary>
-    /// 9:基站考核，网络维护中心考核人:
+    /// 9:基站考核，网络管理中心考核人:
     /// </summary>
     bool isWW = false;
     /// <summary>
@@ -191,9 +191,9 @@ public class FetchMenu : IHttpHandler, IRequiresSessionState
             isXLZG = Session["roleid"].ToString() == "8" ? true : false;
             isJZKH = Session["roleid"].ToString() == "9" ? true : false;
             isGXJZKH = Session["roleid"].ToString() == "9" && Session["pre"].ToString() != "" ? true : false;
-            isWY = Session["roleid"].ToString() == "9" && Session["deptname"].ToString() == "网络优化中心" ? true : false;
-            isWW = Session["roleid"].ToString() == "9" && Session["deptname"].ToString() == "网络维护中心" ? true : false;
-            isYWJZ = Session["roleid"].ToString() == "9" && Session["deptname"].ToString() == "运行维护部" ? true : false;
+            isWY = Session["roleid"].ToString() == "9" && Session["deptname"].ToString() == "网络优化/客户响应中心" ? true : false;
+            isWW = Session["roleid"].ToString() == "9" && Session["deptname"].ToString() == "网络管理中心" ? true : false;
+            isYWJZ = Session["roleid"].ToString() == "9" && Session["deptname"].ToString() == "网络部" ? true : false;
             isXLKH = Session["roleid"].ToString() == "10" ? true : false;
             isNSBD = Session["roleid"].ToString() == "11" ? true : false;
             isUnitMana = Session["roleid"].ToString() == "12" ? true : false;

@@ -97,7 +97,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
             list.Add(" IsDel=0");
         if (roleid == "15")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='安阳市' ");
             else
                 list.Add(" cityname='" + deptname + "' ");
@@ -461,7 +461,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
         //按所属市县
         if (roleid == "15")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='安阳市' ");
             else
                 list.Add(" cityname='" + deptname + "' ");
@@ -768,7 +768,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
             list.Add(" anlevel ='" + Request.Form["anlevel"] + "'");
         if (roleid == "15")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='安阳市' ");
             else
                 list.Add(" cityname='" + deptname + "' ");
@@ -1085,7 +1085,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
     private void SaveOPerationLog()
     {
         List<SqlParameter> _paras = new List<SqlParameter>();
-        _paras.Add(new SqlParameter("@cityname",Session["deptname"].ToString() == "网络维护中心"?"安阳市":Session["deptname"].ToString()));
+        _paras.Add(new SqlParameter("@cityname",Session["deptname"].ToString() == "网络管理中心"?"安阳市":Session["deptname"].ToString()));
         _paras.Add(new SqlParameter("@username", Session["uname"].ToString()));
         _paras.Add(new SqlParameter("@operationdate", DateTime.Now.ToString("yyyy-MM-dd")));
         string sql = "if not exists(select * from AccessNetWork_OperationLog where cityname=@cityname and username=@username and operationdate=@operationdate) ";

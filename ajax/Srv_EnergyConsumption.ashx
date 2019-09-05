@@ -110,7 +110,7 @@ public class Srv_EnergyConsumption : IHttpHandler, IRequiresSessionState
             list.Add(" powersupplymode ='" + Request.Form["powersupplymode"] + "'");
         if (roleid == "20" || roleid == "21")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='市区' ");
             else if (deptname == "林州市")
                 list.Add(" cityname='林州' ");
@@ -476,7 +476,7 @@ public class Srv_EnergyConsumption : IHttpHandler, IRequiresSessionState
             list.Add(" powersupplymode ='" + Request.Form["powersupplymode"] + "'");
         if (roleid == "20" || roleid == "21")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='市区' ");
             else if (deptname == "林州市")
                 list.Add(" cityname='林州' ");
@@ -719,7 +719,7 @@ public class Srv_EnergyConsumption : IHttpHandler, IRequiresSessionState
         }
         if (roleid == "20" || roleid == "21")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='市区' ");
             else if (deptname == "林州市")
                 list.Add(" cityname='林州' ");
@@ -946,7 +946,7 @@ public class Srv_EnergyConsumption : IHttpHandler, IRequiresSessionState
             list.Add(" electype ='" + Request.Form["electype"] + "'");
         if (roleid == "20" || roleid == "21")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='市区' ");
             else if (deptname == "林州市")
                 list.Add(" cityname='林州' ");
@@ -1256,7 +1256,7 @@ public class Srv_EnergyConsumption : IHttpHandler, IRequiresSessionState
             list.Add(" electype ='" + Request.Form["electype"] + "'");
         if (roleid == "20" || roleid == "21")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='市区' ");
             else if (deptname == "林州市")
                 list.Add(" cityname='林州' ");
@@ -1501,7 +1501,7 @@ public class Srv_EnergyConsumption : IHttpHandler, IRequiresSessionState
         }
         if (roleid == "20" || roleid == "21")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='市区' ");
             else if (deptname == "林州市")
                 list.Add(" cityname='林州' ");

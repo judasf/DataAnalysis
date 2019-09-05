@@ -328,7 +328,7 @@
                         <select id="cityname" class="combo easyui-combobox" name="cityname" style="width: 70px;" data-options="panelHeight:'auto',editable:false">
                             <%if (roleid == 20 || roleid == 21)
                                 {
-                                    if (Session["deptname"].ToString() == "网络维护中心")
+                                    if (Session["deptname"].ToString() == "网络管理中心")
                                         Response.Write("<option>市区</option>");
                                     else if (Session["deptname"].ToString() == "林州市")
                                         Response.Write("<option>林州</option>");

@@ -107,7 +107,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
             list.Add(" roomname like'%" + Request.Form["roomname"] + "%'");
         if (roleid != "0" && roleid != "4")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname ='市区'");
             else
                 list.Add(" cityname='" + deptname + "' ");
@@ -452,7 +452,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
         //按所属市县
         if (roleid == "20")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='市区' ");
             else
                 list.Add(" cityname='" + deptname + "' ");
@@ -742,7 +742,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
         //按所属市县
         if (roleid == "20")
         {
-            if (deptname == "网络维护中心")
+            if (deptname == "网络管理中心")
                 list.Add(" cityname='市区' ");
             else
 
@@ -1081,7 +1081,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
             list.Add(" anid like'%" + Request.Form["anid"] + "%'");
         //if (roleid == "20")
         //{
-        //    if (deptname == "网络维护中心")
+        //    if (deptname == "网络管理中心")
         //        list.Add(" cityname='市区' ");
         //    else
         //        list.Add(" cityname='" + deptname + "' ");
@@ -1379,7 +1379,7 @@ public class Srv_AccessNetwork : IHttpHandler, IRequiresSessionState
     private void SaveOPerationLog()
     {
         List<SqlParameter> _paras = new List<SqlParameter>();
-        _paras.Add(new SqlParameter("@cityname", Session["deptname"].ToString() == "网络维护中心" ? "安阳市" : Session["deptname"].ToString()));
+        _paras.Add(new SqlParameter("@cityname", Session["deptname"].ToString() == "网络管理中心" ? "安阳市" : Session["deptname"].ToString()));
         _paras.Add(new SqlParameter("@username", Session["uname"].ToString()));
         _paras.Add(new SqlParameter("@operationdate", DateTime.Now.ToString("yyyy-MM-dd")));
         string sql = "if not exists(select * from AccessNetWork_OperationLog where cityname=@cityname and username=@username and operationdate=@operationdate) ";

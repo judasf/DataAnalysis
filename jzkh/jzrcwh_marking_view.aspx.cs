@@ -49,7 +49,7 @@ public partial class jzkh_jzrcwh_marking_view : System.Web.UI.Page
         //    if (deptname.InnerHtml == Request.QueryString["markingdept"].ToString())
         sql.Append(" and c.markingdept='" + Server.UrlDecode(Request.QueryString["markingdept"].ToString()) + "')");
         //else
-        //    sql.Append(" and (c.markingdept='运行维护部' or c.markingdept='网络维护中心'))");
+        //    sql.Append(" and (c.markingdept='网络部' or c.markingdept='网络管理中心'))");
         //}
         //else
         //    sql.Append(")");

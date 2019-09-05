@@ -72,7 +72,7 @@ public partial class ywbkh_index : System.Web.UI.Page
         }
         else
             outputFileName += DateTime.Now.AddMonths(-1).ToString("yyyy年MM月") + "-";
-        outputFileName += "运行维护部部门员工考核办法.xls";
+        outputFileName += "网络部部门员工考核办法.xls";
         // 手动生成数据表
         DataTable dt = DirectDataAccessor.QueryForDataSet(GetSqlStr()).Tables[0]; ;
         DataTable dtxls = new DataTable();

@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>运行维护部员工考核</title>
+    <title>网络部员工考核</title>
     <link href="css/login-box.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -11,7 +11,7 @@
     <div style="padding: 10% 0 0 35%;">
         <div id="login-box" style="text-align: center;">
             <h2 style="font-size: 24px; text-align: center;">
-                运行维护部员工考核</h2>
+                网络部员工考核</h2>
             <br />
             <br />
             <br />

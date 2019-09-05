@@ -249,11 +249,11 @@
                                 else
                                 { %>
                             <option value="">全部</option>
-                            <option>运行维护部</option>
+                            <option>网络部</option>
                                <option>网络发展部</option>
-                            <option>网络优化中心</option>
+                            <option>网络优化/客户响应中心</option>
                             <option>客户支撑中心</option>
-                            <option>网络维护中心</option>
+                            <option>网络管理中心</option>
                             <option>安阳县</option>
                             <option>滑县</option>
                             <option>内黄县</option>

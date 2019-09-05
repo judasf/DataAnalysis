@@ -5,7 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>运行维护部员工考核</title>
+    <title>网络部员工考核</title>
     <link href="css/style.css" type="text/css" rel="Stylesheet" />
     <script type="text/javascript">
         function chkblank() {
@@ -43,7 +43,7 @@
         <tbody>
             <tr>
                 <td class="head" align="center" height="25">
-                    <b style="font-size: 18px;">运行维护部员工考核</b>
+                    <b style="font-size: 18px;">网络部员工考核</b>
                 </td>
             </tr>
             <tr>
