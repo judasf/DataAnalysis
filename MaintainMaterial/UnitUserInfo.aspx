@@ -245,7 +245,7 @@
                             <option>内黄县</option>
                             <option>林州市</option>
                             <option>汤阴县</option>
-                            <%} %>
+                           <option>集客支撑网格</option> <%} %>
                         </select>
                     </td>
                     <td style="width: 65px; text-align: right;">营业部：
