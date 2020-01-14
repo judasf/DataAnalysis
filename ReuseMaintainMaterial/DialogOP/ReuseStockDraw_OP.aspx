@@ -220,8 +220,8 @@
             'fileTypeExts': '*.jpg;*.jpeg;*.bmp;*.png;*.gif',
             'fileSizeLimit': '5MB',
             'removeTimeout': 1,
-            'queueSizeLimit': 1,
-            'uploadLimit': 1,
+            'queueSizeLimit': 3,
+            'uploadLimit': 3,
             'overrideEvents': ['onDialogClose', 'onSelectError', 'onUploadError'],
             'onDialogClose': function (queueData) {
                 $('#reportNum').val(queueData.queueLength);
