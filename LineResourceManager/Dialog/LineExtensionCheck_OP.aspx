@@ -211,6 +211,7 @@
                     <option>文峰浩翔</option>
                     <option>中通服</option>
                     <option>北关浩翔</option>
+                     <option>安阳县浩翔</option>
                 </select>
             </td>
         </tr>

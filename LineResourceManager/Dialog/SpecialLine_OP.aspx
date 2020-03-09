@@ -143,6 +143,7 @@
                     <option>中通服</option>
                     <option>长线局</option>
                     <option>北关浩翔</option>
+                     <option>安阳县浩翔</option>
                     <option>客户支撑中心</option>
                     <option>设计院</option>
                 </select>
