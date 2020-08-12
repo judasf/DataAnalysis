@@ -1053,7 +1053,8 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         if (where != "")
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
-        sql.Append("SELECT a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,b.classname,b.TypeName,a.amount,b.Units,d.price,a.amount*d.price as allFee,a.memo,a.faultorderno");
+           
+        sql.Append("SELECT a.ckrq,a.unitname,c.AreaName,a.llr,a.storeorderno,b.classname,b.TypeName,a.currentstock,b.Units,d.price,a.currentstock*d.price as allFee,a.memo,a.faultorderno");
         sql.Append(" from  MaintainMaterial_StockOut AS a JOIN MaintainMaterial_TypeInfo AS b ON a.typeid=b.ID JOIN MaintainMaterial_AreaInfo AS c ON a.areaid=c.ID left join MaintainMaterial_Stock d on a.storeorderno=d.storeorderno ");
         sql.Append(where);
         sql.Append(" order by a.id ");
