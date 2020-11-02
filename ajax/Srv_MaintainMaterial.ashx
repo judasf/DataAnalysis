@@ -1000,13 +1000,71 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
         DataSet ds = SqlHelper.GetPagination(table, fieldStr, Request.Form["sort"].ToString(), Request.Form["order"].ToString(), where, Convert.ToInt32(Request.Form["rows"]), Convert.ToInt32(Request.Form["page"]), out total);
         Response.Write(JsonConvert.GetJsonFromDataTable(ds, total));
     }
+          /// <summary>
+    /// 设置物料领用管理查询条件
+    /// </summary>
+    /// <returns></returns>
+    public string SetQueryConditionForStockDraw()
+    {
+        string queryStr = "";
+        //设置查询条件
+        List<string> list = new List<string>();
+        //按领料日期查询
+        //提交开始日期
+        if (!string.IsNullOrEmpty(Request.Form["sdate"]))
+            list.Add(" llrq >='" + Request.Form["sdate"] + "'");
+        //提交截止日期
+        if (!string.IsNullOrEmpty(Request.Form["edate"]))
+            list.Add(" llrq <='" + Request.Form["edate"] + "'");
+        //按单位
+        if (Session["roleid"].ToString() == "2")
+        {
+            list.Add(" a.unitname ='" + Session["deptname"].ToString() + "'");
+        }
+        else if (!string.IsNullOrEmpty(Request.Form["unitname"]) && Request.Form["unitname"] != "全部")
+        {
+
+            list.Add(" a.unitname ='" + Request.Form["unitname"] + "'");
+        }
+        if (roleid == "18" || roleid == "20" || roleid == "21")//故障维修、能耗、能耗管理员
+        {
+            list.Add(" a.llr ='" + Session["uname"].ToString() + "'");
+
+        }
+        //按领料单位
+        if (!string.IsNullOrEmpty(Request.Form["areaid"]))
+            list.Add(" a.areaid =" + Request.Form["areaid"]);
+        //按物料类型
+        if (!string.IsNullOrEmpty(Request.Form["classname"]))
+            list.Add(" classname ='" + Request.Form["classname"] + "'");
+        //按物料型号
+        if (!string.IsNullOrEmpty(Request.Form["typeid"]))
+            list.Add(" a.typeid =" + Request.Form["typeid"]);
+        //按商城订单号
+        if (!string.IsNullOrEmpty(Request.Form["storeorderno"]))
+            list.Add(" a.storeorderno like '%" + Request.Form["storeorderno"] + "%'");
+        //按是否有库存
+        if (!string.IsNullOrEmpty(Request.Form["currentstock"]))
+        {
+            if (Request.Form["currentstock"] == "1")//有库存
+                list.Add(" a.currentstock>0 ");
+            if (Request.Form["currentstock"] == "0")//库存为0
+                list.Add(" a.currentstock=0 ");
+        }
+        else//默认显示有库存
+            list.Add(" a.currentstock>0 ");
+        list.Add(" a.storeorderno like '%" + Request.Form["storeorderno"] + "%'");
+        if (list.Count > 0)
+            queryStr = string.Join(" and ", list.ToArray());
+        return queryStr;
+    }
     /// <summary>
     /// 物料领用管理
     /// </summary>
     public void GetUnitDrawStockDetail()
     {
         int total = 0;
-        string where = SetQueryConditionForOutStock();
+        string where = SetQueryConditionForStockDraw();
         if (!string.IsNullOrEmpty(Request.Form["where"]))
             where = Server.UrlDecode(Request.Form["where"].ToString());
         string fieldStr = "a.id,a.llrq,a.unitname,a.lldw,a.llr,a.storeorderno,b.classname,b.TypeName,a.amount,a.currentstock,b.Units,d.price,a.amount*d.price as allFee,a.memo,a.lldpath,a.inputuser";
@@ -1019,7 +1077,7 @@ public class Srv_MaintainMaterial : IHttpHandler, IRequiresSessionState
     /// </summary>
     public void ExportUnitDrawStockDetail()
     {
-        string where = SetQueryConditionForOutStock();
+        string where = SetQueryConditionForStockDraw();
         if (where != "")
             where = " where " + where;
         StringBuilder sql = new StringBuilder();
